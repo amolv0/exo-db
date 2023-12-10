@@ -1,9 +1,9 @@
+import json
+import requests
+
 # API KEY: REDACTED_API_KEY
 
-import requests
-import json
-
-baseUrl = 'https://www.robotevents.com/api/v2/events?region=Washington&myEvents=false&page=1&per_page=1000'
+baseUrl = 'https://www.robotevents.com/api/v2/events?region=Washington&myEvents=false&page=1&per_page=1000'#washington had ~2600 events recorded
 headers = {
     'accept': 'application/json',
     'Authorization': 'Bearer REDACTED_API_KEY'
