@@ -1,0 +1,2 @@
+# ignore jsons stored in /data
+/database/data/*.json
