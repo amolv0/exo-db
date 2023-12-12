@@ -1,0 +1,66 @@
+team-id{
+	team-info{
+		team-number;
+		team-robot-name;
+		etc;
+	}
+	events-attended{
+		event-id{
+			event-name;
+			program;
+			rank;
+			w-l-t;
+			WP;
+			AP;
+			SP;
+			max-score;
+			TRSPs;
+			OPR;
+			DPR;
+			CCWM;
+			matches {
+				match-id{
+					color
+					score
+					field
+					round
+					match-number
+					match-name
+					division {
+						div-id
+						div-name
+					}
+					alliances[ 
+					{
+						color: "blue"
+						score
+						teams [
+							team{
+								team-id
+								team-name
+							}
+							team{
+								team-id
+								team-name
+							}
+						]
+					},
+					{
+						color: "red"
+						score
+						teams [
+							team{
+								team-id
+								team-name
+							}
+							team{
+								team-id
+								team-name
+							}
+						]
+					},
+				]
+			}
+						
+					  
+		}
