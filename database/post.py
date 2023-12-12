@@ -22,7 +22,7 @@ with open(json_file_path, 'r') as json_file:
 # 'data' is a list of items
 data_list = item_data.get('data', [])
 
-# Function to recursively convert float values to Decimal
+# recursively convert float values to Decimal
 def convert_float_to_decimal(obj):
     if isinstance(obj, float):
         return Decimal(str(obj))
@@ -33,13 +33,16 @@ def convert_float_to_decimal(obj):
     else:
         return obj
 
-for item in data_list:
-    # Convert float values to Decimal
-    item = convert_float_to_decimal(item)
+# Batch write items in groups of 25, completes in one network so should be faster than individual put_items
+for i in range(0, len(data_list), 25):
+    batch_items = data_list[i:i + 25]
+    batch_items = [convert_float_to_decimal(item) for item in batch_items]
 
     try:
-        # Put each item into DynamoDB
-        response = table.put_item(Item=item)
-        print("PutItem succeeded:", response)
+        # Use batch_write_item to write items in batches
+        with table.batch_writer() as batch:
+            for item in batch_items:
+                batch.put_item(Item=item)
+        print("BatchWriteItem succeeded")
     except NoCredentialsError:
         print("Credentials not available")
