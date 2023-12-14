@@ -1,0 +1,8 @@
+{
+    "remote.SSH.ec2-54-161-63-2.compute-1.amazonaws.com": {
+        "host": "ec2-54-161-63-2.compute-1.amazonaws.com",
+        "hostname": "ec2-54-161-63-2.compute-1.amazonaws.com",
+        "user": "ubuntu",
+        "identityFile": "/home/amol/keys/ec2-key-1.pem"
+    }
+}
