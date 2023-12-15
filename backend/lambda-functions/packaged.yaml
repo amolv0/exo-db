@@ -18,7 +18,7 @@ Resources:
       FunctionName: exodb-ongoingEventsFunc
       Handler: ongoingEvents.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/c61c5fe2939ec15f43cb0439d1bd2c27
+      CodeUri: s3://exodblambdafunctions/57c41e1d3f80cd620097120c2634a4ee
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: ongoingEvents

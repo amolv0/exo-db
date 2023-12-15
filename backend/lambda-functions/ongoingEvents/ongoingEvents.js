@@ -41,7 +41,7 @@ const getOngoingEvents = async () => {
 export const handler = async (event) => {
     const connectionId = event.requestContext.connectionId;
     const endpoint = "wss://gruvv52k29.execute-api.us-east-1.amazonaws.com/dev/";
-    
+
     // Initialize postData
     let postData;
 
@@ -52,9 +52,13 @@ export const handler = async (event) => {
     if (message.action === 'ongoingEvents') {
         try {
             const ongoingEvents = await getOngoingEvents();
-            console.log('Ongoing Events:', ongoingEvents);
 
-            postData = JSON.stringify(ongoingEvents);
+            // Extract only the 'id' field from ongoing events
+            const eventIds = ongoingEvents.map(event => event.id);
+
+            console.log('Ongoing Event IDs:', eventIds);
+
+            postData = JSON.stringify(eventIds);
 
             // Sending message back to the client
             await apiGwClient.send(new PostToConnectionCommand({
