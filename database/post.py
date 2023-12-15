@@ -30,19 +30,22 @@ def convert_float_to_decimal(obj):
         return {key: convert_float_to_decimal(value) for key, value in obj.items()}
     elif isinstance(obj, list):
         return [convert_float_to_decimal(element) for element in obj]
+    elif isinstance(obj, bool):  # Check if it's a boolean
+        return str(obj).lower()  # Convert bool to string
     else:
         return obj
 
-# Batch write items in groups of 25, completes in one network so should be faster than individual put_items
-for i in range(0, len(data_list), 25):
-    batch_items = data_list[i:i + 25]
+# Batch write items in groups of 25
+batch_size = 25
+for i in range(0, len(data_list), batch_size):
+    batch_items = data_list[i:i + batch_size]
     batch_items = [convert_float_to_decimal(item) for item in batch_items]
+    batch_number = i // batch_size + 1  # Calculate the batch number
 
     try:
-        # Use batch_write_item to write items in batches
         with table.batch_writer() as batch:
             for item in batch_items:
                 batch.put_item(Item=item)
-        print("BatchWriteItem succeeded")
+        print(f"BatchWriteItem succeeded, batch number: {batch_number}")
     except NoCredentialsError:
         print("Credentials not available")
