@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: A SAM template for deploying multiple Lambda functions.
+Resources:
+  nMostRecent:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-nMostRecentFunc
+      Handler: nMostRecent.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/ac4dfca413e0965f0973c2a5c5303658
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: nMostRecent
+  ongoingEvents:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-ongoingEventsFunc
+      Handler: ongoingEvents.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/c61c5fe2939ec15f43cb0439d1bd2c27
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: ongoingEvents
+  websocketConnect:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-websocketConnectFunction
+      Handler: websocketConnect.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/ef79b0f323a8624abebb99aa85bd0a28
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: websocketConnect
+  websocketDisconnect:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-websocketDisconnectFunction
+      Handler: websocketDisconnect.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/05ed40e38b858223e10065f3f1c0cbf7
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: websocketDisconnect

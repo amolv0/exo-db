@@ -1,2 +1,3 @@
 # ignore jsons stored in /data
 /database/data/*.json
+node_modules
