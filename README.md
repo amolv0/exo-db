@@ -19,4 +19,7 @@
     - OngoingEventsIndex
       - Partition Key: ongoing (from RobotEvents API this comes as a Boolean, we convert to a string representation because DynamoDB does not support Boolean partition keys)
       - This setup allows us to query events with ongoing=="true"
-    
+
+to connect to ec2:
+
+`ssh -i "/home/amol/keys/ec2-key-1.pem" ubuntu@ec2-54-84-18-247.compute-1.amazonaws.com`
