@@ -5,7 +5,6 @@ const WebSocketClient = () => {
   let socket: WebSocket;
 
   useEffect(() => {
-    // Replace with your WebSocket endpoint
     socket = new WebSocket('wss://gruvv52k29.execute-api.us-east-1.amazonaws.com/dev/');
 
     socket.onopen = () => {
@@ -29,7 +28,7 @@ const WebSocketClient = () => {
 
   return (
     <div>
-      <h2>Ongoing Events: </h2>
+      <h2>Ongoing Events:</h2>
       {messages.map((message, index) => (
         <p key={index}>{message}</p>
       ))}
