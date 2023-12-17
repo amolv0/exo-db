@@ -37,4 +37,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["websocketDisconnect"]
 
+[function_build_definitions.37872c5a-e999-4da8-9e20-00bba636dd5d]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/ongoingStream"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "ongoingStream.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["ongoingStream"]
+
 [layer_build_definitions]

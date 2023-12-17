@@ -42,3 +42,13 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: websocketDisconnect
+  ongoingStream:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-ongoingStreamFunc
+      Handler: ongoingStream.handler
+      Runtime: nodejs20.x
+      CodeUri: ongoingStream
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: ongoingStream

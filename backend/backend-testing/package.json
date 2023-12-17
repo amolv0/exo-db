@@ -1,0 +1,14 @@
+{
+  "name": "backend-testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "websocket-test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "websocket": "^1.0.34"
+  }
+}
