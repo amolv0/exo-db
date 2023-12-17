@@ -18,7 +18,7 @@ Resources:
       FunctionName: exodb-ongoingEventsFunc
       Handler: ongoingEvents.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/57c41e1d3f80cd620097120c2634a4ee
+      CodeUri: s3://exodblambdafunctions/4f9878c8ae2cae11d16c6bfd362f3681
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: ongoingEvents
@@ -42,3 +42,13 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: websocketDisconnect
+  ongoingStream:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-ongoingStreamFunc
+      Handler: ongoingStream.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/366cde9f1cb04503461de98a70490f09
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: ongoingStream

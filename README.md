@@ -24,3 +24,6 @@ to connect to ec2:
 
 large:
 `ssh -i "/home/amol/keys/ec2-key-1.pem" ubuntu@ec2-44-204-42-176.compute-1.amazonaws.com`
+
+medium:
+`ssh -i "/home/amol/keys/ec2-key-1.pem" ubuntu@ec2-54-84-202-147.compute-1.amazonaws.com`
