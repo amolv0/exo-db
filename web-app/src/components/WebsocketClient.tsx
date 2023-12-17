@@ -1,0 +1,40 @@
+import { useEffect, useState } from 'react';
+
+const WebSocketClient = () => {
+  const [messages, setMessages] = useState<string[]>([]);
+  let socket: WebSocket;
+
+  useEffect(() => {
+    // Replace with your WebSocket endpoint
+    socket = new WebSocket('wss://gruvv52k29.execute-api.us-east-1.amazonaws.com/dev/');
+
+    socket.onopen = () => {
+      console.log('WebSocket Connected');
+      socket.send(JSON.stringify({ action: 'ongoingEvents' }));
+    };
+
+    socket.onmessage = (event) => {
+      console.log('Message from server ', event.data);
+      setMessages((prevMessages) => [...prevMessages, event.data]);
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket Disconnected');
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  return (
+    <div>
+      <h2>Ongoing Events: </h2>
+      {messages.map((message, index) => (
+        <p key={index}>{message}</p>
+      ))}
+    </div>
+  );
+};
+
+export default WebSocketClient;
