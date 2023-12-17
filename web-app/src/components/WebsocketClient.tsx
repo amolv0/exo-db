@@ -5,7 +5,7 @@ const WebSocketClient = () => {
   let socket: WebSocket;
 
   useEffect(() => {
-    socket = new WebSocket('wss://gruvv52k29.execute-api.us-east-1.amazonaws.com/dev/');
+    socket = new WebSocket('wss://aarnwsrtbl.execute-api.us-east-1.amazonaws.com/dev');
 
     socket.onopen = () => {
       console.log('WebSocket Connected');
