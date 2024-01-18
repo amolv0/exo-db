@@ -1,15 +1,16 @@
 {
-  "name": "ongoingstream",
+  "name": "eventsget",
   "version": "1.0.0",
   "description": "",
-  "main": "ongoingStream.js",
+  "type": "module",
+  "main": "eventsGet.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-apigatewaymanagementapi": "^3.474.0",
-    "@aws-sdk/lib-dynamodb": "^3.474.0"
+    "@aws-sdk/client-dynamodb": "^3.494.0",
+    "@aws-sdk/lib-dynamodb": "^3.494.0"
   }
 }

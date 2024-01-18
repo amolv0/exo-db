@@ -4,22 +4,13 @@ Description: A SAM template for deploying multiple Lambda functions.
 
 Resources:
 
-  nMostRecent:
+  eventsGet:
     Type: AWS::Serverless::Function 
     Properties:
-      FunctionName: exodb-nMostRecentFunc
-      Handler: nMostRecent.handler
+      FunctionName: exodb-eventsGetFunc
+      Handler: eventsGet.handler
       Runtime: nodejs20.x 
-      CodeUri: ./nMostRecent/
-      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
-
-  ongoingEvents:
-    Type: AWS::Serverless::Function 
-    Properties:
-      FunctionName: exodb-ongoingEventsFunc
-      Handler: ongoingEvents.handler
-      Runtime: nodejs20.x 
-      CodeUri: ./ongoingEvents/
+      CodeUri: ./restApi/Events/eventsGet/
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
   websocketConnect:
@@ -28,7 +19,7 @@ Resources:
       FunctionName: exodb-websocketConnectFunction
       Handler: websocketConnect.handler
       Runtime: nodejs20.x 
-      CodeUri: ./websocketConnect/
+      CodeUri: ./websocketApi/websocketConnect/
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
   websocketDisconnect:
@@ -37,14 +28,5 @@ Resources:
       FunctionName: exodb-websocketDisconnectFunction 
       Handler: websocketDisconnect.handler
       Runtime: nodejs20.x
-      CodeUri: ./websocketDisconnect/
-      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
-
-  ongoingStream:
-    Type: AWS::Serverless::Function 
-    Properties:
-      FunctionName: exodb-ongoingStreamFunc
-      Handler: ongoingStream.handler
-      Runtime: nodejs20.x 
-      CodeUri: ./ongoingStream/
+      CodeUri: ./websocketApi/websocketDisconnect/
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
