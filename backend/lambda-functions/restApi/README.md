@@ -10,7 +10,7 @@ Operations:
 
     - GET /events to list events.
     - GET /events/{eventId} to get details of a specific event.
-    - POST /events to create a new event.
+    - POST /events to create a new event. 
     - PUT /events/{eventId} to update an existing event.
     - DELETE /events/{eventId} to delete an event.
 
@@ -25,7 +25,7 @@ Operations:
     - POST /events/{eventId}/divisions: Create a new division for a specific event.
     - PUT /events/{eventId}/divisions/{divisionId}: Update a division within an event.
     - DELETE /events/{eventId}/divisions/{divisionId}: Delete a division from an event.
- q  
+
 ## Teams
 
 Resource Path: `/teams`.

@@ -5,7 +5,6 @@ import time
 import sys
 
 # DynamoDB and API setup
-# Replace 'your-access-key-id' and 'your-secret-access-key' with your AWS access key ID and secret access key
 aws_access_key_id = 'REDACTED'
 aws_secret_access_key = 'REDACTED_API_KEY'
 aws_region = 'us-east-1'
@@ -14,7 +13,7 @@ table_name = 'event-data'
 # Create a DynamoDB client
 dynamodb = boto3.resource('dynamodb', region_name=aws_region, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
-events_table = dynamodb.Table('event-data')  # Replace with your DynamoDB table name
+events_table = dynamodb.Table('event-data')  
 
 API_KEY = 'REDACTED_API_KEY'
 API_KEY_2 = 'REDACTED_API_KEY'
