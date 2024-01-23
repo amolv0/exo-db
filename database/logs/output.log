@@ -1,0 +1,17 @@
+nohup: ignoring input
+Got events page 88
+Got events page 89
+Got events page 90
+Got events page 91
+Got events page 92
+Got events page 93
+Got events page 94
+Got events page 95
+Got events page 96
+Got events page 97
+Got events page 98
+Got events page 99
+Got events page 100
+Event id 52647 successfully posted to DynamoDB
+Event id 52996 successfully posted to DynamoDB
+Rate limit exceeded, Event id: 53279. Retrying in 5 seconds...

@@ -7,14 +7,14 @@ from botocore.exceptions import NoCredentialsError
 aws_access_key_id = 'AKIATKGGTZGQI52I72OY'
 aws_secret_access_key = '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'
 aws_region = 'us-east-1'
-table_name = 'event-data'
+table_name = 'team-data'
 
 # Create a DynamoDB client
 dynamodb = boto3.resource('dynamodb', region_name=aws_region, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
 table = dynamodb.Table(table_name)
 
-json_file_path = 'data/all_events.json'
+json_file_path = 'data/team_data.json'
 
 with open(json_file_path, 'r') as json_file:
     item_data = json.load(json_file)
