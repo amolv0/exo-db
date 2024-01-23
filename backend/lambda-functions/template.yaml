@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: A SAM template for deploying multiple Lambda functions.
 
 Resources:
-
+  # REST Functions
   eventsGet:
     Type: AWS::Serverless::Function 
     Properties:
@@ -13,6 +13,19 @@ Resources:
       CodeUri: ./restApi/Events/eventsGet/
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
+
+  # Other Functions
+  updateFutureEvents:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-eventsFutureUpdateFunc
+      Handler: updateFutureEvents.handler
+      Runtime: python3.10 
+      CodeUri: ./otherFuncs/updateFutureEvents/
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+  
+
+  # Websocket Functions
   websocketConnect:
     Type: AWS::Serverless::Function 
     Properties:
@@ -30,3 +43,4 @@ Resources:
       Runtime: nodejs20.x
       CodeUri: ./websocketApi/websocketDisconnect/
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+      
