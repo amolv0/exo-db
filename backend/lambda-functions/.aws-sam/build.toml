@@ -28,4 +28,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["eventsGet"]
 
+[function_build_definitions.937eecf4-0fdd-41c4-842a-0ca01dc37d86]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateFutureEvents"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "updateFutureEvents.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["updateFutureEvents"]
+
 [layer_build_definitions]
