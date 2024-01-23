@@ -18,7 +18,7 @@ ws.onopen = () => {
 ws.onmessage = (event) => {
     console.log('Received WebSocket message:');
     console.log(event.data); // Log the content of the message
-    ws.close();
+    //ws.close();
 };
 
 ws.onclose = () => {
