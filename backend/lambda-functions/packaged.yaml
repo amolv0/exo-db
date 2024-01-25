@@ -18,7 +18,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
       Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/5eb11ed67a05101b823580d891459ff6
+      CodeUri: s3://exodblambdafunctions/83dda05f8c646b21f3b067cb8dd5bc27
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsDataProcessor
@@ -28,7 +28,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncUrlFinder
       Handler: updateFutureEventsUrlFinder.url_finder_handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/fff1221aa449eee381039934ff9b390b
+      CodeUri: s3://exodblambdafunctions/c98c042ff56e00902515af97ea4b7985
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsUrlFinder
