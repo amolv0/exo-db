@@ -8,7 +8,7 @@ Resources:
       FunctionName: exodb-eventsGetFunc
       Handler: eventsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/d130c3fdb66d0362a74bdea46304d803
+      CodeUri: s3://exodblambdafunctions/ce560522b30915bed2dc744867034c3f
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventsGet
@@ -28,7 +28,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncUrlFinder
       Handler: updateFutureEventsUrlFinder.url_finder_handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/c98c042ff56e00902515af97ea4b7985
+      CodeUri: s3://exodblambdafunctions/bde111d898f0a2cd563d7ef285d07a97
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsUrlFinder
