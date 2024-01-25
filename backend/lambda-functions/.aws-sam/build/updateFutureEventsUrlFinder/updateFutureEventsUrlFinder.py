@@ -2,6 +2,7 @@ import requests
 import json
 import logging
 import boto3
+import time
 from datetime import datetime, timedelta
 import pytz
 # This lambda function together with UpdateFutureEventsDataProcessor.py is meant to run periodically to iterate through the most recent events and update DynamoDB accordingly. This is meant to update team sign-ups for events logged in the future. Probably do this once a day?
@@ -17,9 +18,8 @@ headers = {
     'accept': 'application/json',
     'Authorization': f'Bearer {API_KEY}'
 }
-
-logging.basicConfig(level=logging.INFO)
-logging.basicConfig(level=logging.ERROR)
+logging = logging.getLogger()
+logging.setLevel("INFO")
 
 sqs_client = boto3.client('sqs')
 
@@ -43,6 +43,7 @@ def send_url_to_sqs(url, queue_url):
 
 
 def url_finder_handler(aws_event, context):
+    logging.info("Begining url finder handler")
     queue_url = 'https://sqs.us-east-1.amazonaws.com/228049799584/updateFutureEventsUrlQueue'
 
     current_utc_datetime = datetime.now(pytz.utc)
@@ -58,6 +59,7 @@ def url_finder_handler(aws_event, context):
     # URLs are then passed to UpdateFutureEventsDataProcessor.py
     for url in event_urls:
         send_url_to_sqs(url, queue_url)
+    logging.info(f"{len(event_urls)} URLs sent to SQS")
     return {
         'statusCode': 200,
         'body': json.dumps(f"{len(event_urls)} URLs sent to SQS")

@@ -22,11 +22,8 @@ headers = {
     'Authorization': f'Bearer {API_KEY}'
 }
 
-logging.basicConfig(level=logging.INFO)
-logging.basicConfig(level=logging.ERROR)
-
-logging.basicConfig(level=logging.INFO)
-logging.basicConfig(level=logging.ERROR)
+logging = logging.getLogger()
+logging.setLevel("INFO")
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 event_data_table = dynamodb.Table('event-data')
