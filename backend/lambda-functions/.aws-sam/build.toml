@@ -28,13 +28,22 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["eventsGet"]
 
-[function_build_definitions.937eecf4-0fdd-41c4-842a-0ca01dc37d86]
-codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateFutureEvents"
+[function_build_definitions.11c0b156-4984-4da1-beb4-e57bee4477ea]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateFutureEvents/updateFutureEventsDataProcessor"
 runtime = "python3.10"
 architecture = "x86_64"
 handler = "updateFutureEvents.handler"
 manifest_hash = ""
 packagetype = "Zip"
-functions = ["updateFutureEvents"]
+functions = ["updateFutureEventsDataProcessor"]
+
+[function_build_definitions.50a742d5-ef47-4b26-80c5-eb559ad77a2f]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateFutureEvents/updateFutureEventsUrlFinder"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "updateFutureEvents.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["updateFutureEventsUrlFinder"]
 
 [layer_build_definitions]
