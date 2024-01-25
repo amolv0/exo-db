@@ -47,7 +47,7 @@ def url_finder_handler(aws_event, context):
     queue_url = 'https://sqs.us-east-1.amazonaws.com/228049799584/updateFutureEventsUrlQueue'
 
     current_utc_datetime = datetime.now(pytz.utc)
-    time_to_check = (current_utc_datetime - timedelta(hours=48)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    time_to_check = (current_utc_datetime - timedelta(hours=2)).strftime('%Y-%m-%dT%H:%M:%SZ')
     last_page = get_last_page(time_to_check, headers)
 
     event_urls = []
