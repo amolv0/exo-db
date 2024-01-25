@@ -15,15 +15,24 @@ Resources:
 
 
   # Other Functions
-  updateFutureEvents:
+
+  updateFutureEventsDataProcessor:
     Type: AWS::Serverless::Function 
     Properties:
-      FunctionName: exodb-eventsFutureUpdateFunc
-      Handler: updateFutureEvents.handler
+      FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
+      Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10 
-      CodeUri: ./otherFuncs/updateFutureEvents/
+      CodeUri: ./otherFuncs/updateFutureEvents/updateFutureEventsDataProcessor
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
   
+  updateFutureEventsUrlFinder:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-eventsFutureUpdateFuncUrlFinder
+      Handler: updateFutureEventsUrlFinder.url_finder_handler
+      Runtime: python3.10 
+      CodeUri: ./otherFuncs/updateFutureEvents/updateFutureEventsUrlFinder
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
   # Websocket Functions
   websocketConnect:

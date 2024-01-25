@@ -12,16 +12,26 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventsGet
-  updateFutureEvents:
+  updateFutureEventsDataProcessor:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: exodb-eventsFutureUpdateFunc
-      Handler: updateFutureEvents.handler
+      FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
+      Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/f8bb0532ecfecb82d5199d950197d69c
+      CodeUri: s3://exodblambdafunctions/5eb11ed67a05101b823580d891459ff6
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
-      SamResourceId: updateFutureEvents
+      SamResourceId: updateFutureEventsDataProcessor
+  updateFutureEventsUrlFinder:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-eventsFutureUpdateFuncUrlFinder
+      Handler: updateFutureEventsUrlFinder.url_finder_handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/fff1221aa449eee381039934ff9b390b
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: updateFutureEventsUrlFinder
   websocketConnect:
     Type: AWS::Serverless::Function
     Properties:
