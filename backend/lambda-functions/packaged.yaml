@@ -8,20 +8,80 @@ Resources:
       FunctionName: exodb-eventsGetFunc
       Handler: eventsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/ce560522b30915bed2dc744867034c3f
+      CodeUri: s3://exodblambdafunctions/7948a9b4ff83abb66893d1d0c0bc4b69
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventsGet
+  eventIdGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-eventIdGetFunc
+      Handler: eventIdGet.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/1f99b4590232cde9418dae10f0c6aba2
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: eventIdGet
+  divisionsGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-eventDivisionsGetFunc
+      Handler: divisionsGet.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/4654894c5290a63ca5f4d52a18eb12d3
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: divisionsGet
+  auditOngoing:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-eventsAuditOngoing
+      Handler: auditOngoing.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/90808ea0b32500fd98ddde324993b28b
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: auditOngoing
   updateFutureEventsDataProcessor:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
       Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/83dda05f8c646b21f3b067cb8dd5bc27
+      CodeUri: s3://exodblambdafunctions/41046464184a526f7e847f9e3786eab6
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsDataProcessor
+  updateOngoingAttributeFunc:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-eventsUpdateOngoingAttribute
+      Handler: updateOngoingAttribute.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/e97161d17d6b529e45483552661913b8
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: updateOngoingAttributeFunc
+  updateOngoingEventProcessor:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-eventsUpdateOngoingEventProcessor
+      Handler: updateOngoingEventProcessor.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/90c4765d484c437d4c0ab94a427600b1
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: updateOngoingEventProcessor
+  updateOngoingEventQueue:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-eventsUpdateOngoingEventQueue
+      Handler: updateOngoingEventQueue.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/6dc29de3881f5ce59b04ed2d8238be92
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: updateOngoingEventQueue
   updateFutureEventsUrlFinder:
     Type: AWS::Serverless::Function
     Properties:
