@@ -97,7 +97,7 @@ def convert_values(obj): # Convert floats to decimals and 'ongoing' to a string
     elif isinstance(obj, dict):
         for key, value in obj.items():
             if key == 'ongoing' and isinstance(value, bool):
-                obj[key] = str(value)
+                obj[key] = str(value).lower()
             else:
                 obj[key] = convert_values(value)
     elif isinstance(obj, list):

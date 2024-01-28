@@ -15,22 +15,35 @@ Operations:
 - GET /events to list events (with pagination)
 - GET /events?numberOfEvents={number} to get n most recent events:  ex `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?numberOfEvents=10`
 - GET /events?status=ongoing to get all ongoing events: `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?status=ongoing`
-- GET /events?event={eventId} to get details of a specific event. (including division information): ex `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?eventId=42634`
+- GET /events/{eventId} to get details of a specific event. (including division information): ex `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?eventId=42634` (CHANGE THIS)
 - POST /events to create a new event.
 - PUT /events/{eventId} to update an existing event.
 - DELETE /events/{eventId} to delete an event.
 
-### Sub-Resource: Divisions of an Event
+### Sub-Resource: eventId
+
+Resource Path: `/events/{eventId}`
+
+Operations:
+
+- GET /events/{eventId} to get details for a specific event
+
+### Sub-Sub-Resource: divisions
 
 Resource Path: `/events/{eventId}/divisions`
 
 Operations:
 
-- GET /events/{eventId}/divisions: List all divisions for a specific event.
-- GET /events/{eventId}/divisions/{divisionId}: Get details of a specific division within an event.
-- POST /events/{eventId}/divisions: Create a new division for a specific event.
-- PUT /events/{eventId}/divisions/{divisionId}: Update a division within an event.
-- DELETE /events/{eventId}/divisions/{divisionId}: Delete a division from an event.
+- GET /events/{eventId}/divisions to get a list of divisions for a specific event
+
+### Sub-Sub-Sub-Resource: divId
+
+Resource Path: `/events/{eventId}/divisions/{divId}`
+
+Operations:
+
+- GET /events/{id}/divisions/{divisionId}: Get details of a specific division within an event
+
 
 ## Teams
 
