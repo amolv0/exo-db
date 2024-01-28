@@ -1,14 +1,19 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.handler = void 0;
-const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
+import { APIGatewayProxyEvent } from 'aws-lambda';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
+
 // Initialize DynamoDB Client
-const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
-const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
+const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
+const docClient = DynamoDBDocumentClient.from(ddbClient);
+
+// Type for the event item
+interface EventItem {
+    id: number;
+}
+
 // GET /events?numberOfEvents={number} to get n most recent events
 // Function to get the n most recent events
-const getRecentEvents = async (numberOfEvents) => {
+const getRecentEvents = async (numberOfEvents: number): Promise<EventItem[]> => {
     const params = {
         TableName: 'event-data',
         IndexName: 'EventsByStartDateGSI', // GSI name
@@ -24,19 +29,20 @@ const getRecentEvents = async (numberOfEvents) => {
         ScanIndexForward: false, // false for descending order
         Limit: numberOfEvents
     };
+
     try {
-        const command = new lib_dynamodb_1.QueryCommand(params);
+        const command = new QueryCommand(params);
         const data = await docClient.send(command);
-        return data.Items;
-    }
-    catch (error) {
+        return data.Items as EventItem[];
+    } catch (error) {
         console.error('Error fetching recent events:', error);
         throw error;
     }
 };
+
 // GET /events?status=ongoing to get all ongoing events
 // Function to get ongoing events
-const getOngoingEvents = async () => {
+const getOngoingEvents = async (): Promise<EventItem[]> => {
     const params = {
         TableName: 'event-data',
         IndexName: 'OngoingEventsIndex',
@@ -46,49 +52,52 @@ const getOngoingEvents = async () => {
         },
         ProjectionExpression: 'id'
     };
+
     try {
-        const command = new lib_dynamodb_1.QueryCommand(params);
+        const command = new QueryCommand(params);
         const result = await docClient.send(command);
-        return result.Items;
-    }
-    catch (error) {
+        return result.Items as EventItem[];
+    } catch (error) {
         console.error('Error fetching ongoing events:', error);
         throw error;
     }
 };
-const handler = async (event) => {
+
+export const handler = async (event: APIGatewayProxyEvent) => {
     console.log('Received event:', event);
     console.log('Query parameters:', event.queryStringParameters);
+
     const numberOfEventsInput = event.queryStringParameters?.numberOfEvents;
     const isOngoingQuery = event.queryStringParameters?.status === 'ongoing';
+
     try {
-        let result;
+        let result: EventItem[];
+
         if (numberOfEventsInput) {
             const numberOfEvents = parseInt(numberOfEventsInput, 10);
             if (isNaN(numberOfEvents) || numberOfEvents <= 0) {
                 throw new Error("Invalid 'numberOfEvents' parameter. Must be a positive number.");
             }
             result = await getRecentEvents(numberOfEvents);
-        }
-        else if (isOngoingQuery) {
+            
+        } else if (isOngoingQuery) {
             result = await getOngoingEvents();
-        }
-        else {
+        } else {
             throw new Error("Invalid query parameter. Please specify either 'numberOfEvents' or 'status=ongoing'.");
         }
-        const eventIds = result.map(item => item.id); // No change needed here, but ensure handling as numbers
+
+        const eventIds = result.map(item => item.id);
         console.log('Event IDs:', eventIds);
+
         return {
             statusCode: 200,
             body: JSON.stringify(eventIds)
         };
-    }
-    catch (error) {
+    } catch (error) {
         console.error('Error:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: error.message || 'Failed to fetch events' })
+            body: JSON.stringify({ error: ( error as Error).message || 'Failed to fetch events' })
         };
     }
 };
-exports.handler = handler;
