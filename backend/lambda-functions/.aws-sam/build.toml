@@ -46,4 +46,58 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["updateFutureEventsUrlFinder"]
 
+[function_build_definitions.70ded4ae-525f-422d-b163-2d0191e5f0ca]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/Events/eventId/eventIdGet"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "eventIdGet.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["eventIdGet"]
+
+[function_build_definitions.3e5c1433-bd85-4297-94d2-93bdb098ae8f]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateOngoingAttribute"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "updateOngoing.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["updateOngoingAttributeFunc"]
+
+[function_build_definitions.65d4adda-ed16-4b07-8847-dfa67052bd1b]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateOngoingEvent/updateOngoingEventProcessor"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "updateOngoingEventProcessor.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["updateOngoingEventProcessor"]
+
+[function_build_definitions.b25a08d1-c55d-4f20-b6d6-c0349c0abb25]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateOngoingEvent/updateOngoingEventQueue"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "updateOngoingEventQueue.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["updateOngoingEventQueue"]
+
+[function_build_definitions.02322fb6-dbf0-4f9c-8f72-2f671f5c075f]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/auditOngoing"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "auditOngoing.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["auditOngoing"]
+
+[function_build_definitions.6e42b936-7828-42a2-aa0a-4170f46c245b]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/Events/eventId/divisions/divisionsGet"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "divisionsGet.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["divisionsGet"]
+
 [layer_build_definitions]

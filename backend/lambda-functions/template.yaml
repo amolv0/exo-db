@@ -4,6 +4,8 @@ Description: A SAM template for deploying multiple Lambda functions.
 
 Resources:
   # REST Functions
+
+  ## Events
   eventsGet:
     Type: AWS::Serverless::Function 
     Properties:
@@ -13,8 +15,37 @@ Resources:
       CodeUri: ./restApi/Events/eventsGet/
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
+  ## eventId
+  eventIdGet:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-eventIdGetFunc
+      Handler: eventIdGet.handler
+      Runtime: nodejs20.x 
+      CodeUri: ./restApi/Events/eventId/eventIdGet/
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
+  ## divisions
+  divisionsGet:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-eventDivisionsGetFunc
+      Handler: divisionsGet.handler
+      Runtime: nodejs20.x 
+      CodeUri: ./restApi/Events/eventId/divisions/divisionsGet
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
 
   # Other Functions
+
+  auditOngoing:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-eventsAuditOngoing
+      Handler: auditOngoing.handler
+      Runtime: python3.10 
+      CodeUri: ./otherFuncs/auditOngoing
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
   updateFutureEventsDataProcessor:
     Type: AWS::Serverless::Function 
@@ -23,6 +54,33 @@ Resources:
       Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10 
       CodeUri: ./otherFuncs/updateFutureEvents/updateFutureEventsDataProcessor
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
+  updateOngoingAttributeFunc:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-eventsUpdateOngoingAttribute
+      Handler: updateOngoingAttribute.handler
+      Runtime: python3.10 
+      CodeUri: ./otherFuncs/updateOngoingAttribute
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+  
+  updateOngoingEventProcessor:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-eventsUpdateOngoingEventProcessor
+      Handler: updateOngoingEventProcessor.handler
+      Runtime: python3.10 
+      CodeUri: ./otherFuncs/updateOngoingEvent/updateOngoingEventProcessor
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
+  updateOngoingEventQueue:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-eventsUpdateOngoingEventQueue
+      Handler: updateOngoingEventQueue.handler
+      Runtime: python3.10 
+      CodeUri: ./otherFuncs/updateOngoingEvent/updateOngoingEventQueue
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
   
   updateFutureEventsUrlFinder:
