@@ -9,7 +9,7 @@ from botocore.exceptions import ClientError
 
 
 # This script is meant to be run to update the event-data with any information on events, including events that have retroactively taken place and events that are recorded in the future
-# It is not a lambda function and takes a long time (couple hours) to fully run. This function, when other lambda functions are built, should not need to be called since events that have already 
+# It is not a lambda function and takes a long time (couple hours) to fully run depending on how far back it looks. This function, when other lambda functions are built, should not need to be called since events that have already 
 # taken place (with matches recorded) should be updated in real-time, and future events should be updated by a periodic lambda function. 
 # Its meant to be run to make update the database before those other functions are working properly
 
@@ -148,6 +148,13 @@ def main():
         print(f"Got events page {i}")
         data = make_request_base(url, headers)
         combined_data += data
+
+    # Make json file of event ids to see function progress
+        
+    with open('./data/event_ids_retroactive_update.json', 'w') as file:
+        json.dump({"event_ids": [event['id'] for event in combined_data]}, file, indent=4)
+    print("Event ids dumped to ./data/event_ids_retroactive_update.json")
+    
 
     current_utc_datetime = datetime.now(pytz.utc)
     for event in combined_data:
