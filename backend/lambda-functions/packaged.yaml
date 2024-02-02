@@ -38,7 +38,7 @@ Resources:
       FunctionName: exodb-eventDivIdGetFunc
       Handler: divIdGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/51e6cbead175d7a89465b3f6dcbf0ab8
+      CodeUri: s3://exodblambdafunctions/0e667319cca397e7ab89d4581b169cec
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: divIdGet

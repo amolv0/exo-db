@@ -20,8 +20,8 @@ interface LambdaResponse {
     body: string;
 }
 
-// Function to get divisions of a specific event
-const getEventDivisions = async (eventId: number): Promise<any> => {
+// Function to get specific division of a specific event
+const getEventDivisionById = async (eventId: number, divId: number): Promise<any> => {
     const params = {
         TableName: 'event-data',
         KeyConditionExpression: 'id = :eventIdValue',
@@ -29,14 +29,36 @@ const getEventDivisions = async (eventId: number): Promise<any> => {
             ':eventIdValue': { N: eventId.toString() }
         },
     };
+
     try {
         const command = new QueryCommand(params);
         const result = await docClient.send(command);
-        // Extract divisions from the event details
-        const divisions = result.Items?.map(item => item.divisions?.L).flat();
-        return divisions;
+
+        if (result.Items) {
+            for (const item of result.Items) {
+                // Unmarshall the entire DynamoDB item into a regular JavaScript object
+                const unmarshalledItem = unmarshall(item);
+                console.log("Unmarshalled item:", unmarshalledItem);
+        
+                // Now you can directly work with the unmarshalledItem, which should have a more straightforward structure
+                if (unmarshalledItem.divisions && Array.isArray(unmarshalledItem.divisions)) {
+                    console.log("Got here");
+        
+                    // Iterate over the array of divisions in the unmarshalled item
+                    for (const division of unmarshalledItem.divisions) {
+                        console.log('Division:', division);
+        
+                        // Check if the division has the matching divId
+                        if (division.id === divId) {
+                            return division; // Return the matching division object
+                        }
+                    }
+                }
+            }
+        }
+        return null; // Return null if no matching division is found
     } catch (error) {
-        console.error('Error fetching event divisions:', error);
+        console.error('Error fetching event division:', error);
         throw error;
     }
 };
@@ -45,20 +67,28 @@ const getEventDivisions = async (eventId: number): Promise<any> => {
 
 export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
     console.log('Received event:', event);
-    const eventId = event.pathParameters?.eventId;
+    const { eventId, divId } = event.pathParameters || {};
+
     try {
-        if (eventId) {
-            const divisions = await getEventDivisions(eventId);
-            return {
-                statusCode: 200,
-                body: JSON.stringify(unmarshall(divisions))
-            };
+        if (eventId && divId) {
+            const division = await getEventDivisionById(eventId, Number(divId));
+            if (division) {
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify(division)
+                };
+            } else {
+                return {
+                    statusCode: 404,
+                    body: JSON.stringify({ error: "Division not found" })
+                };
+            }
         } else {
-            throw new Error("Event Id not properly provided through path parameters");
+            throw new Error("Event Id or Division Id not properly provided through path parameters");
         }
     } catch (error) {
         console.error('Error:', error);
-        const errorMessage = (error instanceof Error) ? error.message : 'Failed to fetch event divisions';
+        const errorMessage = (error instanceof Error) ? error.message : 'Failed to fetch event division';
         return {
             statusCode: 500,
             body: JSON.stringify({ error: errorMessage })
