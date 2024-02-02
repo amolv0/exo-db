@@ -15,6 +15,7 @@ Operations:
 - GET /events to list events (with pagination)
 - GET /events?numberOfEvents={number} to get n most recent events:  ex `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?numberOfEvents=10`
 - GET /events?status=ongoing to get all ongoing events: `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?status=ongoing`
+- POST /events/ {body: "[{event_id1}, {event_id2}, {event_id3}...]"} to get details for a set of specific events.
 
 ### Sub-Resource: eventId
 
@@ -25,7 +26,7 @@ Purpose: Handle information regarding a singlular event.
 Operations:
 
 - GET /events/{eventId} to get details for a specific event
-- POST {a set of eventIds} to get details for a set of specific events. 
+
 
 ### Sub-Sub-Resource: divisions
 
