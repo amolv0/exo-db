@@ -100,4 +100,22 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["divisionsGet"]
 
+[function_build_definitions.ac219217-fd82-47c9-86ed-7cada3d175bc]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/Events/eventId/divisions/divId/divIdGet"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "divIdGet.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["divIdGet"]
+
+[function_build_definitions.2a6761ab-dd0f-459d-9172-3a6666629dc9]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateTeamMatches"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "updateTeamMatches.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["updateTeamMatches"]
+
 [layer_build_definitions]
