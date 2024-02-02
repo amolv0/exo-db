@@ -15,6 +15,7 @@ Operations:
 - GET /events to list events (with pagination)
 - GET /events?numberOfEvents={number} to get n most recent events:  ex `EXODB_API_GATEWAY_BASE_URL/dev/events?numberOfEvents=10`
 - GET /events?status=ongoing to get all ongoing events: `EXODB_API_GATEWAY_BASE_URL/dev/events?status=ongoing`
+- POST /events/ {body: "[{event_id1}, {event_id2}, {event_id3}...]"} to get details for a set of specific events.
 
 ### Sub-Resource: eventId
 
@@ -25,7 +26,7 @@ Purpose: Handle information regarding a singlular event.
 Operations:
 
 - GET /events/{eventId} to get details for a specific event
-- POST {a set of eventIds} to get details for a set of specific events. 
+
 
 ### Sub-Sub-Resource: divisions
 
