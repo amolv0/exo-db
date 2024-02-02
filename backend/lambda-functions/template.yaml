@@ -35,6 +35,15 @@ Resources:
       CodeUri: ./restApi/Events/eventId/divisions/divisionsGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
+  ## divId
+  divIdGet:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-eventDivIdGetFunc
+      Handler: divIdGet.handler
+      Runtime: nodejs20.x 
+      CodeUri: ./restApi/Events/eventId/divisions/divId/divIdGet
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
   # Other Functions
 
@@ -45,6 +54,15 @@ Resources:
       Handler: auditOngoing.handler
       Runtime: python3.10 
       CodeUri: ./otherFuncs/auditOngoing
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
+  updateTeamFromStream:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-updateTeamFromStream
+      Handler: updateTeamFromStream.handler
+      Runtime: python3.10 
+      CodeUri: ./otherFuncs/updateTeamFromStream
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
   updateFutureEventsDataProcessor:
