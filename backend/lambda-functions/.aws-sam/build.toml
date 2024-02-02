@@ -46,15 +46,6 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["updateFutureEventsUrlFinder"]
 
-[function_build_definitions.70ded4ae-525f-422d-b163-2d0191e5f0ca]
-codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/Events/eventId/eventIdGet"
-runtime = "nodejs20.x"
-architecture = "x86_64"
-handler = "eventIdGet.handler"
-manifest_hash = ""
-packagetype = "Zip"
-functions = ["eventIdGet"]
-
 [function_build_definitions.3e5c1433-bd85-4297-94d2-93bdb098ae8f]
 codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateOngoingAttribute"
 runtime = "python3.10"
@@ -109,13 +100,22 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["divIdGet"]
 
-[function_build_definitions.2a6761ab-dd0f-459d-9172-3a6666629dc9]
-codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateTeamMatches"
+[function_build_definitions.fa2d57f4-bfb0-4ffe-9011-2183431f79f2]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateTeamFromStream"
 runtime = "python3.10"
 architecture = "x86_64"
-handler = "updateTeamMatches.handler"
+handler = "updateTeamFromStream.handler"
 manifest_hash = ""
 packagetype = "Zip"
-functions = ["updateTeamMatches"]
+functions = ["updateTeamFromStream"]
+
+[function_build_definitions.34dfdfc0-9ccb-4b2a-af53-fc98cb76a00a]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/Events/eventId/eventIdGetPost"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "eventIdGetPost.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["eventIdGetPost"]
 
 [layer_build_definitions]
