@@ -27,7 +27,6 @@ Operations:
 
 - GET /events/{eventId} to get details for a specific event
 
-
 ### Sub-Sub-Resource: divisions
 
 Resource Path: `/events/{eventId}/divisions`
@@ -36,13 +35,13 @@ Purpose: Get information regarding the divisions of a singular event
 
 Operations:
 
-- GET /events/{eventId}/divisions to get a list of divisions for a specific event
+- GET /events/{eventId}/divisions to get data for all divisions for a specific event
 
 ### Sub-Sub-Sub-Resource: divId
 
 Resource Path: `/events/{eventId}/divisions/{divId}`
 
-Purpose: Get information regarding a singular division at a singular event. 
+Purpose: Get information regarding a singular division at a singular event.
 
 Operations:
 
