@@ -1,0 +1,598 @@
+{
+    "Records": [
+      {
+        "eventID": "13b863e319377409e048cbeee7edaca3",
+        "eventName": "MODIFY",
+        "eventVersion": "1.1",
+        "eventSource": "aws:dynamodb",
+        "awsRegion": "us-east-1",
+        "dynamodb": {
+          "ApproximateCreationDateTime": "2024-01-31T08:01:26-05:00",
+          "Keys": {
+            "id": {
+              "N": "51572"
+            }
+          },
+          "NewImage": {
+            "awards_finalized": {
+              "BOOL": false
+            },
+            "divisions": {
+              "L": [
+                {
+                  "M": {
+                    "name": {
+                      "S": "Default"
+                    },
+                    "id": {
+                      "N": "1"
+                    },
+                    "matches": {
+                        "L": [
+                          {
+                              "M": {
+                                "id": {
+                                  "N": "15176108"
+                                },
+                                "alliances": {
+                                  "L": [
+                                    {
+                                      "M": {
+                                        "color": {
+                                          "S": "red"
+                                        },
+                                        "score": {
+                                          "N": "7"
+                                        },
+                                        "teams": {
+                                          "L": [
+                                            {
+                                              "M": {
+                                                "sitting": {
+                                                  "BOOL": false
+                                                },
+                                                "team": {
+                                                  "M": {
+                                                    "id": {
+                                                      "N": "66643"
+                                                    },
+                                                    "code": {
+                                                      "NULL": true
+                                                    },
+                                                    "name": {
+                                                      "S": "1062C"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  ]
+                                },
+                                "division": {
+                                  "M": {
+                                    "id": {
+                                      "N": "1"
+                                    },
+                                    "code": {
+                                      "NULL": true
+                                    },
+                                    "name": {
+                                      "S": "Division 1"
+                                    }
+                                  }
+                                },
+                                "event": {
+                                  "M": {
+                                    "id": {
+                                      "N": "35176"
+                                    },
+                                    "code": {
+                                      "S": "RE-VRC-18-5176"
+                                    },
+                                    "name": {
+                                      "S": "North High School VEX Robotics Tournament - Middle School (Turning Point)"
+                                    }
+                                  }
+                                },
+                                "field": {
+                                  "S": "Field 1"
+                                },
+                                "instance": {
+                                  "N": "1"
+                                },
+                                "matchnum": {
+                                  "N": "1"
+                                },
+                                "name": {
+                                  "S": "Qualifier #1"
+                                },
+                                "round": {
+                                  "N": "2"
+                                },
+                                "scheduled": {
+                                  "S": "2018-12-15T10:00:00-05:00"
+                                },
+                                "scored": {
+                                  "BOOL": true
+                                },
+                                "session": {
+                                  "N": "0"
+                                },
+                                "started": {
+                                  "S": "2018-12-15T10:01:21-05:00"
+                                }
+                              }
+                            }
+                          ]
+                        },
+                    "order": {
+                      "N": "1"
+                    }
+                  }
+                }
+              ]
+            },
+            "end": {
+              "S": "2024-02-03T00:00:00-05:00"
+            },
+            "event_type": {
+              "NULL": true
+            },
+            "gsiPartitionKey": {
+              "S": "ALL_EVENTS"
+            },
+            "id": {
+              "N": "51572"
+            },
+            "level": {
+              "S": "Other"
+            },
+            "location": {
+              "M": {
+                "venue": {
+                  "S": "Great Valley Middle School"
+                },
+                "country": {
+                  "S": "United States"
+                },
+                "city": {
+                  "S": "Malvern"
+                },
+                "address_1": {
+                  "S": "255 Phoenixville Pike"
+                },
+                "address_2": {
+                  "NULL": true
+                },
+                "postcode": {
+                  "S": "19355"
+                },
+                "coordinates": {
+                  "M": {
+                    "lat": {
+                      "N": "40.059006"
+                    },
+                    "lon": {
+                      "N": "-75.564605"
+                    }
+                  }
+                },
+                "region": {
+                  "S": "Pennsylvania"
+                }
+              }
+            },
+            "locations": {
+              "M": {
+                "2024-02-03": {
+                  "M": {
+                    "venue": {
+                      "S": "Great Valley Middle School"
+                    },
+                    "country": {
+                      "S": "United States"
+                    },
+                    "city": {
+                      "S": "Malvern"
+                    },
+                    "address_1": {
+                      "S": "255 Phoenixville Pike"
+                    },
+                    "address_2": {
+                      "NULL": true
+                    },
+                    "postcode": {
+                      "S": "19355"
+                    },
+                    "coordinates": {
+                      "M": {
+                        "lat": {
+                          "N": "40.059006"
+                        },
+                        "lon": {
+                          "N": "-75.564605"
+                        }
+                      }
+                    },
+                    "region": {
+                      "S": "Pennsylvania"
+                    }
+                  }
+                }
+              }
+            },
+            "name": {
+              "S": "Great Valley Middle School February Over Under VRC Qualifier (MS Only)"
+            },
+            "ongoing": {
+              "S": "false"
+            },
+            "program": {
+              "M": {
+                "name": {
+                  "S": "VEX Robotics Competition"
+                },
+                "id": {
+                  "N": "1"
+                },
+                "code": {
+                  "S": "VRC"
+                }
+              }
+            },
+            "season": {
+              "M": {
+                "name": {
+                  "S": "VRC 2023-2024: Over Under"
+                },
+                "id": {
+                  "N": "181"
+                },
+                "code": {
+                  "NULL": true
+                }
+              }
+            },
+            "sku": {
+              "S": "RE-VRC-23-1572"
+            },
+            "start": {
+              "S": "2024-02-03T00:00:00-05:00"
+            },
+            "teams": {
+              "L": [
+                {
+                  "N": "28966"
+                },
+                {
+                  "N": "28708"
+                },
+                {
+                  "N": "44776"
+                },
+                {
+                  "N": "85805"
+                },
+                {
+                  "N": "161762"
+                },
+                {
+                  "N": "85806"
+                },
+                {
+                  "N": "65428"
+                },
+                {
+                  "N": "51758"
+                },
+                {
+                  "N": "65429"
+                },
+                {
+                  "N": "88694"
+                },
+                {
+                  "N": "88697"
+                },
+                {
+                  "N": "155426"
+                },
+                {
+                  "N": "51033"
+                },
+                {
+                  "N": "51300"
+                },
+                {
+                  "N": "51301"
+                },
+                {
+                  "N": "52184"
+                },
+                {
+                  "N": "60534"
+                },
+                {
+                  "N": "60535"
+                },
+                {
+                  "N": "125708"
+                },
+                {
+                  "N": "131445"
+                },
+                {
+                  "N": "131447"
+                },
+                {
+                  "N": "81579"
+                },
+                {
+                  "N": "88104"
+                },
+                {
+                  "N": "88775"
+                },
+                {
+                  "N": "132823"
+                },
+                {
+                  "N": "155997"
+                },
+                {
+                  "N": "139607"
+                },
+                {
+                  "N": "107721"
+                }
+              ]
+            }
+          },
+          "OldImage": {
+            "awards_finalized": {
+              "BOOL": false
+            },
+            "divisions": {
+              "L": [
+                {
+                  "M": {
+                    "name": {
+                      "S": "Default"
+                    },
+                    "id": {
+                      "N": "1"
+                    },
+                    "order": {
+                      "N": "1"
+                    },
+                    "matches": {
+                        "L": []
+                    }
+                  }
+                }
+              ]
+            },
+            "end": {
+              "S": "2024-02-03T00:00:00-05:00"
+            },
+            "event_type": {
+              "NULL": true
+            },
+            "gsiPartitionKey": {
+              "S": "ALL_EVENTS"
+            },
+            "id": {
+              "N": "51572"
+            },
+            "level": {
+              "S": "Other"
+            },
+            "location": {
+              "M": {
+                "venue": {
+                  "S": "Great Valley Middle School"
+                },
+                "country": {
+                  "S": "United States"
+                },
+                "city": {
+                  "S": "Malvern"
+                },
+                "address_1": {
+                  "S": "255 Phoenixville Pike"
+                },
+                "address_2": {
+                  "NULL": true
+                },
+                "postcode": {
+                  "S": "19355"
+                },
+                "coordinates": {
+                  "M": {
+                    "lat": {
+                      "N": "40.059006"
+                    },
+                    "lon": {
+                      "N": "-75.564605"
+                    }
+                  }
+                },
+                "region": {
+                  "S": "Pennsylvania"
+                }
+              }
+            },
+            "locations": {
+              "M": {
+                "2024-02-03": {
+                  "M": {
+                    "venue": {
+                      "S": "Great Valley Middle School"
+                    },
+                    "country": {
+                      "S": "United States"
+                    },
+                    "city": {
+                      "S": "Malvern"
+                    },
+                    "address_1": {
+                      "S": "255 Phoenixville Pike"
+                    },
+                    "address_2": {
+                      "NULL": true
+                    },
+                    "postcode": {
+                      "S": "19355"
+                    },
+                    "coordinates": {
+                      "M": {
+                        "lat": {
+                          "N": "40.059006"
+                        },
+                        "lon": {
+                          "N": "-75.564605"
+                        }
+                      }
+                    },
+                    "region": {
+                      "S": "Pennsylvania"
+                    }
+                  }
+                }
+              }
+            },
+            "name": {
+              "S": "Great Valley Middle School February Over Under VRC Qualifier (MS Only)"
+            },
+            "ongoing": {
+              "S": "false"
+            },
+            "program": {
+              "M": {
+                "name": {
+                  "S": "VEX Robotics Competition"
+                },
+                "id": {
+                  "N": "1"
+                },
+                "code": {
+                  "S": "VRC"
+                }
+              }
+            },
+            "season": {
+              "M": {
+                "name": {
+                  "S": "VRC 2023-2024: Over Under"
+                },
+                "id": {
+                  "N": "181"
+                },
+                "code": {
+                  "NULL": true
+                }
+              }
+            },
+            "sku": {
+              "S": "RE-VRC-23-1572"
+            },
+            "start": {
+              "S": "2024-02-03T00:00:00-05:00"
+            },
+            "teams": {
+              "L": [
+                {
+                  "N": "28966"
+                },
+                {
+                  "N": "28708"
+                },
+                {
+                  "N": "44776"
+                },
+                {
+                  "N": "161762"
+                },
+                {
+                  "N": "85806"
+                },
+                {
+                  "N": "65428"
+                },
+                {
+                  "N": "51758"
+                },
+                {
+                  "N": "65429"
+                },
+                {
+                  "N": "88694"
+                },
+                {
+                  "N": "88697"
+                },
+                {
+                  "N": "155426"
+                },
+                {
+                  "N": "51033"
+                },
+                {
+                  "N": "51300"
+                },
+                {
+                  "N": "51301"
+                },
+                {
+                  "N": "52184"
+                },
+                {
+                  "N": "60534"
+                },
+                {
+                  "N": "60535"
+                },
+                {
+                  "N": "125708"
+                },
+                {
+                  "N": "131445"
+                },
+                {
+                  "N": "131447"
+                },
+                {
+                  "N": "81579"
+                },
+                {
+                  "N": "88104"
+                },
+                {
+                  "N": "88775"
+                },
+                {
+                  "N": "132823"
+                },
+                {
+                  "N": "155997"
+                },
+                {
+                  "N": "139607"
+                },
+                {
+                  "N": "107721"
+                }
+              ]
+            }
+          },
+          "SequenceNumber": "266350500000000030102780350",
+          "SizeBytes": 1813,
+          "StreamViewType": "NEW_AND_OLD_IMAGES"
+        }
+      }
+    ]
+  }

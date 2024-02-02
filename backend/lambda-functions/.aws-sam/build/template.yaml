@@ -32,6 +32,16 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: divisionsGet
+  divIdGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-eventDivIdGetFunc
+      Handler: divIdGet.handler
+      Runtime: nodejs20.x
+      CodeUri: divIdGet
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: divIdGet
   auditOngoing:
     Type: AWS::Serverless::Function
     Properties:
@@ -42,6 +52,16 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditOngoing
+  updateTeamMatches:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-updateTeamMatches
+      Handler: updateTeamMatches.handler
+      Runtime: python3.10
+      CodeUri: updateTeamMatches
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: updateTeamMatches
   updateFutureEventsDataProcessor:
     Type: AWS::Serverless::Function
     Properties:
