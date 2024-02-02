@@ -12,16 +12,16 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventsGet
-  eventIdGet:
+  eventIdGetPost:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: exodb-eventIdGetFunc
-      Handler: eventIdGet.handler
+      FunctionName: exodb-eventIdGetPostFunc
+      Handler: eventIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/f7928909ee388560dc5163e7442b4805
+      CodeUri: s3://exodblambdafunctions/f94e1a03fa77ee3611756b00fb5f998e
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
-      SamResourceId: eventIdGet
+      SamResourceId: eventIdGetPost
   divisionsGet:
     Type: AWS::Serverless::Function
     Properties:
@@ -52,16 +52,16 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditOngoing
-  updateTeamMatches:
+  updateTeamFromStream:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: exodb-updateTeamMatches
-      Handler: updateTeamMatches.handler
+      FunctionName: exodb-updateTeamFromStream
+      Handler: updateTeamFromStream.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/aad73637724de2e5e814dcdcff58acf9
+      CodeUri: s3://exodblambdafunctions/c5ffe540ddec60cad976d65f1997c5a3
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
-      SamResourceId: updateTeamMatches
+      SamResourceId: updateTeamFromStream
   updateFutureEventsDataProcessor:
     Type: AWS::Serverless::Function
     Properties:
