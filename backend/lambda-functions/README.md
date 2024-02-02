@@ -8,4 +8,6 @@ Run `sam build` and then  `sam package     --output-template-file packaged.yaml 
 
 To deploy, run `sam deploy     --template-file packaged.yaml     --stack-name exodb-lambda-stack      --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM     --region us-east-1`
 
-Websocket API URL: `wss://aarnwsrtbl.execute-api.us-east-1.amazonaws.com/dev/`
+or use ./deploy-sam.sh
+
+Dev API link: `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev`

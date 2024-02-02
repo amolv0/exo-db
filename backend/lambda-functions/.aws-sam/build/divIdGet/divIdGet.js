@@ -3,45 +3,58 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
+const util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
 // Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
-// Function to get event details, including all divisions
-const getEventDetails = async (eventId) => {
+// Function to get specific division of a specific event
+const getEventDivisionById = async (eventId, divId) => {
     const params = {
         TableName: 'event-data',
         KeyConditionExpression: 'id = :eventIdValue',
         ExpressionAttributeValues: {
-            ':eventIdValue': { N: eventId.toString() } // Using the numeric value directly
+            ':eventIdValue': { N: eventId.toString() }
         },
     };
     try {
         const command = new client_dynamodb_1.QueryCommand(params);
         const result = await docClient.send(command);
-        return result.Items;
+        if (result.Items) {
+            for (const item of result.Items) {
+                // Unmarshall the entire DynamoDB item into a regular JavaScript object
+                const unmarshalledItem = (0, util_dynamodb_1.unmarshall)(item);
+                console.log("Unmarshalled item:", unmarshalledItem);
+                // Now you can directly work with the unmarshalledItem, which should have a more straightforward structure
+                if (unmarshalledItem.divisions && Array.isArray(unmarshalledItem.divisions)) {
+                    console.log("Got here");
+                    // Iterate over the array of divisions in the unmarshalled item
+                    for (const division of unmarshalledItem.divisions) {
+                        console.log('Division:', division);
+                        // Check if the division has the matching divId
+                        if (division.id === divId) {
+                            return division; // Return the matching division object
+                        }
+                    }
+                }
+            }
+        }
+        return null; // Return null if no matching division is found
     }
     catch (error) {
-        console.error('Error fetching event details:', error);
+        console.error('Error fetching event division:', error);
         throw error;
     }
 };
 const handler = async (event) => {
     console.log('Received event:', event);
-    const eventIdString = event.pathParameters?.eventId;
-    const divIdString = event.pathParameters?.divId;
+    const { eventId, divId } = event.pathParameters || {};
     try {
-        if (eventIdString && divIdString) {
-            const eventId = parseInt(eventIdString, 10);
-            const divId = parseInt(divIdString, 10);
-            const eventDetails = await getEventDetails(eventId);
-            // Assuming eventDetails is an array of events, find the first one (if multiple events have the same ID, this might need adjustment)
-            const eventItem = eventDetails[0];
-            // Assuming divisions are stored in an attribute named 'divisions' and it's an array of division objects
-            const matchingDivision = eventItem.divisions.find((division) => division.id === divId);
-            if (matchingDivision) {
+        if (eventId && divId) {
+            const division = await getEventDivisionById(eventId, Number(divId));
+            if (division) {
                 return {
                     statusCode: 200,
-                    body: JSON.stringify(matchingDivision)
+                    body: JSON.stringify(division)
                 };
             }
             else {
@@ -52,12 +65,12 @@ const handler = async (event) => {
             }
         }
         else {
-            throw new Error("Event ID and/or Division ID not properly provided through path parameters");
+            throw new Error("Event Id or Division Id not properly provided through path parameters");
         }
     }
     catch (error) {
         console.error('Error:', error);
-        const errorMessage = (error instanceof Error) ? error.message : 'Failed to fetch division details';
+        const errorMessage = (error instanceof Error) ? error.message : 'Failed to fetch event division';
         return {
             statusCode: 500,
             body: JSON.stringify({ error: errorMessage })
