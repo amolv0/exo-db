@@ -20,6 +20,7 @@ interface LambdaResponse {
 }
 
 // Function to get specific event details
+// GET /events/{eventId}
 const getEventDetails = async (eventId: number): Promise<any> => {
     const params = {
         TableName: 'event-data',

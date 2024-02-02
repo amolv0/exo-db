@@ -15,22 +15,23 @@ Operations:
 - GET /events to list events (with pagination)
 - GET /events?numberOfEvents={number} to get n most recent events:  ex `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?numberOfEvents=10`
 - GET /events?status=ongoing to get all ongoing events: `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?status=ongoing`
-- GET /events/{eventId} to get details of a specific event. (including division information): ex `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?eventId=42634` (CHANGE THIS)
-- POST /events to create a new event.
-- PUT /events/{eventId} to update an existing event.
-- DELETE /events/{eventId} to delete an event.
 
 ### Sub-Resource: eventId
 
 Resource Path: `/events/{eventId}`
 
+Purpose: Handle information regarding a singlular event.
+
 Operations:
 
 - GET /events/{eventId} to get details for a specific event
+- POST {a set of eventIds} to get details for a set of specific events. 
 
 ### Sub-Sub-Resource: divisions
 
 Resource Path: `/events/{eventId}/divisions`
+
+Purpose: Get information regarding the divisions of a singular event
 
 Operations:
 
@@ -40,10 +41,11 @@ Operations:
 
 Resource Path: `/events/{eventId}/divisions/{divId}`
 
+Purpose: Get information regarding a singular division at a singular event. 
+
 Operations:
 
 - GET /events/{id}/divisions/{divisionId}: Get details of a specific division within an event
-
 
 ## Teams
 
