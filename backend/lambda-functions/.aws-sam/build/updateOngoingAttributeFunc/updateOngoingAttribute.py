@@ -68,8 +68,8 @@ def handler(aws_event, context):
     logging.info("Begining ongoing events updater handler")
 
     current_utc_datetime = datetime.now(pytz.utc)
-    left_window = (current_utc_datetime - timedelta(days=5)).strftime('%Y-%m-%dT%H:%M:%SZ')
-    right_window = (current_utc_datetime + timedelta(days=5)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    left_window = (current_utc_datetime - timedelta(days=4)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    right_window = (current_utc_datetime + timedelta(days=2)).strftime('%Y-%m-%dT%H:%M:%SZ')
     logging.info(f"Left window: {left_window}")
     logging.info(f"Right window: {right_window}")
     page = 0
