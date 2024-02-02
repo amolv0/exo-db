@@ -70,3 +70,7 @@ def handler(aws_event, context):
             logging.info(f"Error occured sending message to queue: {e}")
         
     logging.info(f"Currently {len(events)} events ongoing, of which {count} events are not leagues and were sent to queue") 
+    return {
+        'statusCode': 200,
+        'body': json.dumps(f'Process Completed Successfully. Currently {len(events)} events ongoing, of which {count} events are not leagues and were sent to queue')
+    }
