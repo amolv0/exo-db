@@ -48,7 +48,7 @@ def find_updated_matches(old_divisions, new_divisions):
     updated_matches = []
     for new_division in new_divisions:
         for old_division in old_divisions:
-            if new_division['id'] == old_division['id']:  # Assuming each division has a unique 'id'
+            if new_division['id'] == old_division['id'] and 'matches' in new_division and 'matches' in old_division:  # Assuming each division has a unique 'id'
                 old_match_ids = {match['id'] for match in old_division['matches']}
                 new_match_ids = {match['id'] for match in new_division['matches']}
                 updated_match_ids = new_match_ids.difference(old_match_ids)
@@ -155,6 +155,7 @@ def handler(aws_event, context):
                     for team_id in removed_teams:
                         remove_event_for_team(team_id, event_id)
 
+    logging.info("Process complete")
     return {
         'statusCode': 200,
         'body': json.dumps("Processing completed")
