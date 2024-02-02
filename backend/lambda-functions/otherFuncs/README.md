@@ -1,11 +1,12 @@
 # Scheduled Events
 
-## Every 10 minutes
+## Every 1 hour
 
-updateOngoingEventsScheduler
+updateOngoingAttributeScheduler
 
-- Update the "ongoing" attribute to either make it true or false for all events in an 10 day window of the current date.
-- Run this every 10 minutes to catch the ending of signature events/worlds
+- Update the "ongoing" attribute to either make it true or false for all events in an 6 day window, 4 days back and 2 days forward, of the current date.
+- Run this every hour to catch the ending of signature events/worlds
+- Initially was running every 10 minutes at a 10 day window, was expensive: (~6$ a day?)
 
 ## Every 2 minutes
 
