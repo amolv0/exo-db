@@ -13,7 +13,7 @@ event_data_table = dynamodb.Table('event-data')
 team_data_table = dynamodb.Table('team-data')
 
 logging = logging.getLogger()
-logging.setLevel("INFO")
+logging.setLevel("ERROR")
 
 def unmarshall_dynamodb_item(item):
     return {k: deserializer.deserialize(v) for k, v in item.items()}
@@ -42,7 +42,7 @@ def update_team_data_with_match(team_id, match):
         ReturnValues='UPDATED_NEW'
     )
     logging.info(f"Updated team-data for team ID {team_id} with match data.")
-    logging.info(f"Response: {response}")
+    # logging.info(f"Response: {response}")
 
 def find_updated_matches(old_divisions, new_divisions):
     updated_matches = []
@@ -87,7 +87,7 @@ def update_team_events(team_id, event_data):
         ReturnValues='UPDATED_NEW'
     )
     logging.info(f"Updated team-data for team ID {team_id} with event data.")
-    logging.info(f"Response: {response}")
+    # logging.info(f"Response: {response}")
 
 def remove_event_for_team(team_id, event_id):
     # Fetch the current team item

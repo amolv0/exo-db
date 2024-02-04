@@ -24,7 +24,7 @@ headers = {
 }
 
 logging = logging.getLogger()
-logging.setLevel("INFO")
+logging.setLevel("ERROR")
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 event_data_table = dynamodb.Table('event-data')
@@ -37,11 +37,11 @@ def make_request_base(url, headers, initial_delay=5, retries = 3):
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 429:
-            logging.info(f"Rate limit exceeded when requesting events. Retrying in {initial_delay} seconds...")
+            # logging.info(f"Rate limit exceeded when requesting events. Retrying in {initial_delay} seconds...")
             time.sleep(initial_delay)
             initial_delay *= 2
         else:
-            logging.info(f"Request for events failed with status code: {response.status_code}")
+            logging.error(f"Request for events failed with status code: {response.status_code}")
             break
 
     return []
@@ -65,11 +65,11 @@ def make_request(event_id, url, headers, initial_delay = 5, retries = 3):
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 429:
-            logging.info(f"Rate limit exceeded, Event id: {event_id}. Retrying in {initial_delay} seconds...")
+            # logging.info(f"Rate limit exceeded, Event id: {event_id}. Retrying in {initial_delay} seconds...")
             time.sleep(initial_delay)
             initial_delay *= 2
         else:
-            logging.info(f"Request failed with status code: {response.status_code}")
+            logging.error(f"Request failed with status code: {response.status_code}")
             break
 
     return []
@@ -94,7 +94,7 @@ def handler(aws_event, context):
             continue
 
         for division in event_data['divisions']:
-            logging.info(f"Examining division: {division.get('id')}")
+            # logging.info(f"Examining division: {division.get('id')}")
             matches = fetch_match_data(event_id, f"https://www.robotevents.com/api/v2/events/{event_id}/divisions/{division.get('id')}/matches?&per_page=250")
             # Directly update the division dictionary
             division['matches'] = matches  # Update the matches directly
@@ -108,10 +108,10 @@ def handler(aws_event, context):
             ExpressionAttributeValues={':divisionsVal': event_data['divisions']},
             ReturnValues="UPDATED_NEW"
         )
-        #logging.info(f"DynamoDB update response: {response}")
+        # logging.info(f"DynamoDB update response: {response}")
 
-    logging.info("Process Finished")
-    logging.info(f"Elapsed Time in seconds: {time.time() - start_time}")
+    # logging.info("Process Finished")
+    # logging.info(f"Elapsed Time in seconds: {time.time() - start_time}")
     return {
         'statusCode': 200,
         'body': json.dumps('Process Completed Successfully')
