@@ -58,7 +58,7 @@ Resources:
       FunctionName: exodb-updateTeamFromStream
       Handler: updateTeamFromStream.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/c5ffe540ddec60cad976d65f1997c5a3
+      CodeUri: s3://exodblambdafunctions/a6a5c7da268a1ce24d90309bd1725839
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateTeamFromStream
@@ -88,7 +88,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventProcessor
       Handler: updateOngoingEventProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/90c4765d484c437d4c0ab94a427600b1
+      CodeUri: s3://exodblambdafunctions/bb374192bf39274b92095e016338efc0
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventProcessor
@@ -98,7 +98,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventQueue
       Handler: updateOngoingEventQueue.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/83c966565043c88db14d73cf6375e000
+      CodeUri: s3://exodblambdafunctions/7e9cae408e9f260e906113bc15b2f952
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventQueue

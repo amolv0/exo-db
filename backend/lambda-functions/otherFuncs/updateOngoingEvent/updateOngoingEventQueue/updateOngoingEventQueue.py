@@ -35,36 +35,57 @@ sqs_client = boto3.client('sqs')
 def determine_is_league(event):
     start_time = datetime.fromisoformat(event['start'])
     end_time = datetime.fromisoformat(event['end'])
-    return abs(end_time-start_time).days < 5 # return True if the absolute difference between the start and end time is 5 or more days
+    return abs(end_time-start_time).days < 5 or start_time == end_time # return True if the absolute difference between the start and end time is 5 or more days, meaning it is an event we will add to queue
 
 # Get the set of events with ongoing=="true"
 def get_ongoing_events(table):
-    response = table.query(
-        IndexName='OngoingEventsIndex',
-        KeyConditionExpression='ongoing = :val',
-        ExpressionAttributeValues={
-            ':val': 'true'
-        },
-    )
-    items = response['Items']
-    return items
+    ongoing_events = []
+    last_evaluated_key = None
+    # Loop until no more pages
+    while True:
+        if last_evaluated_key:
+            response = table.query(
+                IndexName='OngoingEventsIndex',
+                KeyConditionExpression='ongoing = :val',
+                ExpressionAttributeValues={
+                    ':val': 'true'
+                },
+                ExclusiveStartKey=last_evaluated_key
+            )
+        else:
+            response = table.query(
+                IndexName='OngoingEventsIndex',
+                KeyConditionExpression='ongoing = :val',
+                ExpressionAttributeValues={
+                    ':val': 'true'
+                }
+            )
+
+        ongoing_events.extend(response['Items'])
+
+        # Check if there's more data to process
+        last_evaluated_key = response.get('LastEvaluatedKey')
+        if not last_evaluated_key:
+            break
+
+    return ongoing_events
 
 
 def handler(aws_event, context):
-    logging.info("Begining updateOngoingEventQueue function")
+    # logging.info("Begining updateOngoingEventQueue function")
     queue_url = 'REDACTED_SQS_URL/OngoingEventsQueue'
 
     events = get_ongoing_events(event_data_table)
     count = 0
     for event in events:
-        if determine_is_league(event):
+        if not determine_is_league(event): # returns true if it is not a league (a valid event)
             continue
         try:
             sqs_client.send_message(
                 QueueUrl=queue_url,
                 MessageBody=json.dumps({'id': int(event['id'])})
             )
-            logging.info(f"Sent event: {event['id']} to queue")  
+            # logging.info(f"Sent event: {event['id']} to queue")  
             count += 1
         except Exception as e:
             logging.info(f"Error occured sending message to queue: {e}")
