@@ -1,40 +1,42 @@
-import { useEffect, useState } from 'react';
-import '../index.css';
+import React, { useState, useEffect } from 'react';
 
-const WebSocketClient = () => {
-  const [messages, setMessages] = useState<string[]>([]);
-  let socket: WebSocket;
+const MyComponent = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    socket = new WebSocket('wss://aarnwsrtbl.execute-api.us-east-1.amazonaws.com/dev');
-
-    socket.onopen = () => {
-      console.log('WebSocket Connected');
-      socket.send(JSON.stringify({ action: 'ongoingEvents' }));
+    const fetchData = async () => {
+      try {
+        // Use a relative or path-based URL instead of the full domain
+        const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/events?status=ongoing');
+        const result = await response.json();
+        setData(result);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    socket.onmessage = (event) => {
-      console.log('Message from server ', event.data);
-      setMessages((prevMessages) => [...prevMessages, event.data]);
-    };
-
-    socket.onclose = () => {
-      console.log('WebSocket Disconnected');
-    };
-
-    return () => {
-      socket.close();
-    };
+    fetchData();
   }, []);
 
   return (
     <div>
-      <h2 className = "text-white">Ongoing Events:</h2>
-      {messages.map((message, index) => (
-        <p key={index}>{message}</p>
-      ))}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div>
+          {/* Display your data here */}
+          {data ? (
+            <p>{JSON.stringify(data)}</p>
+          ) : (
+            <p>No data available</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-export default WebSocketClient;
+export default MyComponent;
