@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import '../index.css';
 
 const WebSocketClient = () => {
   const [messages, setMessages] = useState<string[]>([]);
@@ -28,7 +29,7 @@ const WebSocketClient = () => {
 
   return (
     <div>
-      <h2>Ongoing Events:</h2>
+      <h2 className = "text-white">Ongoing Events:</h2>
       {messages.map((message, index) => (
         <p key={index}>{message}</p>
       ))}
