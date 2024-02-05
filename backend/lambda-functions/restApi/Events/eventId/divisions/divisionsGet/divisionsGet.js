@@ -7,6 +7,12 @@ const util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
 // Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
+// CORS headers
+const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
+    'Access-Control-Allow-Headers': 'Content-Type',
+};
 // Function to get divisions of a specific event
 const getEventDivisions = async (eventId) => {
     const params = {
@@ -36,6 +42,7 @@ const handler = async (event) => {
             const divisions = await getEventDivisions(eventId);
             return {
                 statusCode: 200,
+                headers: headers,
                 body: JSON.stringify((0, util_dynamodb_1.unmarshall)(divisions))
             };
         }
@@ -48,6 +55,7 @@ const handler = async (event) => {
         const errorMessage = (error instanceof Error) ? error.message : 'Failed to fetch event divisions';
         return {
             statusCode: 500,
+            headers: headers,
             body: JSON.stringify({ error: errorMessage })
         };
     }
