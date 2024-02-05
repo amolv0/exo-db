@@ -4,21 +4,14 @@ from decimal import Decimal
 
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
-
-
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Decimal):
-            # Convert decimal instances to floats. 
-            # Use `int(obj)` if you know the values are all integers.
-            return float(obj)
-        # Let the base class default method raise the TypeError
-        return super(DecimalEncoder, self).default(obj)
     
 def transform_match_data(match):
-    # Transform the match data to set the match 'id' as the partition key# Copy the match data
-    match['id'] = match.pop('id')  # Set the 'id' at the top level
-    return match
+    # Check if 'match' is a dictionary and has an 'id' key
+    if isinstance(match, dict) and 'id' in match:
+        match['id'] = match.pop('id')  # Set the 'id' at the top level
+        return match
+    else:
+        return None
 
 
 def scan_and_extract_matches(event_table):
@@ -31,16 +24,15 @@ def scan_and_extract_matches(event_table):
             scan_kwargs['ExclusiveStartKey'] = start_key
         response = event_table.scan(**scan_kwargs)
         for item in response.get('Items', []):
-            # Ensure 'divisions' is accessed correctly
             if 'divisions' in item:
                 divisions = item['divisions']
                 for division in divisions:
-                    # Directly access the list of matches since 'division' is already an item within a list
                     if 'matches' in division:
                         matches = division['matches']
-                        # print(matches)
                         for match in matches:
-                            yield transform_match_data(match)
+                            transformed_match = transform_match_data(match)
+                            if transformed_match is not None:
+                                yield transformed_match
         start_key = response.get('LastEvaluatedKey', None)
         done = start_key is None
 
