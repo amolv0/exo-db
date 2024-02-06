@@ -6,6 +6,13 @@ import { unmarshall } from "@aws-sdk/util-dynamodb";
 const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
+// CORS headers
+const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
+    'Access-Control-Allow-Headers': 'Content-Type',
+};
+
 // Interface for the event parameter
 interface LambdaEvent {
     pathParameters: {
@@ -16,6 +23,7 @@ interface LambdaEvent {
 // Interface for the response structure
 interface LambdaResponse {
     statusCode: number;
+    headers: {};
     body: string;
 }
 
@@ -50,6 +58,7 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
             const divisions = await getEventDivisions(eventId);
             return {
                 statusCode: 200,
+                headers: headers,
                 body: JSON.stringify(unmarshall(divisions))
             };
         } else {
@@ -60,6 +69,7 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
         const errorMessage = (error instanceof Error) ? error.message : 'Failed to fetch event divisions';
         return {
             statusCode: 500,
+            headers: headers,
             body: JSON.stringify({ error: errorMessage })
         };
     }
