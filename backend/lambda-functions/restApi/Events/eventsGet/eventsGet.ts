@@ -70,43 +70,96 @@ const getOngoingEvents = async (): Promise<EventItem[]> => {
     }
 };
 
+// Function to get events before a given start date
+const getEventsBeforeStartDate = async (startDate: string, numberOfEvents: number): Promise<EventItem[]> => {
+    const params = {
+        TableName: 'event-data',
+        IndexName: 'EventsByStartDateGSI',
+        KeyConditionExpression: '#partition_key = :partition_value AND #start_attr < :start_date',
+        ExpressionAttributeNames: {
+            '#partition_key': 'gsiPartitionKey',
+            '#start_attr': 'start', // sort key name in GSI, 'start' is a reserved keyword in dynamodb
+        },
+        ExpressionAttributeValues: {
+            ':partition_value': 'ALL_EVENTS',
+            ':start_date': startDate,
+        },
+        ProjectionExpression: 'id, #start_attr',
+        ScanIndexForward: false, // false for descending order (most recent first)
+        Limit: numberOfEvents
+    };
+
+    const command = new QueryCommand(params);
+    const { Items } = await docClient.send(command);
+    return Items as EventItem[];
+};
+
+// Function to get events after a given start date
+const getEventsAfterStartDate = async (startDate: string, numberOfEvents: number): Promise<EventItem[]> => {
+    const params = {
+        TableName: 'event-data',
+        IndexName: 'EventsByStartDateGSI',
+        KeyConditionExpression: '#partition_key = :partition_value AND #start_attr > :start_date',
+        ExpressionAttributeNames: {
+            '#partition_key': 'gsiPartitionKey',
+            '#start_attr': 'start', // sort key name in GSI, 'start' is a reserved keyword in dynamodb
+        },
+        ExpressionAttributeValues: {
+            ':partition_value': 'ALL_EVENTS',
+            ':start_date': startDate,
+        },
+        ProjectionExpression: 'id, #start_attr',
+        ScanIndexForward: true, // true for ascending order
+        Limit: numberOfEvents
+    };
+
+    const command = new QueryCommand(params);
+    const { Items } = await docClient.send(command);
+    return Items as EventItem[];
+};
+
 export const handler = async (event: APIGatewayProxyEvent) => {
     console.log('Received event:', event);
-    console.log('Query parameters:', event.queryStringParameters);
+    const numberOfEventsInput = event.queryStringParameters?.numberOfEvents || '10'; // Default to 10 if not provided
+    const numberOfEvents = parseInt(numberOfEventsInput, 10);
+    if (isNaN(numberOfEvents) || numberOfEvents <= 0) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ error: "Invalid 'numberOfEvents' parameter. Must be a positive number." })
+        };
+    }
 
-    const numberOfEventsInput = event.queryStringParameters?.numberOfEvents;
+    const startBefore = event.queryStringParameters?.start_before;
+    const startAfter = event.queryStringParameters?.start_after;
     const isOngoingQuery = event.queryStringParameters?.status === 'ongoing';
 
     try {
-        let result: EventItem[];
+        let result: EventItem[] = [];
 
-        if (numberOfEventsInput) {
-            const numberOfEvents = parseInt(numberOfEventsInput, 10);
-            if (isNaN(numberOfEvents) || numberOfEvents <= 0) {
-                throw new Error("Invalid 'numberOfEvents' parameter. Must be a positive number.");
-            }
-            result = await getRecentEvents(numberOfEvents);
-            
+        if (startBefore) {
+            result = await getEventsBeforeStartDate(startBefore, numberOfEvents);
+        } else if (startAfter) {
+            result = await getEventsAfterStartDate(startAfter, numberOfEvents);
         } else if (isOngoingQuery) {
             result = await getOngoingEvents();
         } else {
-            throw new Error("Invalid query parameter. Please specify either 'numberOfEvents' or 'status=ongoing'.");
+            result = await getRecentEvents(numberOfEvents);
         }
 
-        const eventIds = result.map(item => item.id);
-        console.log('Event IDs:', eventIds);
+        console.log('Event items:', result);
 
         return {
             statusCode: 200,
-            headers: headers,
-            body: JSON.stringify(eventIds)
+            headers,
+            body: JSON.stringify(result)
         };
     } catch (error) {
         console.error('Error:', error);
         return {
             statusCode: 500,
-            headers: headers,
-            body: JSON.stringify({ error: ( error as Error).message || 'Failed to fetch events' })
+            headers,
+            body: JSON.stringify({ error: (error as Error).message || 'Failed to fetch events' })
         };
     }
 };
