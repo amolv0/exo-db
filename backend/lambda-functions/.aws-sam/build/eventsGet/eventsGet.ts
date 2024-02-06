@@ -11,6 +11,13 @@ interface EventItem {
     id: number;
 }
 
+// CORS headers
+const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
+    'Access-Control-Allow-Headers': 'Content-Type',
+};
+
 // GET /events?numberOfEvents={number} to get n most recent events
 // Function to get the n most recent events
 const getRecentEvents = async (numberOfEvents: number): Promise<EventItem[]> => {
@@ -91,12 +98,14 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
         return {
             statusCode: 200,
+            headers: headers,
             body: JSON.stringify(eventIds)
         };
     } catch (error) {
         console.error('Error:', error);
         return {
             statusCode: 500,
+            headers: headers,
             body: JSON.stringify({ error: ( error as Error).message || 'Failed to fetch events' })
         };
     }
