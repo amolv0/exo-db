@@ -6,14 +6,12 @@ const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 // Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
-
 // CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
-
 // GET /events?numberOfEvents={number} to get n most recent events
 // Function to get the n most recent events
 const getRecentEvents = async (numberOfEvents) => {
@@ -64,39 +62,90 @@ const getOngoingEvents = async () => {
         throw error;
     }
 };
+// Function to get events before a given start date
+const getEventsBeforeStartDate = async (startDate, numberOfEvents) => {
+    const params = {
+        TableName: 'event-data',
+        IndexName: 'EventsByStartDateGSI',
+        KeyConditionExpression: '#partition_key = :partition_value AND #start_attr < :start_date',
+        ExpressionAttributeNames: {
+            '#partition_key': 'gsiPartitionKey',
+            '#start_attr': 'start', // sort key name in GSI, 'start' is a reserved keyword in dynamodb
+        },
+        ExpressionAttributeValues: {
+            ':partition_value': 'ALL_EVENTS',
+            ':start_date': startDate,
+        },
+        ProjectionExpression: 'id, #start_attr',
+        ScanIndexForward: false, // false for descending order (most recent first)
+        Limit: numberOfEvents
+    };
+    const command = new lib_dynamodb_1.QueryCommand(params);
+    const { Items } = await docClient.send(command);
+    return Items;
+};
+// Function to get events after a given start date
+const getEventsAfterStartDate = async (startDate, numberOfEvents) => {
+    const params = {
+        TableName: 'event-data',
+        IndexName: 'EventsByStartDateGSI',
+        KeyConditionExpression: '#partition_key = :partition_value AND #start_attr > :start_date',
+        ExpressionAttributeNames: {
+            '#partition_key': 'gsiPartitionKey',
+            '#start_attr': 'start', // sort key name in GSI, 'start' is a reserved keyword in dynamodb
+        },
+        ExpressionAttributeValues: {
+            ':partition_value': 'ALL_EVENTS',
+            ':start_date': startDate,
+        },
+        ProjectionExpression: 'id, #start_attr',
+        ScanIndexForward: true, // true for ascending order
+        Limit: numberOfEvents
+    };
+    const command = new lib_dynamodb_1.QueryCommand(params);
+    const { Items } = await docClient.send(command);
+    return Items;
+};
 const handler = async (event) => {
     console.log('Received event:', event);
-    console.log('Query parameters:', event.queryStringParameters);
-    const numberOfEventsInput = event.queryStringParameters?.numberOfEvents;
+    const numberOfEventsInput = event.queryStringParameters?.numberOfEvents || '10'; // Default to 10 if not provided
+    const numberOfEvents = parseInt(numberOfEventsInput, 10);
+    if (isNaN(numberOfEvents) || numberOfEvents <= 0) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ error: "Invalid 'numberOfEvents' parameter. Must be a positive number." })
+        };
+    }
+    const startBefore = event.queryStringParameters?.start_before;
+    const startAfter = event.queryStringParameters?.start_after;
     const isOngoingQuery = event.queryStringParameters?.status === 'ongoing';
     try {
-        let result;
-        if (numberOfEventsInput) {
-            const numberOfEvents = parseInt(numberOfEventsInput, 10);
-            if (isNaN(numberOfEvents) || numberOfEvents <= 0) {
-                throw new Error("Invalid 'numberOfEvents' parameter. Must be a positive number.");
-            }
-            result = await getRecentEvents(numberOfEvents);
+        let result = [];
+        if (startBefore) {
+            result = await getEventsBeforeStartDate(startBefore, numberOfEvents);
+        }
+        else if (startAfter) {
+            result = await getEventsAfterStartDate(startAfter, numberOfEvents);
         }
         else if (isOngoingQuery) {
             result = await getOngoingEvents();
         }
         else {
-            throw new Error("Invalid query parameter. Please specify either 'numberOfEvents' or 'status=ongoing'.");
+            result = await getRecentEvents(numberOfEvents);
         }
-        const eventIds = result.map(item => item.id); // No change needed here, but ensure handling as numbers
-        console.log('Event IDs:', eventIds);
+        console.log('Event items:', result);
         return {
             statusCode: 200,
-            headers: headers,
-            body: JSON.stringify(eventIds)
+            headers,
+            body: JSON.stringify(result)
         };
     }
     catch (error) {
         console.error('Error:', error);
         return {
             statusCode: 500,
-            headers: headers,
+            headers,
             body: JSON.stringify({ error: error.message || 'Failed to fetch events' })
         };
     }
