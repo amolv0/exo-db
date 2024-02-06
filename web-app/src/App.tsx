@@ -4,6 +4,7 @@ import NavBar from './components/NavBar';
 import Teams from './pages/Teams';
 import Events from './pages/Events';
 import Skills from './pages/Skills';
+import EventInfo from './pages/EventInfo';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const Home: React.FC = () => {
@@ -25,7 +26,7 @@ const App: React.FC = () => {
           <Route path="/teams" element={<Teams />} />
           <Route path="/events" element={<Events />} />
           <Route path="/skills" element={<Skills />} />
-          {/* Add other routes as needed */}
+          <Route path="/eventinfo/:eventId" element={<EventInfo />} />
         </Routes>
       </div>
     </Router>
