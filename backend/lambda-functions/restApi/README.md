@@ -14,6 +14,9 @@ Operations:
 
 - GET /events to list events (with pagination)
 - GET /events?numberOfEvents={number} to get n most recent events:  ex `EXODB_API_GATEWAY_BASE_URL/dev/events?numberOfEvents=10`
+  - ?program={'program_code} - get n most recent events of a specific program code. (TBD)
+  - ?start_after={'start_date'} - get n events that started after {'start_date'} (TBD)
+  - ?start_before={'start_date'} - get n events that started before {'start_date'} (TBD)
 - GET /events?status=ongoing to get all ongoing events: `EXODB_API_GATEWAY_BASE_URL/dev/events?status=ongoing`
 - POST /events/ {body: "[{event_id1}, {event_id2}, {event_id3}...]"} to get details for a set of specific events.
 
