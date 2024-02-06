@@ -11,6 +11,7 @@ const EventInfo: React.FC = () => {
   useEffect(() => {
     const fetchEventData = async () => {
       try {
+        console.log(eventId);
         const response = await fetch(`https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events/${eventId}`);
         const data = await response.json();
         setEventData(data);

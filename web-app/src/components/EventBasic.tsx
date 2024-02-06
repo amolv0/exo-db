@@ -12,7 +12,11 @@ const MyComponent: React.FC<MyComponentProps> = ({ eventId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const randomDelay = Math.floor(Math.random() * 1000) + 1;
+        await new Promise(resolve => setTimeout(resolve, randomDelay));
+        
         const response = await fetch(`https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events/${eventId}`);
+        
         const eventData = await response.json();
         const name = eventData[0].name;
 
@@ -36,7 +40,7 @@ const MyComponent: React.FC<MyComponentProps> = ({ eventId }) => {
       ) : (
         <div>
           {/* Use Link to navigate to the EventInfo page with the corresponding event ID */}
-          <Link to={`/eventinfo/${eventId}`}>
+          <Link to={`/events/${eventId}`}>
             <p className="text-white text-2m mb-4 my-8">{eventName || 'N/A'}</p>
           </Link>
         </div>

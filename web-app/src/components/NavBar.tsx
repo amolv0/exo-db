@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   return (
@@ -7,20 +8,25 @@ const Navbar: React.FC = () => {
         <div className="flex items-center">
           {/* Logo or Brand */}
           <div className="text-white text-xl font-bold mr-10">
-            <a href="/">Vex Stats</a>
+            <Link to="/">Vex Stats</Link>
           </div>
 
           {/* Navigation Links */}
           <ul className="flex space-x-4">
             <li className="text-white">
-                <a href="/">Home</a> </li>
+              <Link to="/">Home</Link>
+            </li>
             <li className="text-white">
-                <a href="/teams">Teams</a> </li>
+              <Link to="/teams">Teams</Link>
+            </li>
             <li className="text-white">
-                <a href="/events">Events</a>
-            </li> <li className="text-white">
-                <a href="/skills">Skills</a> </li>
+              <Link to="/events">Events</Link>
+            </li>
+            <li className="text-white">
+              <Link to="/skills">Skills</Link>
+            </li>
           </ul>
+
           <div className="text-white text-xl flex mx-auto">
             <h1>Search Placeholder</h1>
           </div>
