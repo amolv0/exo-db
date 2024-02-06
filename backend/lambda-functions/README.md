@@ -11,3 +11,8 @@ To deploy, run `sam deploy     --template-file packaged.yaml     --stack-name ex
 or use ./deploy-sam.sh
 
 Dev API link: `EXODB_API_GATEWAY_BASE_URL/dev`
+
+Query to determine the size of a log group in cloudwatch:
+
+fields @timestamp, @message
+| stats sum(bytes)

@@ -5,6 +5,13 @@ import { DynamoDBDocumentClient, BatchGetCommand, QueryCommand } from "@aws-sdk/
 const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
+// CORS headers
+const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
+    'Access-Control-Allow-Headers': 'Content-Type',
+};
+
 // Interface for Lambda event structure
 interface LambdaEvent {
     httpMethod: string;
@@ -17,6 +24,7 @@ interface LambdaEvent {
 // Interface for the response structure
 interface LambdaResponse {
     statusCode: number;
+    headers: {};
     body: string;
 }
 
@@ -74,6 +82,7 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
                 const eventDetails = await getEventDetails(eventId);
                 return {
                     statusCode: 200,
+                    headers: headers,
                     body: JSON.stringify(eventDetails)
                 };
             } else {
@@ -95,12 +104,14 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
                 console.error('Parsing error:', parseError);
                 return {
                     statusCode: 400,
+                    headers: headers,
                     body: JSON.stringify({ error: "Failed to parse request body as JSON array" }),
                 };
             }
             const eventDetails = await getMultipleEventDetails(eventIds);
             return {
                 statusCode: 200,
+                headers: headers,
                 body: JSON.stringify(eventDetails),
             };
         } else {
@@ -111,6 +122,7 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
         const errorMessage = (error instanceof Error) ? error.message : 'Failed to process request';
         return {
             statusCode: 500,
+            headers: headers,
             body: JSON.stringify({ error: errorMessage })
         };
     }
