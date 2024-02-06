@@ -11,6 +11,7 @@ const EventInfo: React.FC = () => {
   useEffect(() => {
     const fetchEventData = async () => {
       try {
+        console.log(eventId);
         const response = await fetch(`EXODB_API_GATEWAY_BASE_URL/dev/events/${eventId}`);
         const data = await response.json();
         setEventData(data);
