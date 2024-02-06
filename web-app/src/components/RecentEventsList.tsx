@@ -9,9 +9,13 @@ const App: React.FC = () => {
     const fetchData = async () => {
       try {
         // Fetch the JSON file for ids of recent 10
-        const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/events?numberOfEvents=20');
+        const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/events?numberOfEvents=40');
         const result = await response.json();
-        setEventIds(result);
+
+        // Extract ids and convert them to numbers
+        const ids = result.map((event: { id: number }) => event.id);
+
+        setEventIds(ids);
       } catch (error) {
         console.error('Error fetching event IDs:', error);
       } finally {
