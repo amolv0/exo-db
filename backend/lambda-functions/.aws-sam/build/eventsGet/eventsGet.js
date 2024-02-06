@@ -6,6 +6,14 @@ const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 // Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
+
+// CORS headers
+const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
+    'Access-Control-Allow-Headers': 'Content-Type',
+};
+
 // GET /events?numberOfEvents={number} to get n most recent events
 // Function to get the n most recent events
 const getRecentEvents = async (numberOfEvents) => {
@@ -80,6 +88,7 @@ const handler = async (event) => {
         console.log('Event IDs:', eventIds);
         return {
             statusCode: 200,
+            headers: headers,
             body: JSON.stringify(eventIds)
         };
     }
@@ -87,6 +96,7 @@ const handler = async (event) => {
         console.error('Error:', error);
         return {
             statusCode: 500,
+            headers: headers,
             body: JSON.stringify({ error: error.message || 'Failed to fetch events' })
         };
     }

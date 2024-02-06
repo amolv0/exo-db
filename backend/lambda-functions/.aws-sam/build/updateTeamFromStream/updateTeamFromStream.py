@@ -11,9 +11,10 @@ deserializer = TypeDeserializer()
 
 event_data_table = dynamodb.Table('event-data')
 team_data_table = dynamodb.Table('team-data')
+match_data_table = dynamodb.Table('match-data')
 
 logging = logging.getLogger()
-logging.setLevel("ERROR")
+logging.setLevel("INFO")
 
 def unmarshall_dynamodb_item(item):
     return {k: deserializer.deserialize(v) for k, v in item.items()}
@@ -22,7 +23,11 @@ def process_match(match):
     teams = extract_teams_from_match(match)
     for team in teams:
         team_id = team['team']['id']
-        update_team_data_with_match(team_id, match)
+        if 'id' in match:
+            match_id = match['id']
+            update_team_data_with_match(team_id, match_id)
+            update_match_data_with_match(match)    
+        
 
 def extract_teams_from_match(match):
     teams = []
@@ -30,19 +35,31 @@ def extract_teams_from_match(match):
         teams.extend(alliance.get('teams', []))
     return teams
 
-def update_team_data_with_match(team_id, match):
+def update_team_data_with_match(team_id, match_id):
     # Ensure the match data is in the correct format for DynamoDB
     response = team_data_table.update_item(
         Key={'id': int(team_id)},
         UpdateExpression='SET matches = list_append(if_not_exists(matches, :empty_list), :match)',
         ExpressionAttributeValues={
-            ':match': [match],
+            ':match': [match_id],
             ':empty_list': [],
         },
         ReturnValues='UPDATED_NEW'
     )
-    logging.info(f"Updated team-data for team ID {team_id} with match data.")
-    # logging.info(f"Response: {response}")
+    logging.info(f"Updated team-data for team ID {team_id} with match id {match_id}.")
+
+def update_match_data_with_match(match):
+    # Extract the match ID and use it as the primary key
+    match_id = match.pop('id')  # This removes the 'id' key and gets its value
+
+    # Now, match_id is the primary key, and match is the rest of the match data
+    response = match_data_table.put_item(
+        Item={
+            'id': match_id,  # Set the primary key
+            **match  # Spread the remaining match data as item attributes
+        }
+    )
+    logging.info(f"Posted match data with match ID {match_id} to DynamoDB.")
 
 def find_updated_matches(old_divisions, new_divisions):
     updated_matches = []
@@ -87,7 +104,6 @@ def update_team_events(team_id, event_data):
         ReturnValues='UPDATED_NEW'
     )
     logging.info(f"Updated team-data for team ID {team_id} with event data.")
-    # logging.info(f"Response: {response}")
 
 def remove_event_for_team(team_id, event_id):
     # Fetch the current team item
