@@ -24,7 +24,7 @@ headers = {
 }
 
 logging = logging.getLogger()
-logging.setLevel("ERROR")
+logging.setLevel("INFO")
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 event_data_table = dynamodb.Table('event-data')

@@ -8,7 +8,7 @@ Resources:
       FunctionName: exodb-eventsGetFunc
       Handler: eventsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/7948a9b4ff83abb66893d1d0c0bc4b69
+      CodeUri: s3://exodblambdafunctions/ab3576422cf9eafcb980f480e258d4a0
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventsGet
@@ -18,7 +18,7 @@ Resources:
       FunctionName: exodb-eventIdGetPostFunc
       Handler: eventIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/f94e1a03fa77ee3611756b00fb5f998e
+      CodeUri: s3://exodblambdafunctions/4170895a6ef5e6ddb64e3cee4354bb60
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventIdGetPost
@@ -28,7 +28,7 @@ Resources:
       FunctionName: exodb-eventDivisionsGetFunc
       Handler: divisionsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/4654894c5290a63ca5f4d52a18eb12d3
+      CodeUri: s3://exodblambdafunctions/15514f42a88a761df71b41acb835785c
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: divisionsGet
@@ -38,7 +38,7 @@ Resources:
       FunctionName: exodb-eventDivIdGetFunc
       Handler: divIdGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/0e667319cca397e7ab89d4581b169cec
+      CodeUri: s3://exodblambdafunctions/31a4f7b6dde44416e894f2fe920c0ba0
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: divIdGet
@@ -58,7 +58,7 @@ Resources:
       FunctionName: exodb-updateTeamFromStream
       Handler: updateTeamFromStream.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/a6a5c7da268a1ce24d90309bd1725839
+      CodeUri: s3://exodblambdafunctions/fc7b276cf12c42aa4b7ee1e28f1bba29
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateTeamFromStream
@@ -88,7 +88,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventProcessor
       Handler: updateOngoingEventProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/bb374192bf39274b92095e016338efc0
+      CodeUri: s3://exodblambdafunctions/cd516b8a8fe5790bded5e7f807567ed8
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventProcessor

@@ -6,6 +6,12 @@ const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 // Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
+// CORS headers
+const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
+    'Access-Control-Allow-Headers': 'Content-Type',
+};
 // Function to get specific event details for a GET request
 const getEventDetails = async (eventId) => {
     const numericEventId = Number(eventId); // Convert eventId to a number
@@ -56,6 +62,7 @@ const handler = async (event) => {
                 const eventDetails = await getEventDetails(eventId);
                 return {
                     statusCode: 200,
+                    headers: headers,
                     body: JSON.stringify(eventDetails)
                 };
             }
@@ -80,12 +87,14 @@ const handler = async (event) => {
                 console.error('Parsing error:', parseError);
                 return {
                     statusCode: 400,
+                    headers: headers,
                     body: JSON.stringify({ error: "Failed to parse request body as JSON array" }),
                 };
             }
             const eventDetails = await getMultipleEventDetails(eventIds);
             return {
                 statusCode: 200,
+                headers: headers,
                 body: JSON.stringify(eventDetails),
             };
         }
@@ -98,6 +107,7 @@ const handler = async (event) => {
         const errorMessage = (error instanceof Error) ? error.message : 'Failed to process request';
         return {
             statusCode: 500,
+            headers: headers,
             body: JSON.stringify({ error: errorMessage })
         };
     }
