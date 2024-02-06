@@ -8,7 +8,7 @@ Resources:
       FunctionName: exodb-eventsGetFunc
       Handler: eventsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/ab3576422cf9eafcb980f480e258d4a0
+      CodeUri: s3://exodblambdafunctions/e1877230b931f50513cfed5a214ba8d7
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventsGet
