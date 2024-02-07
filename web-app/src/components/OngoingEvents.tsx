@@ -53,14 +53,29 @@ const App: React.FC = () => {
 
   return (
     <div>
+      <div className="text-xl font-bold text-gray-50" style={{ display: 'flex', width: '100%' }}>
+        <div style={{ flex: 1 }}>Program</div>
+        <div style={{ flex: 3 }}>
+          Event
+        </div>
+        <div style={{ flex: 2 }}>Location</div>
+        <div style={{ flex: 2 }}>
+          Date
+        </div>
+      </div>
+      <br></br>
       {loading ? (
         <p>Loading...</p>
       ) : (
         eventData.map((event: any) => (
           <EventBasic 
             key = {event.id} 
-            name= {event.name} 
+            name = {event.name} 
             eventID = {event.id} 
+            program = {event.program}
+            location = {event.location}
+            start = {event.start}
+            end = {event.end}
           />
         ))
       )}

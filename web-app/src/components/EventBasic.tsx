@@ -1,22 +1,53 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+interface LocationData {
+  venue: string;
+  country: string;
+  city: string;
+  address_1: string;
+  address_2: string | null;
+  postcode: string;
+  coordinates: { lat: number; lon: number };
+  region: string;
+}
+
+interface ProgramData {
+  name: string;
+  id: number;
+  code: string | null;
+}
+
 interface JSONComponentProps {
   name: String | null;
   eventID: number | null;
+  program : ProgramData | null;
+  location: LocationData | null;
+  start: String | null;
+  end: String | null;
 }
 
-const JSONComponent: React.FC<JSONComponentProps> = ({ name, eventID }) => {
+const JSONComponent: React.FC<JSONComponentProps> = ({ name, eventID, program, location, start, end }) => {
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4"></h2>
-        {name && (
-          <div>
+      {name && (
+        <div style={{ display: 'flex', width: '100%' }}>
+          <div className = "text-stone-400" style={{ flex: 1 }}>{program?.code}</div>
+          <div className = "text-rose-100" style={{ flex: 3 }}>
             <Link to={`/events/${eventID}`}>
-              <p className="text-white text-2m mb-4 my-8">{name || 'N/A'}</p>
+              {name || 'N/A'}
             </Link>
           </div>
-        )}
+          <div className="text-stone-400" style={{ flex: 2 }}>
+            {location?.city && (<div>{location.city}, {location.country}</div>)}
+            {!location?.city && location?.country}
+          </div>
+          <div className = "text-rose-100" style={{ flex: 2 }}>
+            {start && (start.substring(0, 10) === end?.substring(0, 10) ? start.substring(0, 10) : start.substring(0, 10) + ' - ' + end?.substring(0, 10))}
+          </div>
+        </div>
+      )}
+      <br></br>
     </div>
   );
 };
