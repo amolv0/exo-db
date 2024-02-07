@@ -1,52 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
-interface MyComponentProps {
-  eventId: number;
+interface JSONComponentProps {
+  name: String | null;
+  eventID: number | null;
 }
 
-const MyComponent: React.FC<MyComponentProps> = ({ eventId }) => {
-  const [loading, setLoading] = useState(true);
-  const [eventName, setEventName] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const randomDelay = Math.floor(Math.random() * 1000) + 1;
-        await new Promise(resolve => setTimeout(resolve, randomDelay));
-        
-        const response = await fetch(`EXODB_API_GATEWAY_BASE_URL/dev/events/${eventId}`);
-        
-        const eventData = await response.json();
-        const name = eventData[0].name;
-
-        console.log('Extracted Name:', name);
-
-        setEventName(name);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching or parsing JSON:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [eventId]);
-
+const JSONComponent: React.FC<JSONComponentProps> = ({ name, eventID }) => {
   return (
     <div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div>
-          {/* Use Link to navigate to the EventInfo page with the corresponding event ID */}
-          <Link to={`/events/${eventId}`}>
-            <p className="text-white text-2m mb-4 my-8">{eventName || 'N/A'}</p>
-          </Link>
-        </div>
-      )}
+      <h2 className="text-xl font-semibold mb-4"></h2>
+        {name && (
+          <div>
+            <Link to={`/events/${eventID}`}>
+              <p className="text-white text-2m mb-4 my-8">{name || 'N/A'}</p>
+            </Link>
+          </div>
+        )}
     </div>
   );
 };
 
-export default MyComponent;
+export default JSONComponent;
