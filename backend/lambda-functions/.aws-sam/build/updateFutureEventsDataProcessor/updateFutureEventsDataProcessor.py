@@ -117,6 +117,10 @@ def handler(aws_event, context):
         count = 1
         for event in data:
             event_id = event['id']
+
+            if 'program' in event and 'code' in event['program']: # Flatten program to just the string representation of the code
+                program_code = event['program']['code']
+                event['program'] = program_code
             # Do not add matches, these events are in the future and should have no associated matches
             # Add teams to events, do this for all events
             event['teams'] = get_teams(event_id)
