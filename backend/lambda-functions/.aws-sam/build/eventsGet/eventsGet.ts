@@ -18,141 +18,121 @@ const headers = {
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-// GET /events?numberOfEvents={number} to get n most recent events
-// Function to get the n most recent events
-const getRecentEvents = async (numberOfEvents: number): Promise<EventItem[]> => {
-    const params = {
+// Function to query ongoing events with optional program filtering and limit
+const getOngoingEvents = async (eventCode?: string): Promise<number[]> => {
+    let accumulatedItems: number[] = [];
+    let lastEvaluatedKey = undefined;
+
+    do {
+        const params: any = {
+            TableName: 'event-data',
+            IndexName: 'OngoingEventsIndex',
+            KeyConditionExpression: '#ongoing_attr = :ongoingValue',
+            ExpressionAttributeNames: {
+                '#ongoing_attr': 'ongoing',
+            },
+            ExpressionAttributeValues: {
+                ':ongoingValue': 'true',
+            },
+            ProjectionExpression: 'id',
+            ExclusiveStartKey: lastEvaluatedKey, // Use the last evaluated key for pagination
+        };
+
+        if (eventCode) {
+            params.FilterExpression = '#program = :program_value';
+            params.ExpressionAttributeNames['#program'] = 'program';
+            params.ExpressionAttributeValues[':program_value'] = eventCode;
+        }
+
+        const command = new QueryCommand(params);
+        const response = await docClient.send(command);
+        const items = response.Items as EventItem[];
+        accumulatedItems = [...accumulatedItems, ...items.map(item => item.id)];
+        lastEvaluatedKey = response.LastEvaluatedKey;
+
+    } while (lastEvaluatedKey); // Continue until all items are fetched
+
+    return accumulatedItems;
+};
+
+// Function to build query parameters dynamically
+const buildQueryParams = (startDate?: string, numberOfEvents = 10, eventCode?: string, isBefore?: boolean) => {
+    const params: any = {
         TableName: 'event-data',
-        IndexName: 'EventsByStartDateGSI', // GSI name
+        IndexName: 'EventsByStartDateGSI',
         KeyConditionExpression: '#partition_key = :partition_value',
         ExpressionAttributeNames: {
-            '#partition_key': 'gsiPartitionKey', // partition key name used in GSI
-            '#id': 'id'
-        },
-        ExpressionAttributeValues: {
-            ':partition_value': 'ALL_EVENTS', // partition key value
-        },
-        ProjectionExpression: '#id', // Only return the 'id' attribute
-        ScanIndexForward: false, // false for descending order
-        Limit: numberOfEvents
-    };
-
-    try {
-        const command = new QueryCommand(params);
-        const data = await docClient.send(command);
-        return data.Items as EventItem[];
-    } catch (error) {
-        console.error('Error fetching recent events:', error);
-        throw error;
-    }
-};
-
-// GET /events?status=ongoing to get all ongoing events
-// Function to get ongoing events
-const getOngoingEvents = async (): Promise<EventItem[]> => {
-    const params = {
-        TableName: 'event-data',
-        IndexName: 'OngoingEventsIndex',
-        KeyConditionExpression: 'ongoing = :ongoingValue',
-        ExpressionAttributeValues: {
-            ':ongoingValue': 'true'
-        },
-        ProjectionExpression: 'id'
-    };
-
-    try {
-        const command = new QueryCommand(params);
-        const result = await docClient.send(command);
-        return result.Items as EventItem[];
-    } catch (error) {
-        console.error('Error fetching ongoing events:', error);
-        throw error;
-    }
-};
-
-// Function to get events before a given start date
-const getEventsBeforeStartDate = async (startDate: string, numberOfEvents: number): Promise<EventItem[]> => {
-    const params = {
-        TableName: 'event-data',
-        IndexName: 'EventsByStartDateGSI',
-        KeyConditionExpression: '#partition_key = :partition_value AND #start_attr < :start_date',
-        ExpressionAttributeNames: {
             '#partition_key': 'gsiPartitionKey',
-            '#start_attr': 'start', // sort key name in GSI, 'start' is a reserved keyword in dynamodb
+            // '#start_attr' will be conditionally added below if needed
         },
         ExpressionAttributeValues: {
             ':partition_value': 'ALL_EVENTS',
-            ':start_date': startDate,
         },
-        ProjectionExpression: 'id, #start_attr',
-        ScanIndexForward: false, // false for descending order (most recent first)
+        ProjectionExpression: 'id',
+        ScanIndexForward: startDate ? !isBefore : false, // false for descending (most recent first) by default
         Limit: numberOfEvents
     };
 
-    const command = new QueryCommand(params);
-    const { Items } = await docClient.send(command);
-    return Items as EventItem[];
+    // Conditionally add start date condition and '#start_attr'
+    if (startDate) {
+        params.KeyConditionExpression += ` AND #start_attr ${isBefore ? '<' : '>'} :start_date`;
+        params.ExpressionAttributeNames['#start_attr'] = 'start';
+        params.ExpressionAttributeValues[':start_date'] = startDate;
+    }
+
+    // Add program filter if eventCode is provided
+    if (eventCode) {
+        params.ExpressionAttributeNames['#program'] = 'program';
+        params.ExpressionAttributeValues[':program_value'] = eventCode;
+        params.FilterExpression = '#program = :program_value';
+    }
+
+    return params;
 };
 
-// Function to get events after a given start date
-const getEventsAfterStartDate = async (startDate: string, numberOfEvents: number): Promise<EventItem[]> => {
-    const params = {
-        TableName: 'event-data',
-        IndexName: 'EventsByStartDateGSI',
-        KeyConditionExpression: '#partition_key = :partition_value AND #start_attr > :start_date',
-        ExpressionAttributeNames: {
-            '#partition_key': 'gsiPartitionKey',
-            '#start_attr': 'start', // sort key name in GSI, 'start' is a reserved keyword in dynamodb
-        },
-        ExpressionAttributeValues: {
-            ':partition_value': 'ALL_EVENTS',
-            ':start_date': startDate,
-        },
-        ProjectionExpression: 'id, #start_attr',
-        ScanIndexForward: true, // true for ascending order
-        Limit: numberOfEvents
-    };
-
-    const command = new QueryCommand(params);
-    const { Items } = await docClient.send(command);
-    return Items as EventItem[];
-};
-
+// Main Lambda handler function
 export const handler = async (event: APIGatewayProxyEvent) => {
     console.log('Received event:', event);
-    const numberOfEventsInput = event.queryStringParameters?.numberOfEvents || '10'; // Default to 10 if not provided
+    const numberOfEventsInput = event.queryStringParameters?.numberOfEvents || '10';
     const numberOfEvents = parseInt(numberOfEventsInput, 10);
-    if (isNaN(numberOfEvents) || numberOfEvents <= 0) {
-        return {
-            statusCode: 400,
-            headers,
-            body: JSON.stringify({ error: "Invalid 'numberOfEvents' parameter. Must be a positive number." })
-        };
-    }
-
     const startBefore = event.queryStringParameters?.start_before;
     const startAfter = event.queryStringParameters?.start_after;
     const isOngoingQuery = event.queryStringParameters?.status === 'ongoing';
+    const eventCode = event.queryStringParameters?.program;
+
+    // Validate eventCode
+    const validEventCodes = ['VRC', 'VIQRC', 'WORKSHOP'];
+    if (eventCode && !validEventCodes.includes(eventCode)) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ error: `Invalid 'program' parameter. Must be one of ${validEventCodes.join(', ')}.` })
+        };
+    }
 
     try {
-        let result: EventItem[] = [];
-
-        if (startBefore) {
-            result = await getEventsBeforeStartDate(startBefore, numberOfEvents);
-        } else if (startAfter) {
-            result = await getEventsAfterStartDate(startAfter, numberOfEvents);
-        } else if (isOngoingQuery) {
-            result = await getOngoingEvents();
+        let id_array: number[] = [];
+        if (isOngoingQuery) {
+            id_array = await getOngoingEvents(eventCode);
         } else {
-            result = await getRecentEvents(numberOfEvents);
-        }
+                let lastEvaluatedKey = undefined;
+                do {
+                    const params = buildQueryParams(startBefore || startAfter, numberOfEvents - id_array.length, eventCode, !!startBefore);
+                    params.ExclusiveStartKey = lastEvaluatedKey; // Use the last evaluated key for pagination
+                    const command = new QueryCommand(params);
+                    const response = await docClient.send(command);
+                    const items = response.Items as EventItem[];
+                    id_array = [...id_array, ...items.map(item => item.id)];
+                    lastEvaluatedKey = response.LastEvaluatedKey;
+                } while (lastEvaluatedKey && id_array.length < numberOfEvents);
+            }
 
-        console.log('Event items:', result);
+        //console.log('Event items:', result);
 
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify(result)
+            body: JSON.stringify(id_array)
         };
     } catch (error) {
         console.error('Error:', error);
