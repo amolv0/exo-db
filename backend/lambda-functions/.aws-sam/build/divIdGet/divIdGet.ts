@@ -48,7 +48,7 @@ const getEventDivisionById = async (eventId: number, divId: number): Promise<any
                 const unmarshalledItem = unmarshall(item);
                 console.log("Unmarshalled item:", unmarshalledItem);
         
-                // Now you can directly work with the unmarshalledItem, which should have a more straightforward structure
+                // Now directly work with the unmarshalledItem, which should have a more straightforward structure
                 if (unmarshalledItem.divisions && Array.isArray(unmarshalledItem.divisions)) {
                     console.log("Got here");
         

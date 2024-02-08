@@ -100,6 +100,19 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     const isOngoingQuery = event.queryStringParameters?.status === 'ongoing';
     const eventCode = event.queryStringParameters?.program;
 
+    const allowedParams = ['numberOfEvents', 'start_before', 'start_after', 'status', 'program'];
+
+    const queryParams = Object.keys(event.queryStringParameters || {});
+    const invalidParams = queryParams.filter(param => !allowedParams.includes(param));
+
+    if (invalidParams.length > 0) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ error: `Invalid query parameters provided: ${invalidParams.join(', ')}.` })
+        };
+    }
+    
     // Validate eventCode
     // the only ones that are worth working with are (based on what robotevents even has on their website): VRC, VIQRC, WORKSHOP, VEXU, ADC, VAIRC, TVRC, TVIQRC
     const validEventCodes = ['VRC', 'VIQRC', 'WORKSHOP', 'VEXU', 'ADC', 'TVRC', 'TVIQRC', 'BellAVR', 'FAC', 'NRL', 'VAIRC']; 
@@ -108,6 +121,23 @@ export const handler = async (event: APIGatewayProxyEvent) => {
             statusCode: 400,
             headers,
             body: JSON.stringify({ error: `Invalid 'program' parameter. Must be one of ${validEventCodes.join(', ')}.` })
+        };
+    }
+
+    // Validate startBefore and startAfter dates format if provided
+    const datetimeRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|([+-]\d{2}:\d{2})))?$/;
+    if (startBefore && !datetimeRegex.test(startBefore)) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ error: "Invalid 'start_before' parameter. Must be a date in 'YYYY-MM-DD' format." })
+        };
+    }
+    if (startAfter && !datetimeRegex.test(startAfter)) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ error: "Invalid 'start_after' parameter. Must be a date in 'YYYY-MM-DD' format." })
         };
     }
 
