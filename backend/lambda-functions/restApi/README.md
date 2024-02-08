@@ -14,21 +14,22 @@ Operations:
 
 - GET /events to list events (with pagination)
 - GET /events?numberOfEvents={number} to get n most recent events:  ex `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?numberOfEvents=10`
-  - ?program={'program_code} - get n most recent events of a specific program code. (TBD)
+  - ?program={'program_code} - get n most recent events of a specific program code. (DONE)
   - ?start_after={'start_date'} - get n events that started after {'start_date'} (DONE)
   - ?start_before={'start_date'} - get n events that started before {'start_date'} (DONE)
-- GET /events?status=ongoing to get all ongoing events: `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?status=ongoing`
-- POST /events/ {body: "[{event_id1}, {event_id2}, {event_id3}...]"} to get details for a set of specific events.
+  - ?status=ongoing to get all ongoing events: `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?status=ongoing`
+  - ?region={'region'} to get events from a specific region
 
 ### Sub-Resource: eventId
 
 Resource Path: `/events/{eventId}`
 
-Purpose: Handle information regarding a singlular event.
+Purpose: Handle information regarding a defined set of events.
 
 Operations:
 
 - GET /events/{eventId} to get details for a specific event
+- POST /events/ {body: "[{event_id1}, {event_id2}, {event_id3}...]"} to get details for a set of specific events.
 
 ### Sub-Sub-Resource: divisions
 
@@ -50,7 +51,7 @@ Operations:
 
 - GET /events/{id}/divisions/{divisionId}: Get details of a specific division within an event
 
-## Teams
+## Teams (IN PROGRESS)
 
 Resource Path: `/teams`.
 
@@ -63,16 +64,3 @@ Operations:
 - POST /teams to add a new team.
 - PUT /teams/{teamId} to update a team’s details.
 - DELETE /teams/{teamId} to remove a team.
-
-## Regions (TBD, WILL NEED GSIs)
-
-Resource Path: `/regions`.
-
-Purpose: To manage information about events and maybe teams from a specified region
-
-Operations:
-
-- GET /regions to get all regions
-- GET /regions/{regionString}/teams to get all teams from a specific region
-- GET /regions/{regionString}/events to get all events from a specific region
-- (tbd)
