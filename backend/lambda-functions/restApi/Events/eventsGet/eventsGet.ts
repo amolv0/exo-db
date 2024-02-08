@@ -101,7 +101,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     const eventCode = event.queryStringParameters?.program;
 
     // Validate eventCode
-    const validEventCodes = ['VRC', 'VIQRC', 'WORKSHOP'];
+    // the only ones that are worth working with are (based on what robotevents even has on their website): VRC, VIQRC, WORKSHOP, VEXU, ADC, VAIRC, TVRC, TVIQRC
+    const validEventCodes = ['VRC', 'VIQRC', 'WORKSHOP', 'VEXU', 'ADC', 'TVRC', 'TVIQRC', 'BellAVR', 'FAC', 'NRL', 'VAIRC']; 
     if (eventCode && !validEventCodes.includes(eventCode)) {
         return {
             statusCode: 400,
