@@ -90,6 +90,53 @@ const buildQueryParams = (startDate?: string, numberOfEvents = 10, eventCode?: s
     return params;
 };
 
+// Function to query events by region with optional program filtering and limit
+const getEventsByRegion = async (region: string, startDate?: string, numberOfEvents = 10, eventCode?: string, isBefore?: boolean) => {
+    let accumulatedItems: number[] = [];
+    let lastEvaluatedKey = undefined;
+
+    do {
+        const params: any = {
+            TableName: 'event-data',
+            IndexName: 'RegionStartIndex', 
+            KeyConditionExpression: '#region = :regionVal',
+            ExpressionAttributeNames: {
+                '#region': 'region',
+            },
+            ExpressionAttributeValues: {
+                ':regionVal': region,
+            },
+            ProjectionExpression: 'id',
+            ScanIndexForward: startDate ? !isBefore : false, 
+            Limit: numberOfEvents,
+            ExclusiveStartKey: lastEvaluatedKey,
+        };
+
+        if (startDate) {
+            params.KeyConditionExpression += ` AND #start_attr ${isBefore ? '<' : '>'} :start_date`;
+            params.ExpressionAttributeNames['#start_attr'] = 'start';
+            params.ExpressionAttributeValues[':start_date'] = startDate;
+        }
+
+        // Add program filter if eventCode is provided
+        if (eventCode) {
+            params.ExpressionAttributeNames['#program'] = 'program';
+            params.ExpressionAttributeValues[':program_value'] = eventCode;
+            params.FilterExpression = '#program = :program_value';
+        }
+
+        const command = new QueryCommand(params);
+        const response = await docClient.send(command);
+        const items = response.Items as EventItem[];
+        accumulatedItems = [...accumulatedItems, ...items.map(item => item.id)];
+        lastEvaluatedKey = response.LastEvaluatedKey;
+
+    } while (lastEvaluatedKey && accumulatedItems.length < numberOfEvents);
+
+    return accumulatedItems;
+};
+
+
 // Main Lambda handler function
 export const handler = async (event: APIGatewayProxyEvent) => {
     console.log('Received event:', event);
@@ -99,8 +146,9 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     const startAfter = event.queryStringParameters?.start_after;
     const isOngoingQuery = event.queryStringParameters?.status === 'ongoing';
     const eventCode = event.queryStringParameters?.program;
+    const eventRegion = event.queryStringParameters?.region;
 
-    const allowedParams = ['numberOfEvents', 'start_before', 'start_after', 'status', 'program'];
+    const allowedParams = ['numberOfEvents', 'start_before', 'start_after', 'status', 'program', 'region'];
 
     const queryParams = Object.keys(event.queryStringParameters || {});
     const invalidParams = queryParams.filter(param => !allowedParams.includes(param));
@@ -145,6 +193,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         let id_array: number[] = [];
         if (isOngoingQuery) {
             id_array = await getOngoingEvents(eventCode);
+        } else if (eventRegion) {
+            id_array = await getEventsByRegion(eventRegion, startBefore || startAfter, numberOfEvents, eventCode, !!startBefore);
         } else {
                 let lastEvaluatedKey = undefined;
                 do {
