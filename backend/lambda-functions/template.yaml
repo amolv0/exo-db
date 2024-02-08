@@ -109,23 +109,4 @@ Resources:
       Runtime: python3.10 
       CodeUri: ./otherFuncs/updateFutureEvents/updateFutureEventsUrlFinder
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
-
-  # Websocket Functions
-  websocketConnect:
-    Type: AWS::Serverless::Function 
-    Properties:
-      FunctionName: exodb-websocketConnectFunction
-      Handler: websocketConnect.handler
-      Runtime: nodejs20.x 
-      CodeUri: ./websocketApi/websocketConnect/
-      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
-
-  websocketDisconnect:
-    Type: AWS::Serverless::Function 
-    Properties:
-      FunctionName: exodb-websocketDisconnectFunction 
-      Handler: websocketDisconnect.handler
-      Runtime: nodejs20.x
-      CodeUri: ./websocketApi/websocketDisconnect/
-      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
       
