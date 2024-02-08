@@ -8,7 +8,7 @@ Resources:
       FunctionName: exodb-eventsGetFunc
       Handler: eventsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/74aad0d20305ebee774be63568bc3873
+      CodeUri: s3://exodblambdafunctions/14dcba73bc379bf3368295a077eef70b
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventsGet
@@ -38,7 +38,7 @@ Resources:
       FunctionName: exodb-eventDivIdGetFunc
       Handler: divIdGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/31a4f7b6dde44416e894f2fe920c0ba0
+      CodeUri: s3://exodblambdafunctions/fb40d1e6b7f719aa050fecac244ea765
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: divIdGet
@@ -112,23 +112,3 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsUrlFinder
-  websocketConnect:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: exodb-websocketConnectFunction
-      Handler: websocketConnect.handler
-      Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/ef79b0f323a8624abebb99aa85bd0a28
-      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
-    Metadata:
-      SamResourceId: websocketConnect
-  websocketDisconnect:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: exodb-websocketDisconnectFunction
-      Handler: websocketDisconnect.handler
-      Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/05ed40e38b858223e10065f3f1c0cbf7
-      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
-    Metadata:
-      SamResourceId: websocketDisconnect
