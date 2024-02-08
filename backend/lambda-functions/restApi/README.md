@@ -15,8 +15,8 @@ Operations:
 - GET /events to list events (with pagination)
 - GET /events?numberOfEvents={number} to get n most recent events:  ex `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?numberOfEvents=10`
   - ?program={'program_code} - get n most recent events of a specific program code. (TBD)
-  - ?start_after={'start_date'} - get n events that started after {'start_date'} (TBD)
-  - ?start_before={'start_date'} - get n events that started before {'start_date'} (TBD)
+  - ?start_after={'start_date'} - get n events that started after {'start_date'} (DONE)
+  - ?start_before={'start_date'} - get n events that started before {'start_date'} (DONE)
 - GET /events?status=ongoing to get all ongoing events: `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?status=ongoing`
 - POST /events/ {body: "[{event_id1}, {event_id2}, {event_id3}...]"} to get details for a set of specific events.
 
