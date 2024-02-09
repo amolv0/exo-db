@@ -18,7 +18,7 @@ Resources:
       FunctionName: exodb-eventIdGetPostFunc
       Handler: eventIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/4170895a6ef5e6ddb64e3cee4354bb60
+      CodeUri: s3://exodblambdafunctions/b2099d9996aba96e50ba941d45b740c4
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventIdGetPost
@@ -42,6 +42,16 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: divIdGet
+  teamsIdGetPost:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-teamsIdGetpostFunc
+      Handler: teamsIdGetPost.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/50c96dd1a2526631fa3c715ae491b5d8
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: teamsIdGetPost
   auditOngoing:
     Type: AWS::Serverless::Function
     Properties:

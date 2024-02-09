@@ -19,6 +19,7 @@ Operations:
   - ?start_before={'start_date'} - get n events that started before {'start_date'} (DONE)
   - ?status=ongoing to get all ongoing events: `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?status=ongoing`
   - ?region={'region'} to get events from a specific region
+- POST /events/ {body: "[{event_id1}, {event_id2}, {event_id3}...]"} to get details for a set of specific events.
 
 ### Sub-Resource: eventId
 
@@ -29,7 +30,6 @@ Purpose: Handle information regarding a defined set of events.
 Operations:
 
 - GET /events/{eventId} to get details for a specific event
-- POST /events/ {body: "[{event_id1}, {event_id2}, {event_id3}...]"} to get details for a set of specific events.
 
 ### Sub-Sub-Resource: divisions
 
@@ -59,8 +59,27 @@ Purpose: To manage information about teams participating in the events.
 
 Operations:
 
-- GET /teams to list all teams.
-- GET /teams/{teamId} to get details of a specific team.
-- POST /teams to add a new team.
-- PUT /teams/{teamId} to update a team’s details.
-- DELETE /teams/{teamId} to remove a team.
+- GET /teams to list teams (with pagination)
+- POST /teams/ {body: "[{team_id1}, {team_id2}, {team_id3}...]"} to get details for a set of specific teamss.
+
+### Sub-Resource: teamId
+
+Resource Path: `/teams/{teamId}`
+
+Purpose: Handle information regarding a defined set of teams.
+
+Operations:
+
+- GET /teams/{teamId} to get details for a specific team
+
+## Init new typescript API
+
+npm init -y
+
+npm install --save-dev typescript @types/node
+
+npm install dependencies
+
+npx tsc --init
+
+modify tsconfig.json
