@@ -22,7 +22,7 @@ headers = {
 }
 
 # Function to make API requests with rate limiting handling
-def make_request(url, headers, initial_delay=5, retries=15):
+def make_request(url, headers, initial_delay=10, retries=15):
     for _ in range(retries):
         response = requests.get(url, headers=headers)
 
