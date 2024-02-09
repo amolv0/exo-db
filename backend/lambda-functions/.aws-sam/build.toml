@@ -100,4 +100,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["eventIdGetPost"]
 
+[function_build_definitions.900cf00a-06d7-4536-9303-4a702ba2d7c0]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/Teams/teamsId/teamsIdGetPost"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "teamsIdGetPost.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["teamsIdGetPost"]
+
 [layer_build_definitions]
