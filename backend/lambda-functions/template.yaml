@@ -45,6 +45,17 @@ Resources:
       CodeUri: ./restApi/Events/eventId/divisions/divId/divIdGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
+  # Teams
+
+  teamsIdGetPost:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-teamsIdGetpostFunc
+      Handler: teamsIdGetPost.handler
+      Runtime: nodejs20.x 
+      CodeUri: ./restApi/Teams/teamsId/teamsIdGetPost
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
   # Other Functions
 
   auditOngoing:
