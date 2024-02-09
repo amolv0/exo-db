@@ -29,7 +29,7 @@ interface LambdaResponse {
 }
 
 
-// Function to get specific event details for a GET request
+// Function to get specifi event details for a GET request
 const getEventDetails = async (eventId: string): Promise<any> => {
     const numericEventId = Number(eventId); // Convert eventId to a number
     const params = {
