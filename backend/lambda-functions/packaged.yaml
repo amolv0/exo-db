@@ -48,7 +48,7 @@ Resources:
       FunctionName: exodb-teamsIdGetpostFunc
       Handler: teamsIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/50c96dd1a2526631fa3c715ae491b5d8
+      CodeUri: s3://exodblambdafunctions/2605e26ed15f495a862a0c45746e569b
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: teamsIdGetPost
@@ -98,7 +98,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventProcessor
       Handler: updateOngoingEventProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/cd516b8a8fe5790bded5e7f807567ed8
+      CodeUri: s3://exodblambdafunctions/9bc33513262a9c3b304444459ab95128
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventProcessor
