@@ -23,6 +23,10 @@ headers = {
     'Authorization': f'Bearer {API_KEY}'
 }
 
+# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# logging = logging.getLogger(__name__)
+
+
 logging = logging.getLogger()
 logging.setLevel("INFO")
 
@@ -30,88 +34,94 @@ dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 event_data_table = dynamodb.Table('event-data')
 
 
-def make_request_base(url, headers, initial_delay=5, retries = 3):
+def make_request(url, headers, initial_delay=5, retries=3):
     for _ in range(retries):
         response = requests.get(url, headers=headers)
-
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 429:
-            # logging.info(f"Rate limit exceeded when requesting events. Retrying in {initial_delay} seconds...")
-            time.sleep(initial_delay)
-            initial_delay *= 2
-        else:
-            logging.error(f"Request for events failed with status code: {response.status_code}")
-            break
-
-    return []
-
-def fetch_match_data(event_id, base_url):
-    division_data = []
-    page = 1
-    while True:
-        url = f"{base_url}?page={page}"
-        response = make_request(event_id, url, headers=headers)
-        division_data.extend(response['data'])
-        if page==response['meta']['last_page']:
-            break
-        page += 1
-    return division_data
-
-def make_request(event_id, url, headers, initial_delay = 5, retries = 3):    
-    for _ in range(retries):
-        response = requests.get(url, headers=headers)
-
-        if response.status_code == 200:
-            return response.json()
-        elif response.status_code == 429:
-            # logging.info(f"Rate limit exceeded, Event id: {event_id}. Retrying in {initial_delay} seconds...")
             time.sleep(initial_delay)
             initial_delay *= 2
         else:
             logging.error(f"Request failed with status code: {response.status_code}")
             break
+    return None
 
-    return []
+def fetch_event_data(event_id):
+    url = f"https://www.robotevents.com/api/v2/events/{event_id}"
+    return make_request(url, headers)
 
-def handler(aws_event, context):
-    start_time = time.time()
+def fetch_division_matches(event_id, division_id):
+    matches = []
+    page = 1
+    while True:
+        url = f"https://www.robotevents.com/api/v2/events/{event_id}/divisions/{division_id}/matches?page={page}&per_page=250"
+        response = make_request(url, headers)
+        if response:
+            matches.extend(response['data'])
+            if page >= response['meta']['last_page']:
+                break
+            page += 1
+        else:
+            break
+    # logging.info(f"Found {len(matches)} matches")
+    return matches
 
-    for record in aws_event['Records']:
+def update_if_changed(event_id, new_data):
+    # Read the current event data from DynamoDB
+    try:
+        response = event_data_table.get_item(Key={'id': event_id})
+        current_data = response.get('Item', {})
+    except ClientError as e:
+        logging.error(e.response['Error']['Message'])
+        return
+
+    # Compare and construct update expression
+    update_expression = "SET "
+    expression_attribute_values = {}
+    for key, value in new_data.items():
+        if current_data.get(key) != value:
+            update_expression += f"{key} = :{key}, "
+            expression_attribute_values[f":{key}"] = value
+
+    # Remove trailing comma and space
+    update_expression = update_expression.rstrip(', ')
+
+    if expression_attribute_values:
+        # Update DynamoDB if there are changes
+        try:
+            response = event_data_table.update_item(
+                Key={'id': event_id},
+                UpdateExpression=update_expression,
+                ExpressionAttributeValues=expression_attribute_values,
+                ReturnValues="UPDATED_NEW"
+            )
+            logging.info(f"Updated event {event_id} with changes.")
+        except ClientError as e:
+            logging.error(e.response['Error']['Message'])
+
+def handler(event, context):
+    for record in event['Records']:
         message = json.loads(record['body'])
         event_id = message['id']
         logging.info(f"Processing event ID: {event_id}")
-        event_data = make_request_base(f"https://www.robotevents.com/api/v2/events/{event_id}", headers=headers)
-        if event_data is None:
-            return {
-            'statusCode': 200,
-            'body': json.dumps('Process timed out, will be updated in next pass')
-        } # requests timed out, just don't do anything and let the next queue message take care of this
-    
-        # Ensure event_data['divisions'] is a list before proceeding
-        if not isinstance(event_data.get('divisions'), list):
-            logging.error(f"No divisions found for event ID: {event_id}")
-            continue
 
-        for division in event_data['divisions']:
-            # logging.info(f"Examining division: {division.get('id')}")
-            matches = fetch_match_data(event_id, f"https://www.robotevents.com/api/v2/events/{event_id}/divisions/{division.get('id')}/matches?&per_page=250")
-            # Directly update the division dictionary
-            division['matches'] = matches  # Update the matches directly
+        # Fetch new event data from the API
+        event_data = fetch_event_data(event_id)
+        if event_data:
+            # logging.info("found event data")
+            divisions = event_data.get('divisions', [])
+            for division in divisions:
+                # logging.info(f"Examining division id {division.get('id')}")
+                division_id = division.get('id')
+                if division_id:
+                    division['matches'] = fetch_division_matches(event_id, division_id)
 
-        # Update the divisions attribute in DynamoDB
+            # Compare and update DynamoDB if there are changes
+            update_if_changed(event_id, {'divisions': divisions})
+        else:
+            logging.error(f"Failed to fetch data for event ID: {event_id}")
 
-        item_key = {'id': event_id}
-        response = event_data_table.update_item(
-            Key=item_key,
-            UpdateExpression='SET divisions = :divisionsVal',
-            ExpressionAttributeValues={':divisionsVal': event_data['divisions']},
-            ReturnValues="UPDATED_NEW"
-        )
-        # logging.info(f"DynamoDB update response: {response}")
-
-    # logging.info("Process Finished")
-    # logging.info(f"Elapsed Time in seconds: {time.time() - start_time}")
     return {
         'statusCode': 200,
         'body': json.dumps('Process Completed Successfully')
@@ -123,7 +133,7 @@ def handler(aws_event, context):
 
 #     "Records": [
 #         {
-#             "body": "{\"id\": 39267}",
+#             "body": "{\"id\": 52538}",
 #         }
 #     ]
 # }
