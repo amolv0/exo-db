@@ -63,33 +63,42 @@ const getMultipleTeamDetails = async (queries, queryType) => {
         const params = {
             RequestItems: {
                 'team-data': {
-                    Keys: numericTeamids, // Use numericEventIds here
+                    Keys: numericTeamids, // Use numericTeamids here
                 }
             }
         };
         try {
             const command = new lib_dynamodb_1.BatchGetCommand(params);
             const result = await docClient.send(command);
-            return result.Responses?.['event-data'];
+            return result.Responses?.['team-data'];
         }
         catch (error) {
             console.error('Error fetching teams:', error);
             throw error;
         }
     }
-    else {
-        const numericTeamids = queries.map(number => ({ number: number }));
-        const params = {
-            RequestItems: {
-                'team-data': {
-                    Keys: numericTeamids, // Use numericEventIds here
+    else if (queryType === 'number') {
+        try {
+            const results = [];
+            for (let teamNumber of queries) { // Iterate over each team number in the queries array
+                const params = {
+                    TableName: 'team-data',
+                    IndexName: 'TeamNumberIndex',
+                    KeyConditionExpression: "#num = :numVal",
+                    ExpressionAttributeNames: {
+                        "#num": "number"
+                    },
+                    ExpressionAttributeValues: {
+                        ":numVal": teamNumber
+                    }
+                };
+                const command = new lib_dynamodb_1.QueryCommand(params);
+                const result = await docClient.send(command);
+                if (result.Items) {
+                    results.push(...result.Items);
                 }
             }
-        };
-        try {
-            const command = new lib_dynamodb_1.BatchGetCommand(params);
-            const result = await docClient.send(command);
-            return result.Responses?.['event-data'];
+            return results;
         }
         catch (error) {
             console.error('Error fetching teams:', error);
@@ -114,7 +123,7 @@ const handler = async (event) => {
                 };
             }
             else {
-                throw new Error("Team {queryType} not properly provided through path parameters");
+                throw new Error("Team id/number not properly provided through path parameters");
             }
         }
         else if (httpMethod === 'POST') {
