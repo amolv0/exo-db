@@ -48,28 +48,42 @@ def make_request(url, headers, initial_delay=5, retries = 5):
 
 # DynamoDB functions
     
-def update_ongoing_attribute(table, event):
+def update_ongoing_attribute_if_changed(table, event):
     event_id = event['id']
-    ongoing = str(event['ongoing']).lower() #convert ongoing to a lowercase string
-    item_key = {'id': event_id}
-    update_expression = 'SET #ongoing = :new_value'
-    expression_attribute_names = {'#ongoing': 'ongoing'}
-    expression_attribute_values = {':new_value': ongoing}
-    response = table.update_item(
-        Key=item_key,
-        UpdateExpression=update_expression,
-        ExpressionAttributeNames=expression_attribute_names,
-        ExpressionAttributeValues=expression_attribute_values,
-        ReturnValues="UPDATED_NEW"
-    )
-    return response    
+    new_ongoing_value = str(event['ongoing']).lower()  # Convert ongoing to a lowercase string
+    
+    # First, fetch the existing item from DynamoDB
+    try:
+        response = table.get_item(Key={'id': event_id})
+        if 'Item' in response:
+            current_ongoing_value = str(response['Item'].get('ongoing', '')).lower()
+            # Proceed with the update only if the ongoing attribute differs
+            if current_ongoing_value != new_ongoing_value:
+                update_expression = 'SET #ongoing = :new_value'
+                expression_attribute_names = {'#ongoing': 'ongoing'}
+                expression_attribute_values = {':new_value': new_ongoing_value}
+                update_response = table.update_item(
+                    Key={'id': event_id},
+                    UpdateExpression=update_expression,
+                    ExpressionAttributeNames=expression_attribute_names,
+                    ExpressionAttributeValues=expression_attribute_values,
+                    ReturnValues="UPDATED_NEW"
+                )
+                logging.info(f"Updated ongoing for event: {event_id} from {current_ongoing_value} to {new_ongoing_value}")
+                return update_response
+            else:
+                logging.info(f"No update needed for event: {event_id}, ongoing value remains {current_ongoing_value}")
+        else:
+            logging.error(f"Event ID {event_id} not found in DynamoDB")
+    except ClientError as e:
+        logging.error(e.response['Error']['Message'])
 
 def handler(aws_event, context):
-    logging.info("Begining ongoing events updater handler")
+    logging.info("Beginning ongoing events updater handler")
 
     current_utc_datetime = datetime.now(pytz.utc)
     left_window = (current_utc_datetime - timedelta(days=4)).strftime('%Y-%m-%dT%H:%M:%SZ')
-    right_window = (current_utc_datetime + timedelta(days=2)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    right_window = (current_utc_datetime + timedelta(days=4)).strftime('%Y-%m-%dT%H:%M:%SZ')
     logging.info(f"Left window: {left_window}")
     logging.info(f"Right window: {right_window}")
     page = 0
@@ -79,17 +93,20 @@ def handler(aws_event, context):
     while not finished:
         page += 1
         response = make_request(f"https://www.robotevents.com/api/v2/events?start={left_window}&end={right_window}&page={page}&per_page=250", headers)
-        finished = response.json().get('meta', [])['last_page'] == page
-        for event in response.json().get('data', []):
-            update_ongoing_attribute(event_data_table, event)
-            logging.info(f"Updated ongoing for event: {event['id']}")
-            count += 1
+        if response and response.status_code == 200:
+            events_data = response.json()
+            finished = events_data.get('meta', {}).get('last_page', 0) == page
+            for event in events_data.get('data', []):
+                update_ongoing_attribute_if_changed(event_data_table, event)
+                count += 1
+        else:
+            logging.error(f"Failed to fetch events for page {page}")
+            break
 
     logging.info(f"Window consists of {page} pages")
-    logging.info(f"Updated {response.json().get('meta', [])['total']} events")
+    logging.info(f"Processed {count} events")
     logging.info(f"Function duration: {datetime.now(pytz.utc) - current_utc_datetime}")
     return {
         'statusCode': 200,
         'body': json.dumps('Process Completed Successfully')
     }
-          
