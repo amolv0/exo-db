@@ -88,7 +88,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingAttribute
       Handler: updateOngoingAttribute.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/0f2075876d8daf9a965930aa5b86e734
+      CodeUri: s3://exodblambdafunctions/e21389f2674dc4d9db6934bef6283abf
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingAttributeFunc
