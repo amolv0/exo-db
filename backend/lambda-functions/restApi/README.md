@@ -55,7 +55,7 @@ Operations:
 
 Resource Path: `/teams`.
 
-Purpose: To manage information about teams participating in the events.
+Purpose: To manage information about teams.
 
 Operations:
 
