@@ -1,38 +1,33 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.handler = void 0;
+const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
+const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 // Initialize DynamoDB Client
-const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
-const docClient = DynamoDBDocumentClient.from(ddbClient);
-
+const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
+const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
 // CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
-
-export const handler = async (event: APIGatewayProxyEvent) => {
+const handler = async (event) => {
     console.log('Received event:', event);
     const region = event.queryStringParameters?.region;
     const program = event.queryStringParameters?.program;
     const registered = event.queryStringParameters?.registered;
     let responsesParam = parseInt(event.queryStringParameters?.responses || '100', 10);
     responsesParam = isNaN(responsesParam) ? 100 : responsesParam; // Default to 100 if not a number
-    const maxResponses = Math.min(responsesParam, 500); // Cap at 500, remove later? (TRUST API USER!????? WOOF WOOF)
-
+    const maxResponses = Math.min(responsesParam, 500); // Cap at 500
     let accumulatedItems = [];
     let lastEvaluatedKey = undefined;
-
-    const baseParams: any = {
+    const baseParams = {
         TableName: 'team-data',
         ProjectionExpression: 'id',
         Limit: maxResponses, // Control the number of items per fetch
     };
-
     let command;
-
     if (registered === 'any') {
         // When registered=any, do not filter by registered status
         if (region) {
@@ -44,32 +39,32 @@ export const handler = async (event: APIGatewayProxyEvent) => {
                 ExpressionAttributeNames: { '#region': 'region' },
                 ExpressionAttributeValues: { ':region': region },
             };
-    
             if (program) {
                 // If program is also specified, add a FilterExpression to filter the results by program
                 queryParams.FilterExpression = '#program = :program';
                 queryParams.ExpressionAttributeNames['#program'] = 'program';
-                queryParams.ExpressionAttributeValues[':program'] = program; 
+                queryParams.ExpressionAttributeValues[':program'] = program;
             }
-    
-            command = new QueryCommand(queryParams);
-        } else if (program) {
+            command = new lib_dynamodb_1.QueryCommand(queryParams);
+        }
+        else if (program) {
             // If only program is specified, use ProgramRegisteredIndex without registered filter
-            command = new QueryCommand({
+            command = new lib_dynamodb_1.QueryCommand({
                 ...baseParams,
                 IndexName: 'ProgramRegisteredIndex',
                 KeyConditionExpression: '#program = :program',
                 ExpressionAttributeNames: { '#program': 'program' },
                 ExpressionAttributeValues: { ':program': program },
             });
-        } else {
-            // Perform a simple scan if no region or program is specified
-            command = new ScanCommand(baseParams);
         }
-    } else {
+        else {
+            // Perform a simple scan if no region or program is specified
+            command = new lib_dynamodb_1.ScanCommand(baseParams);
+        }
+    }
+    else {
         // Handle cases with specific registered values or when registered is not provided
         const registeredValue = registered === 'false' ? 'false' : 'true'; // Default to 'true' if not explicitly set to 'false'
-
         if (region) {
             // Use RegionRegisteredIndex to filter by region
             let queryParams = {
@@ -85,18 +80,17 @@ export const handler = async (event: APIGatewayProxyEvent) => {
                     ':registered': registeredValue,
                 },
             };
-        
             if (program) {
                 // If program is also specified, add a FilterExpression to filter the results by program
                 queryParams.FilterExpression = '#program = :program';
                 queryParams.ExpressionAttributeNames['#program'] = 'program';
-                queryParams.ExpressionAttributeValues[':program'] = program; 
+                queryParams.ExpressionAttributeValues[':program'] = program;
             }
-        
-            command = new QueryCommand(queryParams);
-        } else if (program) {
+            command = new lib_dynamodb_1.QueryCommand(queryParams);
+        }
+        else if (program) {
             // If only program is specified, use ProgramRegisteredIndex to filter by program
-            command = new QueryCommand({
+            command = new lib_dynamodb_1.QueryCommand({
                 ...baseParams,
                 IndexName: 'ProgramRegisteredIndex',
                 KeyConditionExpression: '#program = :program AND #registered = :registered',
@@ -109,9 +103,10 @@ export const handler = async (event: APIGatewayProxyEvent) => {
                     ':registered': registeredValue,
                 },
             });
-        } else {
+        }
+        else {
             // Query using RegisteredIndex with registered filter if no region or program is specified
-            command = new QueryCommand({
+            command = new lib_dynamodb_1.QueryCommand({
                 ...baseParams,
                 IndexName: 'RegisteredIndex',
                 KeyConditionExpression: '#registered = :registered',
@@ -120,30 +115,25 @@ export const handler = async (event: APIGatewayProxyEvent) => {
             });
         }
     }
-
     do {
         const response = await docClient.send(command);
-
         if (response.Items) {
             accumulatedItems.push(...response.Items.map(item => item.id));
         }
-
         if (accumulatedItems.length >= maxResponses) {
             accumulatedItems = accumulatedItems.slice(0, maxResponses);
             break;
         }
-
         lastEvaluatedKey = response.LastEvaluatedKey;
         if (command.input) {
             command.input.ExclusiveStartKey = lastEvaluatedKey;
             command.input.Limit = maxResponses - accumulatedItems.length; // Adjust limit for subsequent fetches
         }
-
     } while (lastEvaluatedKey && accumulatedItems.length < maxResponses);
-
     return {
         statusCode: 200,
         body: JSON.stringify(accumulatedItems),
         headers
     };
 };
+exports.handler = handler;
