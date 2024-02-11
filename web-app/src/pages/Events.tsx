@@ -1,5 +1,5 @@
 import React from 'react';
-import RecentEventsList from '../components/RecentEventsList';
+import RecentEventsList from '../components/EventLists/RecentEventsList';
 
 const Teams: React.FC = () => {
   console.log("wtf");

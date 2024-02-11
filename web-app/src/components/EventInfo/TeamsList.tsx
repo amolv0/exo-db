@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface JSONComponentProps {
   teams: number[] | null;
@@ -12,7 +13,11 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
           <h2 className="text-xl font-semibold mb-4">Teams List</h2>
           <ul className="pl-4">
             {teams.map((teamId, index) => (
-              <li key={index}>{teamId}</li>
+              <li key={index}>
+                <Link to={`/teams/${teamId}`}>
+                  {teamId}
+                </Link>
+              </li>
             ))}
           </ul>
         </div>
