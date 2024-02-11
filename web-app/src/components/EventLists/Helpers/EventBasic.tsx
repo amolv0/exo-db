@@ -12,16 +12,10 @@ interface LocationData {
   region: string;
 }
 
-interface ProgramData {
-  name: string;
-  id: number;
-  code: string | null;
-}
-
 interface JSONComponentProps {
   name: String | null;
   eventID: number | null;
-  program : ProgramData | null;
+  program : String | null;
   location: LocationData | null;
   start: String | null;
   end: String | null;
@@ -32,7 +26,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ name, eventID, program, l
     <div>
       {name && (
         <div style={{ display: 'flex', width: '100%' }}>
-          <div className = "text-stone-400" style={{ flex: 1 }}>{program?.code}</div>
+          <div className = "text-stone-400" style={{ flex: 1 }}>{program}</div>
           <div className = "text-rose-100" style={{ flex: 3 }}>
             <Link to={`/events/${eventID}`}>
               {name || 'N/A'}
