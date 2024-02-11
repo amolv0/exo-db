@@ -60,6 +60,9 @@ Purpose: To manage information about teams participating in the events.
 Operations:
 
 - GET /teams to list teams (with pagination)
+  - GET /teams?region={region_name} to get teams from a specific region
+  - GET /teams?active=true to get active teams
+  - GET /teams?program={'program_code'} to get teams from a specific program
 - POST /teams/ {body: "[{team_id1}, {team_id2}, {team_id3}...]"} to get details for a set of specific teamss.
 
 ### Sub-Resource: teamId

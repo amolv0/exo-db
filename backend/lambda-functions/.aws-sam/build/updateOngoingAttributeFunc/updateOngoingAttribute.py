@@ -29,6 +29,7 @@ logging.setLevel("INFO")
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 event_data_table = dynamodb.Table('event-data')
+updates = 0
 
 def make_request(url, headers, initial_delay=5, retries = 5):
     for _ in range(retries):
@@ -49,6 +50,7 @@ def make_request(url, headers, initial_delay=5, retries = 5):
 # DynamoDB functions
     
 def update_ongoing_attribute_if_changed(table, event):
+    global updates
     event_id = event['id']
     new_ongoing_value = str(event['ongoing']).lower()  # Convert ongoing to a lowercase string
     
@@ -70,6 +72,7 @@ def update_ongoing_attribute_if_changed(table, event):
                     ReturnValues="UPDATED_NEW"
                 )
                 logging.info(f"Updated ongoing for event: {event_id} from {current_ongoing_value} to {new_ongoing_value}")
+                updates += 1
                 return update_response
             else:
                 logging.info(f"No update needed for event: {event_id}, ongoing value remains {current_ongoing_value}")
@@ -104,7 +107,7 @@ def handler(aws_event, context):
             break
 
     logging.info(f"Window consists of {page} pages")
-    logging.info(f"Processed {count} events")
+    logging.info(f"Processed {count} events, {updates} updates made.")
     logging.info(f"Function duration: {datetime.now(pytz.utc) - current_utc_datetime}")
     return {
         'statusCode': 200,

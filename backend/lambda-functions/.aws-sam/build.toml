@@ -109,4 +109,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["teamsIdGetPost"]
 
+[function_build_definitions.b3e538ed-ae94-48af-acab-17462b106d5f]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/Teams/teamsGet"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "teamsGet.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["teamsGet"]
+
 [layer_build_definitions]
