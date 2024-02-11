@@ -13,12 +13,6 @@ interface NameData {
   code: string | null;
 }
 
-interface ProgramData {
-  name: string;
-  id: number;
-  code: string | null;
-}
-
 interface LocationData {
   venue: string;
   country: string;
@@ -34,7 +28,7 @@ interface JSONComponentProps {
   location: LocationData | null;
   season: SeasonData | null;
   name: NameData | null;
-  program: ProgramData | null;
+  program: String | null;
 }
 
 const JSONComponent: React.FC<JSONComponentProps> = ({ location, season, name, program }) => {
@@ -61,7 +55,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ location, season, name, p
         {program && (
           <div className="mb-6">
             <h3 className="text-lg font-medium mb-2">Program</h3>
-            <p>{program.code || 'N/A'}</p>
+            <p>{program || 'N/A'}</p>
           </div>
         )}
     </div>
