@@ -6,7 +6,7 @@ import time
 dynamodb = boto3.resource('dynamodb')
 
 
-table_name = 'event-data'
+table_name = 'team-data'
 table = dynamodb.Table(table_name)
 
 # Function to update items in batches
@@ -55,8 +55,6 @@ def update_item(item):
 
     # Proceed only if a valid region or country value is found
     if region is not None:
-
-
         # Update the item to add a new 'region' attribute
         update_response = table.update_item(
             Key={'id': item_id},
