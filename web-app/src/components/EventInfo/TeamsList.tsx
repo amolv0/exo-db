@@ -11,15 +11,15 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
       {teams && teams.length > 0 ? (
         <div>
           <h2 className="text-xl font-semibold mb-4">Teams List</h2>
-          <ul className="pl-4">
+          <div className="grid grid-cols-4 gap-4">
             {teams.map((teamId, index) => (
-              <li key={index}>
-                <Link to={`/teams/${teamId}`}>
+              <div key={index} className="bg-gray rounded-lg p-2">
+                <Link to={`/teams/${teamId}`} className="block hover:text-blue-200">
                   {teamId}
                 </Link>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       ) : (
         <p className="text-lg">No teams available</p>
