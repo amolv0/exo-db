@@ -23,10 +23,10 @@ interface JSONComponentProps {
 
 const JSONComponent: React.FC<JSONComponentProps> = ({ name, eventID, program, location, start, end }) => {
   return (
-    <div>
+    <div className = "flex flex-wrap">
       {name && (
         <div style={{ display: 'flex', width: '100%' }}>
-          <div className = "text-stone-400" style={{ flex: 1 }}>{program}</div>
+          <div className = "text-stone-400 hidden md:block" style={{ flex: 1 }}>{program}</div>
           <div className = "text-rose-100" style={{ flex: 3 }}>
             <Link to={`/events/${eventID}`}>
               {name || 'N/A'}
@@ -41,6 +41,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ name, eventID, program, l
           </div>
         </div>
       )}
+      <br></br>
       <br></br>
     </div>
   );
