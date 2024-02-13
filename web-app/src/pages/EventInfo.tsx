@@ -27,7 +27,7 @@ const EventInfo: React.FC = () => {
   return (
     <div>
       {loading ? (
-        <p>Loading...</p>
+        <p className = "text-white text-2xl mb-4 mt-8 text-center">Loading...</p>
       ) : (
         <div>
           {eventData && eventData.length > 0 ? (
