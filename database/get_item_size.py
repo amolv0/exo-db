@@ -1,31 +1,45 @@
-import json
+import boto3
 
-# Script to determine the size of a dynamodb table item. 
+# Initialize a DynamoDB client
+dynamodb = boto3.resource('dynamodb')
 
-def calculate_attribute_size(key, value):
-    size = len(key.encode('utf-8'))
-    
-    # Check the type of the value and calculate accordingly
-    if isinstance(value, dict):
-        for type_code, type_value in value.items():
-            if type_code in ['S', 'N']:
-                # Strings and Numbers
-                size += len(type_value.encode('utf-8'))
-            elif type_code == 'B':
-                # Binary type value; decode to get raw binary size
-                size += len(type_value)  # Assuming base64 encoded
-            elif type_code in ['SS', 'NS', 'BS']:
-                # Sets; calculate the size of each element
-                size += sum([len(str(elem).encode('utf-8')) for elem in type_value])
-            elif type_code in ['M', 'L']:
-                # Maps and Lists; recursive calculation for each element
-                size += sum([calculate_attribute_size(k, v) if type_code == 'M' else calculate_attribute_size(str(i), v) for i, (k, v) in enumerate(type_value.items() if type_code == 'M' else enumerate(type_value))])
-    return size
+# Specify your table name and partition key
+table_name = 'event-data'
+partition_key_name = 'id'
+partition_key_value = 45455
+
+table = dynamodb.Table(table_name)
 
 def calculate_item_size(item):
-    return sum([calculate_attribute_size(key, value) for key, value in item.items()]) + 100
+    # DynamoDB item size calculation logic
+    size = 0
+    for key, value in item.items():
+        size += len(key.encode('utf-8'))  # Size of the attribute name
+        # Add size of the attribute value
+        if isinstance(value, str):
+            size += len(value.encode('utf-8'))
+        elif isinstance(value, (int, float)):
+            size += len(str(value).encode('utf-8'))
+        elif isinstance(value, dict):  # For Map type attributes
+            size += calculate_item_size(value)
+        elif isinstance(value, list):  # For List type attributes
+            size += sum(calculate_item_size({str(i): v}) for i, v in enumerate(value))
+        # Add logic here for other data types as needed, such as Binary, Set, etc.
+    return size
 
-with open('./data/team_114670.json', 'r') as f:
-    item_data = json.load(f)
-    item_size = calculate_item_size(item_data['Item'])  
-    print(f"Item size: {item_size / 1024} KB")  # Display size in Kilobytes
+def get_item_size(table, partition_key_name, partition_key_value):
+    # Fetch the item based on the partition key
+    response = table.get_item(Key={partition_key_name: partition_key_value})
+    item = response.get('Item')
+
+    if not item:
+        print(f"No item found with partition key {partition_key_value}")
+        return None
+
+    # Calculate the size of the fetched item
+    item_size = calculate_item_size(item)
+    return item_size
+
+item_size = get_item_size(table, partition_key_name, partition_key_value)
+if item_size is not None:
+    print(f"Size of the item with partition key {partition_key_value}: {item_size} bytes")
