@@ -51,6 +51,7 @@ def fetch_event_data(event_id, data_type):
             break
 
         page_data = response_json.get('data', [])
+        # if data_type == 'skills':
         data.extend(page_data)
 
         if not response_json.get('meta', {}).get('next_page_url'):
