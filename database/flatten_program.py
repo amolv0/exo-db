@@ -6,7 +6,7 @@ import time
 dynamodb = boto3.resource('dynamodb')
 
 # Specify your table name
-table_name = 'event-data'
+table_name = 'team-data'
 table = dynamodb.Table(table_name)
 
 # Function to update items in batches
@@ -38,7 +38,6 @@ def update_items():
 def update_item(item):
     item_id = item['id']
     if 'code' not in item['program']:
-
         return # already updated
     program_code = item['program']['code']
 
@@ -53,6 +52,9 @@ def update_item(item):
     )
 
     
+
+# item = table.get_item(Key={'id': 5226}).get('Item', None)
+# update_item(item)
 
 # Update all items in the table
 update_items()
