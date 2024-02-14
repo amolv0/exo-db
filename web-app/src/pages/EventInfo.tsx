@@ -59,7 +59,7 @@ const EventInfo: React.FC = () => {
                     name={eventData[0].name}
                     program={eventData[0].program}
                 />}
-                {activeElement === 'TeamsList' && <TeamsList teams={eventData[0].teams}/>}
+                {activeElement === 'TeamsList' && <TeamsList teams={JSON.stringify(eventData[0].teams)}/>}
                 {activeElement === 'MatchesList' && <MatchesList division={eventData[0].divisions[0]}/>}
                 {activeElement === 'Element3' && <Element3 />}
                 {activeElement === 'Element4' && <Element4 />}
