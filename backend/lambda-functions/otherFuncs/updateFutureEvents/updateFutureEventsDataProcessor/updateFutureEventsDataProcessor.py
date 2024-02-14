@@ -156,7 +156,7 @@ def handler(aws_event, context):
             update_expression = "SET "
             expression_attribute_values = {}
             updated = False
-            
+
             # Check and update 'teams' and 'team_numbers'
             teams, team_numbers = get_teams(event_id)
             if current_event_data is None or 'teams' not in current_event_data or current_event_data['teams'] != teams:
@@ -214,3 +214,93 @@ def handler(aws_event, context):
         'statusCode': 200,
         'body': json.dumps('Process Completed Successfully')
     }
+
+
+# Test event:
+
+# test_event = {
+#   "Records": [
+    # {
+    #   "messageId": "1",
+    #   "receiptHandle": "abc123",
+    #   "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=1&per_page=250\"}",
+    #   "attributes": {
+    #     "ApproximateReceiveCount": "1",
+    #     "SentTimestamp": "1573251510774",
+    #     "SenderId": "testSender",
+    #     "ApproximateFirstReceiveTimestamp": "1573251510774"
+    #   },
+    #   "messageAttributes": {},
+    #   "md5OfBody": "md5",
+    #   "eventSource": "aws:sqs",
+    #   "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
+    #   "awsRegion": "us-east-1"
+    # },
+    #     {
+    #   "messageId": "1",
+    #   "receiptHandle": "abc123",
+    #   "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=2&per_page=250\"}",
+    #   "attributes": {
+    #     "ApproximateReceiveCount": "1",
+    #     "SentTimestamp": "1573251510774",
+    #     "SenderId": "testSender",
+    #     "ApproximateFirstReceiveTimestamp": "1573251510774"
+    #   },
+    #   "messageAttributes": {},
+    #   "md5OfBody": "md5",
+    #   "eventSource": "aws:sqs",
+    #   "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
+    #   "awsRegion": "us-east-1"
+    # },
+    #     {
+    #   "messageId": "1",
+    #   "receiptHandle": "abc123",
+    #   "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=3&per_page=250\"}",
+    #   "attributes": {
+    #     "ApproximateReceiveCount": "1",
+    #     "SentTimestamp": "1573251510774",
+    #     "SenderId": "testSender",
+    #     "ApproximateFirstReceiveTimestamp": "1573251510774"
+    #   },
+    #   "messageAttributes": {},
+    #   "md5OfBody": "md5",
+    #   "eventSource": "aws:sqs",
+    #   "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
+    #   "awsRegion": "us-east-1"
+    # },
+    #     {
+    #   "messageId": "1",
+    #   "receiptHandle": "abc123",
+    #   "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=4&per_page=250\"}",
+    #   "attributes": {
+    #     "ApproximateReceiveCount": "1",
+    #     "SentTimestamp": "1573251510774",
+    #     "SenderId": "testSender",
+    #     "ApproximateFirstReceiveTimestamp": "1573251510774"
+    #   },
+    #   "messageAttributes": {},
+    #   "md5OfBody": "md5",
+    #   "eventSource": "aws:sqs",
+    #   "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
+    #   "awsRegion": "us-east-1"
+    # },
+#         {
+#       "messageId": "1",
+#       "receiptHandle": "abc123",
+#       "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=5&per_page=250\"}",
+#       "attributes": {
+#         "ApproximateReceiveCount": "1",
+#         "SentTimestamp": "1573251510774",
+#         "SenderId": "testSender",
+#         "ApproximateFirstReceiveTimestamp": "1573251510774"
+#       },
+#       "messageAttributes": {},
+#       "md5OfBody": "md5",
+#       "eventSource": "aws:sqs",
+#       "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
+#       "awsRegion": "us-east-1"
+#     }
+#   ]
+# }
+
+# handler(test_event)
