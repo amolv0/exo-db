@@ -63,7 +63,7 @@ Operations:
   - GET /teams?region={region_name} to get teams from a specific region
   - GET /teams?registered=false to get nonregistered teams or ?registered=any to get registered and unregistered teams. Without inclusion, ?registered=true is defaulted to
   - GET /teams?program={'program_code'} to get teams from a specific program
-  - GET /teams?responses={responses_number} to get a variable number of responses that match the given parameters. Defaults to 100, maxes at 500(?)
+  - GET /teams?responses={responses_number} to get a variable number of responses that match the given parameters. Defaults to 100, maxes at 500(?).
 - POST /teams/ {body: "[{team_id1}, {team_id2}, {team_id3}...]"} to get details for a set of specific teamss.
 
 ### Sub-Resource: teamId
@@ -76,7 +76,7 @@ Operations:
 
 - GET /teams/{teamId} to get details for a specific team
 
-## Init new typescript API
+## Init new typescript API function
 
 npm init -y
 
