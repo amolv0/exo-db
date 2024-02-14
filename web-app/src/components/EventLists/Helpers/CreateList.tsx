@@ -7,7 +7,6 @@ interface EventListDisplayProps {
 
 const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
   const [eventData, setEventData] = useState<any[]>([]);
-  console.log(eventIdsString);
   useEffect(() => {
     const fetchEventData = async () => {
       try {
