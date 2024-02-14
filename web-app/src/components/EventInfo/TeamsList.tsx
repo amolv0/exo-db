@@ -1,20 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+interface LocationData {
+  city: string;
+  region: string;
+  country: string;
+}
+
 interface TeamDetail {
   id: number;
-  name: string;
+  number: string;
+  team_name: string;
+  organization: string;
+  location: LocationData;
 }
 
 interface JSONComponentProps {
-  teams: string | null;
+  teams: number[] | null;
 }
 
 const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
   const [teamDetails, setTeamDetails] = useState<TeamDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  console.log(teams);
+
   useEffect(() => {
     const fetchTeamDetails = async () => {
       if (teams && teams.length > 0) {
@@ -24,16 +32,12 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
             headers: {
               'Content-Type': 'application/json'
             },
-            body: teams
+            body: JSON.stringify(teams)
           });
           if (response.ok) {
             const data = await response.json();
             setTeamDetails(data);
-          } else {
-            setError('Failed to fetch team details');
           }
-        } catch (error) {
-          setError('Error fetching team details');
         } finally {
           setLoading(false);
         }
@@ -46,28 +50,50 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
   }, [teams]);
 
   return (
-    <div className="max-w-md mx-auto bg-black text-white p-4 rounded-lg shadow-md">
+    <div className="mx-auto bg-gray-700 text-white p-4 rounded-lg shadow-md mt-4">
       {loading ? (
         <p className="text-lg">Loading...</p>
-      ) : error ? (
-        <p className="text-lg">{error}</p>
       ) : teamDetails.length > 0 ? (
         <div>
           <h2 className="text-xl font-semibold mb-4">Teams List</h2>
-          <div className="grid grid-cols-4 gap-4">
-            {teamDetails.map((team, index) => (
-              <div key={index} className="bg-gray rounded-lg p-2">
-                <Link to={`/teams/${team.id}`} className="block hover:text-blue-200">
-                  {team.name}
-                </Link>
-              </div>
-            ))}
-          </div>
+          <table className="w-full">
+            <tbody>
+              {teamDetails.map((team, index) => (
+                <tr key={index} className={index !== teamDetails.length - 1 ? "border-b border-gray-600 hover:text-blue-200" : "hover:text-blue-200"}>
+                  <td className="py-4">
+                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
+                      <span>{team.number}</span>
+                    </Link>
+                  </td>
+                  <td className="py-4">
+                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
+                      <span>{team.team_name}</span>
+                    </Link>
+                  </td>
+                  <td className="py-4">
+                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
+                      <span>{team.organization}</span>
+                    </Link>
+                  </td>
+                  <td className="py-4">
+                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
+                      <span>
+                        {team.location.city && `${team.location.city}`}
+                        {team.location.region && `, ${team.location.region}`}
+                        {team.location.country && `, ${team.location.country}`}
+                      </span>
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       ) : (
         <p className="text-lg">No teams available</p>
       )}
     </div>
+
   );
 };
 
