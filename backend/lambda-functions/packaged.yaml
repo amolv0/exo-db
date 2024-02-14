@@ -48,7 +48,7 @@ Resources:
       FunctionName: exodb-teamsGetFunc
       Handler: teamsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/18ab111625bb8bb281d043ac5ac05668
+      CodeUri: s3://exodblambdafunctions/d7723a59b8168e4134556a43a386ad38
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: teamsGet
@@ -62,6 +62,16 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: teamsIdGetPost
+  matchesIdGetPost:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-matchesIdGetPostFunc
+      Handler: matchesIdGetPost.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/c25c7f0f6d61ad2ec5dc8ccb0ebcc06b
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: matchesIdGetPost
   auditOngoing:
     Type: AWS::Serverless::Function
     Properties:
@@ -88,7 +98,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
       Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/29b336dcbf9b28eadad3b67bb434b527
+      CodeUri: s3://exodblambdafunctions/06ddf60d817f44e44525d01d406703b4
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsDataProcessor
@@ -128,7 +138,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncUrlFinder
       Handler: updateFutureEventsUrlFinder.url_finder_handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/bde111d898f0a2cd563d7ef285d07a97
+      CodeUri: s3://exodblambdafunctions/4b42800d6d8d0944101fd772700046e2
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsUrlFinder

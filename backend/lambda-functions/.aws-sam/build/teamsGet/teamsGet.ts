@@ -20,7 +20,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     const registered = event.queryStringParameters?.registered;
     let responsesParam = parseInt(event.queryStringParameters?.responses || '100', 10);
     responsesParam = isNaN(responsesParam) ? 100 : responsesParam; // Default to 100 if not a number
-    const maxResponses = Math.min(responsesParam, 500); // Cap at 500
+    const maxResponses = Math.min(responsesParam, 500); // Cap at 500, remove later? (TRUST API USER!????? WOOF WOOF)
 
     let accumulatedItems = [];
     let lastEvaluatedKey = undefined;
