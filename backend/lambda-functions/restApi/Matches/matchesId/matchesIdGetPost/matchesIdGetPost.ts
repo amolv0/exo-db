@@ -1,4 +1,3 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, BatchGetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
@@ -12,6 +11,22 @@ const headers = {
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
+
+// Interface for Lambda event structure
+interface LambdaEvent {
+    httpMethod: string;
+    pathParameters?: {
+        matchId?: string; // It will come as a string through the path param, we convert to a number later
+    };
+    body?: string;
+}
+
+// Interface for the response structure
+interface LambdaResponse {
+    statusCode: number;
+    headers: {};
+    body: string;
+}
 
 // Function to get details for a single match
 const getMatchDetails = async (matchId: string): Promise<any> => {
@@ -54,7 +69,7 @@ const getMultipleMatchDetails = async (matchIds: string[]): Promise<any> => {
 };
 
 // Main Lambda handler function
-export const handler = async (event: APIGatewayProxyEvent) => {
+export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
     console.log('Received event:', event);
     const httpMethod = event.httpMethod;
 
@@ -94,6 +109,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
                 headers: headers,
                 body: JSON.stringify(matchDetails),
             };
+        } else {
+            throw new Error("Unsupported HTTP method");
         }
     } catch (error) {
         console.error('Error:', error);
