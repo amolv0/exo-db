@@ -1,4 +1,3 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, BatchGetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
@@ -14,6 +13,25 @@ const headers = {
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
+
+// Interface for Lambda event structure
+interface LambdaEvent {
+    httpMethod: string;
+    pathParameters?: {
+        teamId?: string; // It will come as a string through the path param, we convert to a number later
+    };
+    queryStringParameters?: {
+        [key: string]: string; // This allows any key-value pair in queryStringParameters
+    };
+    body?: string;
+}
+
+// Interface for the response structure
+interface LambdaResponse {
+    statusCode: number;
+    headers: {};
+    body: string;
+}
 
 const getTeamDetails = async (query: string, queryType: string): Promise<any> => {
     if(queryType == "id"){
@@ -106,33 +124,42 @@ const getMultipleTeamDetails = async (queries: string[], queryType: string): Pro
 };
 
 // Main Lambda handler function
-export const handler = async (event: APIGatewayProxyEvent) => {
+export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
     console.log('Received event:', event);
     const queryType = event.queryStringParameters?.query_type === 'number' ? "number" : "id";
     const httpMethod = event.httpMethod;
 
     try {
-        if(httpMethod === 'GET'){
+        if (httpMethod === 'GET') {
             const pathParam = event.pathParameters?.teamId;
             if (pathParam) {
                 const teamDetails = await getTeamDetails(pathParam, queryType);
                 return {
                     statusCode: 200,
                     headers: headers,
-                    body: JSON.stringify(teamDetails)
+                    body: JSON.stringify(teamDetails),
                 };
             } else {
-                throw new Error("Team id/number not properly provided through path parameters");
+                // Return an error response if the path parameter is missing
+                return {
+                    statusCode: 400,
+                    headers: headers,
+                    body: JSON.stringify({ error: "Team id/number not properly provided through path parameters" }),
+                };
             }
-        } else if(httpMethod === 'POST'){
+        } else if (httpMethod === 'POST') {
             let queries: string[];
-            // Parse the JSON string from the request body
             try {
                 const parsedBody = JSON.parse(event.body || '[]');
                 if (Array.isArray(parsedBody)) {
                     queries = parsedBody;
                 } else {
-                    throw new Error("Request body is not an array");
+                    // Return an error response if the body is not an array
+                    return {
+                        statusCode: 400,
+                        headers: headers,
+                        body: JSON.stringify({ error: "Request body is not an array" }),
+                    };
                 }
             } catch (parseError) {
                 console.error('Parsing error:', parseError);
@@ -154,7 +181,14 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ error: (error as Error).message || 'Failed to fetch team(s)' })
+            body: JSON.stringify({ error: (error as Error).message || 'Failed to fetch team(s)' }),
         };
     }
-}
+
+    // Default response for unsupported HTTP methods
+    return {
+        statusCode: 405,
+        headers: headers,
+        body: JSON.stringify({ error: "Method Not Allowed" }),
+    };
+};

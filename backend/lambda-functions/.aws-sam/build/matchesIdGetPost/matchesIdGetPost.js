@@ -97,6 +97,9 @@ const handler = async (event) => {
                 body: JSON.stringify(matchDetails),
             };
         }
+        else {
+            throw new Error("Unsupported HTTP method");
+        }
     }
     catch (error) {
         console.error('Error:', error);
