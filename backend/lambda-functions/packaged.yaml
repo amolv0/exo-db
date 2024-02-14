@@ -58,7 +58,7 @@ Resources:
       FunctionName: exodb-teamsIdGetpostFunc
       Handler: teamsIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/2605e26ed15f495a862a0c45746e569b
+      CodeUri: s3://exodblambdafunctions/25bff56087c7bac5f2de6ecf143518c0
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: teamsIdGetPost
@@ -68,7 +68,7 @@ Resources:
       FunctionName: exodb-matchesIdGetPostFunc
       Handler: matchesIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/c25c7f0f6d61ad2ec5dc8ccb0ebcc06b
+      CodeUri: s3://exodblambdafunctions/0ecc7d8360bf467dfb63b93aad9ff065
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: matchesIdGetPost
