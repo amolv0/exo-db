@@ -51,7 +51,7 @@ Operations:
 
 - GET /events/{id}/divisions/{divisionId}: Get details of a specific division within an event
 
-## Teams (IN PROGRESS)
+## Teams
 
 Resource Path: `/teams`.
 
@@ -64,7 +64,7 @@ Operations:
   - GET /teams?registered=false to get nonregistered teams or ?registered=any to get registered and unregistered teams. Without inclusion, ?registered=true is defaulted to
   - GET /teams?program={'program_code'} to get teams from a specific program
   - GET /teams?responses={responses_number} to get a variable number of responses that match the given parameters. Defaults to 100, maxes at 500(?).
-- POST /teams/ {body: "[{team_id1}, {team_id2}, {team_id3}...]"} to get details for a set of specific teamss.
+- POST /teams/ {body: "[{team_id1}, {team_id2}, {team_id3}...]"} to get details for a set of specific teams.
 
 ### Sub-Resource: teamId
 
@@ -75,6 +75,26 @@ Purpose: Handle information regarding a defined set of teams.
 Operations:
 
 - GET /teams/{teamId} to get details for a specific team
+
+## Matches
+
+Resource Path: `/matches`.
+
+Purpose: To manage information about matches.
+
+Operations:
+
+- POST /matches/ {body: "[{match_id1}, {match_id2}, {match_id3}...]"} to get details for a set of specific matches.
+
+### Sub-Resource: matchId
+
+Resource Path: `/match/{matchid}`
+
+Purpose: Handle information regarding a specific match
+
+Operations:
+
+- GET /matches/{matchId} to get details for a specific match
 
 ## Init new typescript API function
 
