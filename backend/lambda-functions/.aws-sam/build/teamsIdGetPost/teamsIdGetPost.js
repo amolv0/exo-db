@@ -119,23 +119,32 @@ const handler = async (event) => {
                 return {
                     statusCode: 200,
                     headers: headers,
-                    body: JSON.stringify(teamDetails)
+                    body: JSON.stringify(teamDetails),
                 };
             }
             else {
-                throw new Error("Team id/number not properly provided through path parameters");
+                // Return an error response if the path parameter is missing
+                return {
+                    statusCode: 400,
+                    headers: headers,
+                    body: JSON.stringify({ error: "Team id/number not properly provided through path parameters" }),
+                };
             }
         }
         else if (httpMethod === 'POST') {
             let queries;
-            // Parse the JSON string from the request body
             try {
                 const parsedBody = JSON.parse(event.body || '[]');
                 if (Array.isArray(parsedBody)) {
                     queries = parsedBody;
                 }
                 else {
-                    throw new Error("Request body is not an array");
+                    // Return an error response if the body is not an array
+                    return {
+                        statusCode: 400,
+                        headers: headers,
+                        body: JSON.stringify({ error: "Request body is not an array" }),
+                    };
                 }
             }
             catch (parseError) {
@@ -159,8 +168,14 @@ const handler = async (event) => {
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ error: error.message || 'Failed to fetch team(s)' })
+            body: JSON.stringify({ error: error.message || 'Failed to fetch team(s)' }),
         };
     }
+    // Default response for unsupported HTTP methods
+    return {
+        statusCode: 405,
+        headers: headers,
+        body: JSON.stringify({ error: "Method Not Allowed" }),
+    };
 };
 exports.handler = handler;
