@@ -10,13 +10,14 @@ interface Match {
   started: string;
   matchnum: number;
   round: number;
+  field: string;
   name: string;
   alliances: AllianceData[];
 }
 
 interface AllianceData {
   color: string;
-  alliance: TeamData[];
+  teams: TeamData[];
   score: number;
 }
 
