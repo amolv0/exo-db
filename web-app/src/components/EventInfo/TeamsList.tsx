@@ -83,9 +83,13 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                   <td className="py-4">
                     <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
                       <span>
-                        {team.location.city && `${team.location.city}`}
-                        {team.location.region && `, ${team.location.region}`}
-                        {team.location.country && `, ${team.location.country}`}
+                      {team.location && 
+                        <>
+                          {team.location.city && `${team.location.city}`}
+                          {team.location.region && `, ${team.location.region}`}
+                          {team.location.country && `, ${team.location.country}`}
+                        </>
+                      }
                       </span>
                     </Link>
                   </td>
