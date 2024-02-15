@@ -9,9 +9,9 @@ interface SeasonData {
 }
 
 interface LocationData {
-  venue: string;
-  country: string;
-  city: string;
+  venue: string | null;
+  country: string | null;
+  city: string | null;
   address_1: string;
   address_2: string | null;
   postcode: string;
