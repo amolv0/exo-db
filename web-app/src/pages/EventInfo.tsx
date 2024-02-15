@@ -4,6 +4,7 @@ import EventLocation from '../components/EventInfo/EventLocation';
 import TeamsList from '../components/EventInfo/TeamsList';
 import MatchesList from '../components/EventInfo/MatchesList';
 import EventRankings from '../components/EventInfo/EventRankings';
+import EventSkills from '../components/EventInfo/EventSkills';
 
 const EventInfo: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -50,7 +51,7 @@ const EventInfo: React.FC = () => {
                       <th className="py-2 px-4 cursor-pointer" onClick={() => handleHeaderClick('MatchesList')}>Matches</th>
                       <th className="py-2 px-4 cursor-pointer" onClick={() => handleHeaderClick('Rankings')}>Rankings</th>
                       <th className="py-2 px-4 cursor-pointer" onClick={() => handleHeaderClick('Element4')}>Elims</th>
-                      <th className="py-2 px-4 cursor-pointer" onClick={() => handleHeaderClick('Element5')}>Skills</th>
+                      <th className="py-2 px-4 cursor-pointer" onClick={() => handleHeaderClick('Skills')}>Skills</th>
                     </tr>
                   </thead>
                 </table>
@@ -64,7 +65,7 @@ const EventInfo: React.FC = () => {
                 {activeElement === 'MatchesList' && <MatchesList division={eventData[0].divisions[0]}/>}
                 {activeElement === 'Rankings' && <EventRankings rankings={eventData[0].divisions[0].rankings} />}
                 {activeElement === 'Element4' && <Element4 />}
-                {activeElement === 'Element5' && <Element5 />}
+                {activeElement === 'Skills' && <EventSkills skills = {eventData[0].skills} />}
               </div>
             </React.Fragment>
           ) : (
@@ -77,6 +78,5 @@ const EventInfo: React.FC = () => {
 };
 
 const Element4: React.FC = () => <div className="mt-4 p-4 bg-gray-100 rounded-lg">Element 5 Content</div>;
-const Element5: React.FC = () => <div className="mt-4 p-4 bg-gray-100 rounded-lg">Element 5 Content</div>;
 
 export default EventInfo;

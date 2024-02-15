@@ -1,105 +1,125 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-interface LocationData {
-  city: string;
-  region: string;
-  country: string;
-}
-
-interface TeamDetail {
+interface TeamData {
+  name: string;
   id: number;
-  number: string;
-  team_name: string;
-  organization: string;
-  location: LocationData;
 }
 
-interface JSONComponentProps {
-  teams: number[] | null;
+interface Skill {
+  score: number;
+  name: string;
+  rank: number;
+  team: TeamData;
+  type: string;
+  attempts: number;
 }
 
-const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
-  const [teamDetails, setTeamDetails] = useState<TeamDetail[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+interface EventSkillsComponentProps {
+  skills: Skill[];
+}
 
-  useEffect(() => {
-    const fetchTeamDetails = async () => {
-      if (teams && teams.length > 0) {
-        try {
-          const response = await fetch('https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/teams/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(teams)
-          });
-          if (response.ok) {
-            const data = await response.json();
-            data.sort((a: TeamDetail, b: TeamDetail) => {
-              const numA = parseInt((a.number.match(/\d+/) || ['0'])[0]);
-              const numB = parseInt((b.number.match(/\d+/) || ['0'])[0]);
-              return numA - numB;
-            });
-            setTeamDetails(data);
-          }
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    };
+const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) => {
+  const [selectedOption, setSelectedOption] = useState<'programming' | 'driver' | 'combined'>('combined');
 
-    fetchTeamDetails();
-  }, [teams]);
+  const programmingSkills = skills.filter(skill => skill.type === "programming");
+  const driverSkills = skills.filter(skill => skill.type === "driver");
+
+  const programmingScoresMap = new Map<number, number>();
+  const driverScoresMap = new Map<number, number>();
+  const combinedScoresMap = new Map<number, number>();
+  
+  programmingSkills.forEach(skill => {
+    const teamId = skill.team.id;
+    if (!programmingScoresMap.has(teamId)) {
+      programmingScoresMap.set(teamId, skill.score);
+    } else {
+      programmingScoresMap.set(teamId, programmingScoresMap.get(teamId)! + skill.score);
+    }
+  });
+  
+  driverSkills.forEach(skill => {
+    const teamId = skill.team.id;
+    if (!driverScoresMap.has(teamId)) {
+      driverScoresMap.set(teamId, skill.score);
+    } else {
+      driverScoresMap.set(teamId, driverScoresMap.get(teamId)! + skill.score);
+    }
+  });
+  
+  skills.forEach(skill => {
+    const teamId = skill.team.id;
+    const combinedScore = (programmingScoresMap.get(teamId) ?? 0) + (driverScoresMap.get(teamId) ?? 0);
+    combinedScoresMap.set(teamId, combinedScore);
+  });
+  
+  const sortedCombinedScores = Array.from(combinedScoresMap.entries()).sort((a, b) => b[1] - a[1]);
+  const sortedProgScores = Array.from(programmingScoresMap.entries()).sort((a, b) => b[1] - a[1]);
+  const sortedDriverScores = Array.from(driverScoresMap.entries()).sort((a, b) => b[1] - a[1]);
+  
 
   return (
     <div className="mx-auto bg-gray-700 text-white p-4 rounded-lg shadow-md mt-4">
-      {loading ? (
-        <p className="text-lg">Loading...</p>
-      ) : teamDetails.length > 0 ? (
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Teams List</h2>
-          <table className="w-full">
-            <tbody>
-              {teamDetails.map((team, index) => (
-                <tr key={index} className={index !== teamDetails.length - 1 ? "border-b border-gray-600 hover:text-blue-200" : "hover:text-blue-200"}>
-                  <td className="py-4">
-                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
-                      <span>{team.number}</span>
+      <div className="flex flex-row space-x-4">
+        <button className={`rounded-lg px-4 py-2 ${selectedOption === 'combined' ? 'bg-blue-200 text-white' : 'bg-gray-200 text-gray-800'}`} onClick={() => setSelectedOption('combined')}>Combined Scores</button>
+        <button className={`rounded-lg px-4 py-2 ${selectedOption === 'driver' ? 'bg-blue-200 text-white' : 'bg-gray-200 text-gray-800'}`} onClick={() => setSelectedOption('driver')}>Driver Scores</button>
+        <button className={`rounded-lg px-4 py-2 ${selectedOption === 'programming' ? 'bg-blue-200 text-white' : 'bg-gray-200 text-gray-800'}`} onClick={() => setSelectedOption('programming')}>Programming Scores</button>
+      </div>
+      <div>
+        {selectedOption === 'programming' && (
+          <ul className="ml-4">
+            {sortedProgScores.map(([teamId, score], index) => {
+              const team = skills.find(skill => skill.team.id === teamId)?.team;
+              if (team) {
+                return (
+                  <li key={teamId} className="mb-4 border-b border-gray-300 py-2">
+                    <Link to={`/teams/${teamId}`} className="hover:text-blue-500">
+                      <span className="font-semibold">{index + 1}.</span> {team.name} - Score: {score}
                     </Link>
-                  </td>
-                  <td className="py-4">
-                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
-                      <span>{team.team_name}</span>
+                  </li>
+                );
+              }
+              return null;
+            })}
+          </ul>
+        )}
+        {selectedOption === 'driver' && (
+          <ul className="ml-4">
+            {sortedDriverScores.map(([teamId, score], index) => {
+              const team = skills.find(skill => skill.team.id === teamId)?.team;
+              if (team) {
+                return (
+                  <li key={teamId} className="mb-4 border-b border-gray-300 py-2">
+                    <Link to={`/teams/${teamId}`} className="hover:text-blue-500">
+                      <span className="font-semibold">{index + 1}.</span> {team.name} - Score: {score}
                     </Link>
-                  </td>
-                  <td className="py-4">
-                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
-                      <span>{team.organization}</span>
+                  </li>
+                );
+              }
+              return null;
+            })}
+          </ul>
+        )}
+        {selectedOption === 'combined' && (
+          <ul className="ml-4">
+            {sortedCombinedScores.map(([teamId, score], index) => {
+              const team = skills.find(skill => skill.team.id === teamId)?.team;
+              if (team) {
+                return (
+                  <li key={teamId} className="mb-4 border-b border-gray-300 py-2">
+                    <Link to={`/teams/${teamId}`} className="hover:text-blue-500">
+                      <span className="font-semibold">{index + 1}.</span> {team.name} - Score: {score}
                     </Link>
-                  </td>
-                  <td className="py-4">
-                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
-                      <span>
-                        {team.location.city && `${team.location.city}`}
-                        {team.location.region && `, ${team.location.region}`}
-                        {team.location.country && `, ${team.location.country}`}
-                      </span>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <p className="text-lg">No teams available</p>
-      )}
+                  </li>
+                );
+              }
+              return null;
+            })}
+          </ul>
+        )}
+      </div>
     </div>
+  );  
+}
 
-  );
-};
-
-export default JSONComponent;
+export default EventSkillsComponent;
