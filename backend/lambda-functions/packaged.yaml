@@ -78,7 +78,7 @@ Resources:
       FunctionName: exodb-searchGetFunc
       Handler: searchGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/8f0082005086a8d5a994682ffb2adb17
+      CodeUri: s3://exodblambdafunctions/102342ad08809366655fc74254ee3bcd
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: searchGet
@@ -108,7 +108,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
       Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/f7004e6ea279de5dd7fbd13eb7dc36ca
+      CodeUri: s3://exodblambdafunctions/4ad5aa40104a4bbad7064160cc52e6af
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsDataProcessor
@@ -162,3 +162,23 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOpenSearch
+  auditTeamDataProcessor:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-auditTeamDataProcessorFunc
+      Handler: auditTeamDataProcessor.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/086a27ea0d53cb4c9a16d97259233e58
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: auditTeamDataProcessor
+  auditTeamDataQueue:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-auditTeamDataQueueFunc
+      Handler: auditTeamDataQueue.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/6ccfde6027dd50283f774894a375d0cb
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: auditTeamDataQueue
