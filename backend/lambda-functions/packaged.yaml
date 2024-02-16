@@ -72,6 +72,16 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: matchesIdGetPost
+  searchGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-searchGetFunc
+      Handler: searchGet.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/8f0082005086a8d5a994682ffb2adb17
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: searchGet
   auditOngoing:
     Type: AWS::Serverless::Function
     Properties:
@@ -98,7 +108,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
       Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/06ddf60d817f44e44525d01d406703b4
+      CodeUri: s3://exodblambdafunctions/f7004e6ea279de5dd7fbd13eb7dc36ca
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsDataProcessor
@@ -142,3 +152,13 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsUrlFinder
+  updateOpenSearch:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-updateOpenSearchFunc
+      Handler: updateOpenSearch.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/0f0071b94a913a1e4593a333d9bb0fff
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: updateOpenSearch
