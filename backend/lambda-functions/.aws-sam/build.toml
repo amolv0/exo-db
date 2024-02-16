@@ -145,4 +145,22 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["updateOpenSearch"]
 
+[function_build_definitions.e5075ecc-6002-4440-8597-85ea67075cb7]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/auditTeamData/auditTeamDataProcessor"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "auditTeamDataProcessor.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["auditTeamDataProcessor"]
+
+[function_build_definitions.c321bb6f-fd77-4c94-a83b-5aeb78954a9a]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/auditTeamData/auditTeamDataQueue"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "auditTeamDataQueue.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["auditTeamDataQueue"]
+
 [layer_build_definitions]
