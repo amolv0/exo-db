@@ -96,6 +96,22 @@ Operations:
 
 - GET /matches/{matchId} to get details for a specific match
 
+## Search
+
+Resource Path: `/search`
+
+Purpose: To handle search by providing an endpoint to easily query OpenSearch API
+
+### Sub-Resource {queryTerm}
+
+Resource Path: `/search/{queryTerm}`
+
+Purpose: To handle specific search queries
+
+Operations:
+
+- GET /serach/{searchQuery} to make a specific search query
+
 ## Init new typescript API function
 
 npm init -y
