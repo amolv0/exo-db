@@ -6,6 +6,7 @@ import json
 import requests
 import time
 import boto3
+from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
 # This lambda function together with UpdateFutureEventsUrlFinder.py is meant to run periodically to iterate through the most recent events and update DynamoDB accordingly. This is meant to update team sign-ups for events logged in the future. Probably do this once a day?
@@ -27,6 +28,7 @@ logging.setLevel("INFO")
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 event_data_table = dynamodb.Table('event-data')
+team_data_table = dynamodb.Table('team-data')
 
 def make_request_base(url, headers, initial_delay=5, retries = 5):
     for _ in range(retries):
@@ -66,14 +68,16 @@ def get_teams(event_id):
     page = 1
     all_teams = []
     all_team_numbers = []
+    teams_to_update = []
+
     while True:
-        api_url = f"https://www.robotevents.com/api/v2/events/{event_id}/teams?page={page}&per_page=75"
+        api_url = f"https://www.robotevents.com/api/v2/events/{event_id}/teams?page={page}&per_page=250"
         teams_data = make_request(event_id, api_url, headers={'Authorization': f'Bearer {API_KEY}'})
         if teams_data:
             team_ids = [team['id'] for team in teams_data]
-            team_numbers = [team['number'] for team in teams_data]  # Collecting team numbers
+            team_numbers = [team['number'] for team in teams_data]
             all_teams.extend(team_ids)
-            all_team_numbers.extend(team_numbers)  # Adding team numbers to the list
+            all_team_numbers.extend(team_numbers)
             last_page = teams_data[0].get('meta', {}).get('last_page', 0)
             if page >= last_page:
                 break
@@ -81,7 +85,32 @@ def get_teams(event_id):
                 page += 1
         else:
             break
-    return all_teams, all_team_numbers  # Returning both team IDs and team numbers
+
+    # DynamoDB Batch Get to retrieve 'registered' status for all teams
+    for i in range(0, len(all_teams), 100):  # DynamoDB BatchGetItem limit is 100 items
+        batch_keys = [{'id': team_id} for team_id in all_teams[i:i+100]]
+        response = dynamodb.batch_get_item(
+            RequestItems={
+                'team-data': {
+                    'Keys': batch_keys,
+                    'ProjectionExpression': 'id, registered'
+                }
+            }
+        )
+
+        # Process the response
+        for team in response['Responses']['team-data']:
+            if 'registered' in team and team['registered'] == 'false':
+                teams_to_update.append(team['id'])
+
+    # Updating 'registered' status for teams where necessary
+    for team_id in teams_to_update:
+        team_data_table.update_item(
+            Key={'id': team_id},
+            UpdateExpression="SET registered = :val",
+            ExpressionAttributeValues={':val': 'true'}
+        )
+    return all_teams, all_team_numbers
 
 def get_awards(event_id):
     page = 1
