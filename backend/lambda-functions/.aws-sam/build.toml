@@ -127,4 +127,22 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["matchesIdGetPost"]
 
+[function_build_definitions.1ff4d2b3-96f7-4b00-b8d6-21252d0a6dae]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/Search/searchGet"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "searchGet.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["searchGet"]
+
+[function_build_definitions.27c1110a-8a48-40f4-be52-96d6b03aff8f]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateOpenSearch"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "updateOpenSearch.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["updateOpenSearch"]
+
 [layer_build_definitions]
