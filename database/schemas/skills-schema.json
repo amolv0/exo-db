@@ -1,0 +1,41 @@
+{
+    "id": {
+        "attempts": {
+            "N": "4"
+        },
+        "division": {
+            "NULL": "true"
+        },
+        "event": {
+            "id": {
+            "N": "35176"
+            },
+            "code": {
+            "S": "RE-VRC-18-5176"
+            },
+            "name": {
+            "S": "North High School VEX Robotics Tournament - Middle School (Turning Point)"
+            }
+        },
+        "event_id": {
+            "N": "35176"
+        },
+        "team": {
+            "id": {
+            "N": "50410"
+            },
+            "code": {
+            "NULL": "true"
+            },
+            "name": {
+            "S": "1028Y"
+            }
+        },
+        "team_id": {
+            "N": "50410"
+        }
+    }
+}
+
+
+	
