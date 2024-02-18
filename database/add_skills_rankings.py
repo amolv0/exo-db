@@ -3,7 +3,7 @@ import time
 import requests
 from botocore.exceptions import ClientError
 
-# Script to get team skills, awards, and rankings data. This has not been run yet because after doing so, to update the data the stream from event-data would need to be used, which itself will need to be updated to contain award, rankings, and skills data. 
+# Script to get team skills, awards, and rankings data.
 
 
 # Initialize a DynamoDB client
