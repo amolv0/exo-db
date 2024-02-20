@@ -84,6 +84,16 @@ Resources:
       CodeUri: ./restApi/Search/searchGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
+  # Skills
+  skillsIdGetPost:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-skillsIdGetPostFunc
+      Handler: skillsIdGetPost.handler
+      Runtime: nodejs20.x 
+      CodeUri: ./restApi/Skills/skillsId/skillsIdGetPost
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
   # Other Functions
 
   auditOngoing:
