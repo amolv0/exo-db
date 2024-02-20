@@ -154,14 +154,22 @@ def get_item_from_dynamodb(table, event_id):
         logging.error(e.response['Error']['Message'])
         return None
 
-def update_item_in_dynamodb(table, event_id, update_expression, expression_attribute_values):
+def update_item_in_dynamodb(table, event_id, update_expression, expression_attribute_values, expression_attribute_names=None):
     try:
-        response = table.update_item(
-            Key={'id': event_id},
-            UpdateExpression=update_expression,
-            ExpressionAttributeValues=expression_attribute_values,
-            ReturnValues="UPDATED_NEW"
-        )
+        # Prepare the parameters for the update_item call
+        update_params = {
+            'Key': {'id': event_id},
+            'UpdateExpression': update_expression,
+            'ExpressionAttributeValues': expression_attribute_values,
+            'ReturnValues': "UPDATED_NEW"
+        }
+
+        # Add ExpressionAttributeNames to parameters if it's not empty
+        if expression_attribute_names:
+            update_params['ExpressionAttributeNames'] = expression_attribute_names
+
+        # Make the update_item call with the prepared parameters
+        response = table.update_item(**update_params)
         return response
     except ClientError as e:
         logging.error(e.response['Error']['Message'])
@@ -177,65 +185,106 @@ def handler(aws_event, context):
         logging.info(f"{len(data)} Events to process")
         for event in data:
             event_id = event['id']
-
-            # Fetch the current event data from DynamoDB
             current_event_data = get_item_from_dynamodb(event_data_table, event_id)
 
-            # Initialize update flags and update parameters
-            update_expression = "SET "
-            expression_attribute_values = {}
-            updated = False
+            if current_event_data is None:
+                # Event not found in DynamoDB, create a new one
+                new_event_data = {
+                    'id': event_id,
+                    'name': event.get('name'),
+                    'start': event.get('start'),
+                    'end': event.get('end'),
+                    'season': event.get('season'),
+                    'program': event.get('program'),
+                    'location': event.get('location', {}).get('venue', ''),
+                    'teams': [],
+                    'team_numbers': [],
+                    'awards': [],
+                    'divisions': event.get('divisions', [])
+                }
 
-            # Check and update 'teams' and 'team_numbers'
-            teams, team_numbers = get_teams(event_id)
-            if current_event_data is None or 'teams' not in current_event_data or current_event_data['teams'] != teams:
-                update_expression += "teams = :teams, "
-                expression_attribute_values[':teams'] = teams
-                updated = True
+                # Convert values for DynamoDB compatibility
+                new_event_data = convert_values(new_event_data)
 
-            if current_event_data is None or 'team_numbers' not in current_event_data or current_event_data['team_numbers'] != team_numbers:
-                update_expression += "team_numbers = :teamNumbers, "
-                expression_attribute_values[':teamNumbers'] = team_numbers
-                updated = True
+                # Insert the new event into DynamoDB
+                try:
+                    event_data_table.put_item(Item=new_event_data)
+                    logging.info(f"New event {event_id} added to DynamoDB.")
+                except ClientError as e:
+                    logging.error(f"Failed to add new event {event_id} to DynamoDB: {e.response['Error']['Message']}")
 
-            # Check and update 'awards'
-            awards = get_awards(event_id)
-            if current_event_data is None or 'awards' not in current_event_data or current_event_data['awards'] != awards:
-                update_expression += "awards = :awards, "
-                expression_attribute_values[':awards'] = awards
-                updated = True
-
-            # Check and update 'divisions' and ensure each division has an empty 'rankings' list
-            divisions_changed = False
-            if 'divisions' in event:
-                for division in event['divisions']:
-                    if 'rankings' not in division:
-                        division['rankings'] = []  # Ensure each division has an empty 'rankings' list
-                        divisions_changed = True  # Mark divisions as changed if any division didn't have 'rankings'
-
-                # Check if divisions have changed compared to what's stored in DynamoDB
-                if current_event_data is None or 'divisions' not in current_event_data or current_event_data['divisions'] != event['divisions']:
-                    divisions_changed = True
-
-            if divisions_changed:
-                update_expression += "divisions = :divisions, "
-                expression_attribute_values[':divisions'] = event['divisions']
-                updated = True
-
-            # Finalize update expression and perform update if necessary
-            if updated:
-                update_expression = update_expression.rstrip(", ")  # Remove the trailing comma and space
-                
-                # Apply convert_values to each value in expression_attribute_values
-                expression_attribute_values = {k: convert_values(v) for k, v in expression_attribute_values.items()}
-
-                response = update_item_in_dynamodb(event_data_table, event_id, update_expression, expression_attribute_values)
-                if response:
-                    logging.info(f"Event id {event_id} successfully updated in DynamoDB.")
-                else:
-                    logging.info(f"Failed to update event id {event_id} in DynamoDB.")
             else:
-                logging.info(f"No updates required for event id {event_id}.")
+                # Proceed with updates if the event already exists in DynamoDB
+                update_expression = "SET "
+                expression_attribute_values = {}
+                expression_attribute_names = {}
+                updated = False
+
+                # Attributes to check for changes
+                attributes_to_check = ['name', 'start', 'end', 'season', 'program', 'locations', 'location']
+                for attr in attributes_to_check:
+                    new_value = event
+                    try:
+                        for key in attr.split('.'):
+                            new_value = new_value[key] if key in new_value else None
+                    except TypeError:
+                        new_value = None
+
+                    if new_value is not None:
+                        new_value = convert_values(new_value)
+
+                    if attr not in current_event_data or current_event_data[attr] != new_value:
+                        placeholder = f"#{attr}"
+                        expression_attribute_names[placeholder] = attr
+                        update_expression += f"{placeholder} = :{attr}, "
+                        expression_attribute_values[f":{attr}"] = new_value
+                        updated = True
+
+                # Update 'teams' and 'team_numbers'
+                teams, team_numbers = get_teams(event_id)
+                if 'teams' not in current_event_data or current_event_data['teams'] != teams:
+                    update_expression += "teams = :teams, "
+                    expression_attribute_values[':teams'] = teams
+                    updated = True
+
+                if 'team_numbers' not in current_event_data or current_event_data['team_numbers'] != team_numbers:
+                    update_expression += "team_numbers = :teamNumbers, "
+                    expression_attribute_values[':teamNumbers'] = team_numbers
+                    updated = True
+
+                # Update 'awards'
+                awards = get_awards(event_id)
+                if 'awards' not in current_event_data or current_event_data['awards'] != awards:
+                    update_expression += "awards = :awards, "
+                    expression_attribute_values[':awards'] = awards
+                    updated = True
+
+                # Update 'divisions'
+                if 'divisions' in event:
+                    divisions_changed = False
+                    for division in event['divisions']:
+                        if 'rankings' not in division:
+                            division['rankings'] = []
+                            divisions_changed = True
+                        if 'matches' not in division:
+                            division['matches'] = []
+                            divisions_changed = True
+
+                    if divisions_changed or 'divisions' not in current_event_data or current_event_data['divisions'] != event['divisions']:
+                        update_expression += "divisions = :divisions, "
+                        expression_attribute_values[':divisions'] = event['divisions']
+                        updated = True
+
+                # Finalize and perform update if necessary
+                if updated:
+                    update_expression = update_expression.rstrip(", ")
+                    response = update_item_in_dynamodb(event_data_table, event_id, update_expression, expression_attribute_values, expression_attribute_names)
+                    if response:
+                        logging.info(f"Event id {event_id} successfully updated in DynamoDB.")
+                    else:
+                        logging.error(f"Failed to update event id {event_id} in DynamoDB.")
+                else:
+                    logging.info(f"No updates required for event id {event_id}.")
 
     logging.info("Process Finished")
     logging.info(f"Elapsed Time in seconds: {time.time() - start_time}")
@@ -249,22 +298,22 @@ def handler(aws_event, context):
 
 # test_event = {
 #   "Records": [
-    # {
-    #   "messageId": "1",
-    #   "receiptHandle": "abc123",
-    #   "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=1&per_page=250\"}",
-    #   "attributes": {
-    #     "ApproximateReceiveCount": "1",
-    #     "SentTimestamp": "1573251510774",
-    #     "SenderId": "testSender",
-    #     "ApproximateFirstReceiveTimestamp": "1573251510774"
-    #   },
-    #   "messageAttributes": {},
-    #   "md5OfBody": "md5",
-    #   "eventSource": "aws:sqs",
-    #   "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
-    #   "awsRegion": "us-east-1"
-    # },
+#     {
+#       "messageId": "1",
+#       "receiptHandle": "abc123",
+#       "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-17&per_page=250\"}",
+#       "attributes": {
+#         "ApproximateReceiveCount": "1",
+#         "SentTimestamp": "1573251510774",
+#         "SenderId": "testSender",
+#         "ApproximateFirstReceiveTimestamp": "1573251510774"
+#       },
+#       "messageAttributes": {},
+#       "md5OfBody": "md5",
+#       "eventSource": "aws:sqs",
+#       "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
+#       "awsRegion": "us-east-1"
+#     },
     #     {
     #   "messageId": "1",
     #   "receiptHandle": "abc123",
