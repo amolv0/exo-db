@@ -163,4 +163,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["auditTeamDataQueue"]
 
+[function_build_definitions.02b1188d-59dd-471f-ae36-46bb97b0a04c]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/Skills/skillsId/skillsIdGetPost"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "skillsIdGetPost.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["skillsIdGetPost"]
+
 [layer_build_definitions]
