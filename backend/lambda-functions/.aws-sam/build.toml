@@ -172,4 +172,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["skillsIdGetPost"]
 
+[function_build_definitions.1999ea8c-f105-4184-80b4-d6e57094fe3b]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/Rankings/rankingsId/rankingsIdGetPost"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "rankingsIdGetPost.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["rankingsIdGetPost"]
+
 [layer_build_definitions]
