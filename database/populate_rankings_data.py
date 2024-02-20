@@ -76,11 +76,10 @@ if __name__ == '__main__':
     event_table = dynamodb.Table('event-data')
     ranking_table = dynamodb.Table('rankings-data')
     
-    # Uncomment one of the lines below based on your need:
     
     # To update rankings for all events
     update_rankings_for_all_events(event_table, ranking_table)
     
-    # To update rankings for a single event (replace 'your_event_id_here' with your actual event ID)
+    # To update rankings for a single event 
     # test_event_id = 36967
     # update_rankings_for_single_event(event_table, ranking_table, test_event_id)
