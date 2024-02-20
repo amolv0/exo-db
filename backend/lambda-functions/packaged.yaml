@@ -78,7 +78,7 @@ Resources:
       FunctionName: exodb-searchGetFunc
       Handler: searchGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/102342ad08809366655fc74254ee3bcd
+      CodeUri: s3://exodblambdafunctions/1794a0979943af510f3a62429439944a
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: searchGet
@@ -98,7 +98,7 @@ Resources:
       FunctionName: exodb-updateTeamFromStream
       Handler: updateTeamFromStream.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/fc7b276cf12c42aa4b7ee1e28f1bba29
+      CodeUri: s3://exodblambdafunctions/f71922437360bda9eb57933ba31caf9a
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateTeamFromStream
@@ -108,7 +108,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
       Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/4ad5aa40104a4bbad7064160cc52e6af
+      CodeUri: s3://exodblambdafunctions/6af64d5a5a7ca141900e1fb150e4735e
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsDataProcessor
@@ -128,7 +128,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventProcessor
       Handler: updateOngoingEventProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/9bc33513262a9c3b304444459ab95128
+      CodeUri: s3://exodblambdafunctions/826c30f7b24208cfd8f35ab2e0937b04
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventProcessor
@@ -148,7 +148,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncUrlFinder
       Handler: updateFutureEventsUrlFinder.url_finder_handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/4b42800d6d8d0944101fd772700046e2
+      CodeUri: s3://exodblambdafunctions/a798d02425a5262a1fa63ae6faac51f6
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsUrlFinder

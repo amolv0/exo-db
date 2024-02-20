@@ -49,10 +49,11 @@ def url_finder_handler(aws_event, context):
     current_utc_datetime = datetime.now(pytz.utc)
     time_to_check = (current_utc_datetime - timedelta(hours=2)).strftime('%Y-%m-%dT%H:%M:%SZ')
     last_page = get_last_page(time_to_check, headers)
-    logging.info(time_to_check)
+    logging.info(f"Time to check: {time_to_check}")
     event_urls = []
     for i in range(1, last_page + 1):
         url = f'https://www.robotevents.com/api/v2/events?start={time_to_check}&page={i}&per_page=250'
+        logging.info(f"Appended {url}")
         event_urls.append(url)
 
     # Send URLs to SQS
