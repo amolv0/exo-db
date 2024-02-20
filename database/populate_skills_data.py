@@ -72,11 +72,10 @@ if __name__ == '__main__':
     event_table = dynamodb.Table('event-data')
     skills_table = dynamodb.Table('skills-data')
     
-    # Uncomment one of the lines below based on your need:
     
     # To update skills for all events
     update_skills_for_all_events(event_table, skills_table)
     
-    # # To update skills for a single event (replace 'your_event_id_here' with your actual event ID)
+    # # To update skills for a single event
     # test_event_id = 51500
     # update_skills_for_single_event(event_table, skills_table, test_event_id)
