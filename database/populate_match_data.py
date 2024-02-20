@@ -4,64 +4,83 @@ from decimal import Decimal
 
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
-    
-def transform_match_data(match):
-    # Check if 'match' is a dictionary and has an 'id' key
+
+def transform_match_data(match, division_id, division_name, event_id, event_name):
     if isinstance(match, dict) and 'id' in match:
-        match['id'] = match.pop('id')  # Set the 'id' at the top level
+        match['division_id'] = division_id
+        match['division_name'] = division_name
+        match['event_id'] = event_id
+        match['event_name'] = event_name
+        match.pop('event', None)
+        match.pop('division', None)
         return match
     else:
         return None
 
-
-def scan_and_extract_matches(event_table):
-    scan_kwargs = {}
-    done = False
-    start_key = None
-
-    while not done:
-        if start_key:
-            scan_kwargs['ExclusiveStartKey'] = start_key
-        response = event_table.scan(**scan_kwargs)
-        for item in response.get('Items', []):
-            if 'divisions' in item:
-                divisions = item['divisions']
-                for division in divisions:
-                    if 'matches' in division:
-                        matches = division['matches']
-                        for match in matches:
-                            transformed_match = transform_match_data(match)
-                            if transformed_match is not None:
-                                yield transformed_match
-        start_key = response.get('LastEvaluatedKey', None)
-        done = start_key is None
-
+def extract_matches_from_event(item):
+    event_id = item['id']
+    event_name = item.get('name', None)
+    matches = []
+    if 'divisions' in item:
+        for division in item['divisions']:
+            division_id = division['id']
+            division_name = division.get('name', None)
+            if 'matches' in division:
+                for match in division['matches']:
+                    transformed_match = transform_match_data(match, division_id, division_name, event_id, event_name)
+                    if transformed_match is not None:
+                        matches.append(transformed_match)
+    return matches
 
 def batch_write_matches(match_table, matches):
     with match_table.batch_writer() as batch:
         for match in matches:
             batch.put_item(Item=match)
 
+def update_matches_for_all_events(event_table, match_table):
+    scan_kwargs = {}
+    page = 0
+    count = 0
+    while True:
+        page += 1
+        print(f"Scanning page {page}")
+        response = event_table.scan(**scan_kwargs)
+        for item in response.get('Items', []):
+            matches = extract_matches_from_event(item)
+            count += 1
+            print(f"Adding matches from event {count}")
+            if matches:
+                batch_write_matches(match_table, matches)
+        if 'LastEvaluatedKey' in response:
+            scan_kwargs['ExclusiveStartKey'] = response['LastEvaluatedKey']
+        else:
+            break
+
+def update_matches_for_single_event(event_table, match_table, event_id):
+    try:
+        response = event_table.get_item(Key={'id': event_id})
+        item = response.get('Item', None)
+        if item:
+            matches = extract_matches_from_event(item)
+            if matches:
+                batch_write_matches(match_table, matches)
+                print(f"Updated matches for event ID: {event_id}")
+            else:
+                print(f"No matches found for event ID: {event_id}")
+        else:
+            print(f"No event found with ID: {event_id}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 if __name__ == '__main__':
     event_table = dynamodb.Table('event-data')
     match_table = dynamodb.Table('match-data')
-
-    # Create a generator to yield matches from the event-data table
-    matches_generator = scan_and_extract_matches(event_table)
-
-    # Temporary list to hold matches for batch writing
-    temp_matches = []
-    count = 0
-    for match in matches_generator:
-        temp_matches.append(match)
-        # Batch write when we have enough matches or at the end
-        if len(temp_matches) >= 25:  # DynamoDB batch write limit
-            batch_write_matches(match_table, temp_matches)
-            print(f"Wrote batch {count}")
-            count += 1
-            temp_matches = []  # Reset the temp list after batch writing
-
-    # Write any remaining matches
-    if temp_matches:
-        batch_write_matches(match_table, temp_matches)
+    
+    # Uncomment one of the lines below based on your need:
+    
+    # To update matches for all events
+    update_matches_for_all_events(event_table, match_table)
+    
+    # To update matches for a single event (replace 'your_event_id_here' with your actual event ID)
+    # test_event_id = 54011
+    # update_matches_for_single_event(event_table, match_table, test_event_id)

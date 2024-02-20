@@ -6,7 +6,7 @@ dynamodb = boto3.resource('dynamodb')
 # Specify your table name and partition key
 table_name = 'event-data'
 partition_key_name = 'id'
-partition_key_value = 45455
+partition_key_value = 52043
 
 table = dynamodb.Table(table_name)
 
