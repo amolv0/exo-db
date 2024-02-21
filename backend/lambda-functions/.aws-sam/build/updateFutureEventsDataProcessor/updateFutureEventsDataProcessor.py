@@ -186,21 +186,30 @@ def handler(aws_event, context):
         for event in data:
             event_id = event['id']
             current_event_data = get_item_from_dynamodb(event_data_table, event_id)
-
+            
             if current_event_data is None:
+                if 'location' in event and 'region' in event['location']:
+                    region = event['location']['region']
+                elif 'location' in event and 'country' in event['location']:
+                    region = event['location']['country']
+                else:
+                    region = None
+                    logging.error(f"New event {event_id} could not set a region")
                 # Event not found in DynamoDB, create a new one
+                # print(f"Region: {region}")
                 new_event_data = {
                     'id': event_id,
                     'name': event.get('name'),
                     'start': event.get('start'),
                     'end': event.get('end'),
                     'season': event.get('season'),
-                    'program': event.get('program'),
+                    'program': event.get('program').get('code'),
                     'location': event.get('location', {}).get('venue', ''),
                     'teams': [],
                     'team_numbers': [],
                     'awards': [],
-                    'divisions': event.get('divisions', [])
+                    'divisions': event.get('divisions', []),
+                    'region': region
                 }
 
                 # Convert values for DynamoDB compatibility
@@ -233,18 +242,38 @@ def handler(aws_event, context):
                     if new_value is not None:
                         new_value = convert_values(new_value)
 
-                    if attr not in current_event_data or current_event_data[attr] != new_value:
+                    if attr not in current_event_data or current_event_data[attr] != new_value:                        
                         placeholder = f"#{attr}"
                         expression_attribute_names[placeholder] = attr
                         update_expression += f"{placeholder} = :{attr}, "
                         expression_attribute_values[f":{attr}"] = new_value
                         updated = True
 
+
+                # Check if region is nonexistent or changed
+                event_region = None
+                if 'location' in event and 'region' in event['location']:
+                    event_region = event['location']['region']
+                elif 'location' in event and 'country' in event['location']:
+                    event_region = event['location']['country']
+                else:
+                    logging.error(f"While updating event {event_id} could not set/update a region")
+                    # print(f"While updating event {event_id} could not set/update a region")
+                if ('region' not in current_event_data or event_region != current_event_data['region']) and event_region is not None:
+                    update_expression += "region = :region, "
+                    expression_attribute_names[':region'] = event_region
+                    updated = True
+
                 # Update 'teams' and 'team_numbers'
                 teams, team_numbers = get_teams(event_id)
                 if 'teams' not in current_event_data or current_event_data['teams'] != teams:
                     update_expression += "teams = :teams, "
                     expression_attribute_values[':teams'] = teams
+                    updated = True
+
+                if 'program' not in current_event_data or isinstance(current_event_data['program'], dict):
+                    update_expression += "program = :program, "
+                    expression_attribute_values[':program'] = event.get('program').get('code')
                     updated = True
 
                 if 'team_numbers' not in current_event_data or current_event_data['team_numbers'] != team_numbers:
@@ -260,9 +289,9 @@ def handler(aws_event, context):
                     updated = True
 
                 # Update 'divisions'
-                if 'divisions' in event:
+                if 'divisions' in current_event_data:
                     divisions_changed = False
-                    for division in event['divisions']:
+                    for division in current_event_data['divisions']:
                         if 'rankings' not in division:
                             division['rankings'] = []
                             divisions_changed = True
@@ -270,9 +299,9 @@ def handler(aws_event, context):
                             division['matches'] = []
                             divisions_changed = True
 
-                    if divisions_changed or 'divisions' not in current_event_data or current_event_data['divisions'] != event['divisions']:
+                    if divisions_changed:
                         update_expression += "divisions = :divisions, "
-                        expression_attribute_values[':divisions'] = event['divisions']
+                        expression_attribute_values[':divisions'] = current_event_data['divisions']
                         updated = True
 
                 # Finalize and perform update if necessary
@@ -281,6 +310,7 @@ def handler(aws_event, context):
                     response = update_item_in_dynamodb(event_data_table, event_id, update_expression, expression_attribute_values, expression_attribute_names)
                     if response:
                         logging.info(f"Event id {event_id} successfully updated in DynamoDB.")
+                        # print(f"Event id {event_id} successfully updated in DynamoDB.")
                     else:
                         logging.error(f"Failed to update event id {event_id} in DynamoDB.")
                 else:
@@ -314,54 +344,54 @@ def handler(aws_event, context):
 #       "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
 #       "awsRegion": "us-east-1"
 #     },
-    #     {
-    #   "messageId": "1",
-    #   "receiptHandle": "abc123",
-    #   "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=2&per_page=250\"}",
-    #   "attributes": {
-    #     "ApproximateReceiveCount": "1",
-    #     "SentTimestamp": "1573251510774",
-    #     "SenderId": "testSender",
-    #     "ApproximateFirstReceiveTimestamp": "1573251510774"
-    #   },
-    #   "messageAttributes": {},
-    #   "md5OfBody": "md5",
-    #   "eventSource": "aws:sqs",
-    #   "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
-    #   "awsRegion": "us-east-1"
-    # },
-    #     {
-    #   "messageId": "1",
-    #   "receiptHandle": "abc123",
-    #   "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=3&per_page=250\"}",
-    #   "attributes": {
-    #     "ApproximateReceiveCount": "1",
-    #     "SentTimestamp": "1573251510774",
-    #     "SenderId": "testSender",
-    #     "ApproximateFirstReceiveTimestamp": "1573251510774"
-    #   },
-    #   "messageAttributes": {},
-    #   "md5OfBody": "md5",
-    #   "eventSource": "aws:sqs",
-    #   "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
-    #   "awsRegion": "us-east-1"
-    # },
-    #     {
-    #   "messageId": "1",
-    #   "receiptHandle": "abc123",
-    #   "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=4&per_page=250\"}",
-    #   "attributes": {
-    #     "ApproximateReceiveCount": "1",
-    #     "SentTimestamp": "1573251510774",
-    #     "SenderId": "testSender",
-    #     "ApproximateFirstReceiveTimestamp": "1573251510774"
-    #   },
-    #   "messageAttributes": {},
-    #   "md5OfBody": "md5",
-    #   "eventSource": "aws:sqs",
-    #   "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
-    #   "awsRegion": "us-east-1"
-    # },
+#         {
+#       "messageId": "1",
+#       "receiptHandle": "abc123",
+#       "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=2&per_page=250\"}",
+#       "attributes": {
+#         "ApproximateReceiveCount": "1",
+#         "SentTimestamp": "1573251510774",
+#         "SenderId": "testSender",
+#         "ApproximateFirstReceiveTimestamp": "1573251510774"
+#       },
+#       "messageAttributes": {},
+#       "md5OfBody": "md5",
+#       "eventSource": "aws:sqs",
+#       "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
+#       "awsRegion": "us-east-1"
+#     },
+#         {
+#       "messageId": "1",
+#       "receiptHandle": "abc123",
+#       "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=3&per_page=250\"}",
+#       "attributes": {
+#         "ApproximateReceiveCount": "1",
+#         "SentTimestamp": "1573251510774",
+#         "SenderId": "testSender",
+#         "ApproximateFirstReceiveTimestamp": "1573251510774"
+#       },
+#       "messageAttributes": {},
+#       "md5OfBody": "md5",
+#       "eventSource": "aws:sqs",
+#       "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
+#       "awsRegion": "us-east-1"
+#     },
+#         {
+#       "messageId": "1",
+#       "receiptHandle": "abc123",
+#       "body": "{\"url\": \"https://www.robotevents.com/api/v2/events?start=2024-02-01&page=4&per_page=250\"}",
+#       "attributes": {
+#         "ApproximateReceiveCount": "1",
+#         "SentTimestamp": "1573251510774",
+#         "SenderId": "testSender",
+#         "ApproximateFirstReceiveTimestamp": "1573251510774"
+#       },
+#       "messageAttributes": {},
+#       "md5OfBody": "md5",
+#       "eventSource": "aws:sqs",
+#       "eventSourceARN": "arn:aws:sqs:region:account-id:queue-name",
+#       "awsRegion": "us-east-1"
+#     },
 #         {
 #       "messageId": "1",
 #       "receiptHandle": "abc123",

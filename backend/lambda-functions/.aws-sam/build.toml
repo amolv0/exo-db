@@ -181,4 +181,22 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["rankingsIdGetPost"]
 
+[function_build_definitions.7af1ce23-1ec5-4b8a-a37c-c5fd1fa58ef4]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/Awards/awardsId/awardsIdGetPost"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "awardsIdGetPost.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["awardsIdGetPost"]
+
+[function_build_definitions.9f7a3b98-e8c8-4645-8348-38dc519f9a6c]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/SkillsRanking/skillsRankingGet"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "skillsRankingGet.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["skillsRankingGet"]
+
 [layer_build_definitions]
