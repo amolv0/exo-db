@@ -24,7 +24,10 @@ def process_skills_for_event(event_item):
     unique_items = {}
     event_season = event_item['season']['id']
     program = event_item['program']
-
+    event_start = event_item['start']
+    if 'region' in event_item:
+        region = event_item['region']
+    else: region = None
     # Collect all unique team_ids
     team_ids = {int(skill_item['team']['id']) for skill_item in event_item['skills']}
 
@@ -56,7 +59,7 @@ def process_skills_for_event(event_item):
         # Extract team_name and team_org from the fetched team data
         team_info = team_data.get(team_id, {})
         team_name = team_info.get('team_name', "")
-        team_org = team_info.get('team_org', "")
+        team_org = team_info.get('organization', "")
 
         if skill_type in ['programming', 'driver']:
             key = (team_id, skill_type)
@@ -75,47 +78,53 @@ def process_skills_for_event(event_item):
                 'skills_id': skills_id,
                 'event_id': event_item['id'],
                 'event_name': event_name,
+                'event_start': event_start,
                 'team_id': team_id,
                 'team_number': team_number,
                 'team_name': team_name,
                 'team_org': team_org,
                 'season': event_season,
-                'program': program
+                'program': program,
+                'region': region
             }
 
             # Check if the opposite type exists and create a 'robot' entry
             opposite_type = 'programming' if skill_type == 'driver' else 'driver'
             if (team_id, opposite_type) in highest_scores:
                 robot_score = score + highest_scores[(team_id, opposite_type)][0]
-                robot_key = f"{event_item['id']}-{team_id}-robot"
+                robot_key = f"{event_item['id']}-{team_id}"
                 unique_items[robot_key] = {
                     'event_team_id': f"{event_item['id']}-{team_id}",
                     'type': 'robot',
                     'score': robot_score,
                     'event_id': event_item['id'],
                     'event_name': event_name,
+                    'event_start': event_start,
                     'team_id': team_id,
                     'team_number': team_number,
                     'team_name': team_name,
                     'team_org': team_org,
                     'season': event_season,
-                    'program': program
+                    'program': program,
+                    'region': region
                 }
             else:
                 # If the opposite type doesn't exist, use the same score for 'robot'
-                robot_key = f"{event_item['id']}-{team_id}-robot"
+                robot_key = f"{event_item['id']}-{team_id}"
                 unique_items[robot_key] = {
                     'event_team_id': f"{event_item['id']}-{team_id}",
                     'type': 'robot',
                     'score': score,
                     'event_id': event_item['id'],
                     'event_name': event_name,
+                    'event_start': event_start,
                     'team_id': team_id,
                     'team_number': team_number,
                     'team_name': team_name,
                     'team_org': team_org,
                     'season': event_season,
-                    'program': program
+                    'program': program,
+                    'region': region
                 }
 
         # Write unique items to the table
@@ -152,10 +161,10 @@ def process_event_data():
         else:
             break
     print("Process complete")
-# Example usage - replace 'your_event_id_here' with the actual event ID you want to test
-# process_single_event(35176)
+
+
 # To process all events
         
-# process_event_data()
+process_event_data()
 
-process_single_event(51499)
+# process_single_event(39671)
