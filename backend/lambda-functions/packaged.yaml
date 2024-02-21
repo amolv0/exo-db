@@ -82,6 +82,16 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: rankingsIdGetPost
+  awardsIdGetPost:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-awardsIdGetPostFunc
+      Handler: awardsIdGetPost.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/a6b974321c12f1f05687bf8122cc1249
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: awardsIdGetPost
   searchGet:
     Type: AWS::Serverless::Function
     Properties:
@@ -102,6 +112,16 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: skillsIdGetPost
+  skillsRankingGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-skillsRankingGetFunc
+      Handler: skillsRankingGet.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/571a65f0d7cc97e833ca731667574c95
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: skillsRankingGet
   auditOngoing:
     Type: AWS::Serverless::Function
     Properties:
@@ -118,7 +138,7 @@ Resources:
       FunctionName: exodb-updateTeamFromStream
       Handler: updateTeamFromStream.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/f71922437360bda9eb57933ba31caf9a
+      CodeUri: s3://exodblambdafunctions/a135e4c5bd41492ff67ea7edea1566f4
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateTeamFromStream
@@ -128,7 +148,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
       Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/6af64d5a5a7ca141900e1fb150e4735e
+      CodeUri: s3://exodblambdafunctions/f8b3deca2d3c5ff7a28476ca899c44d4
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsDataProcessor
