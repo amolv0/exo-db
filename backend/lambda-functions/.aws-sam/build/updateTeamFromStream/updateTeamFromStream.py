@@ -23,14 +23,14 @@ logging.setLevel("ERROR")
 def unmarshall_dynamodb_item(item):
     return {k: deserializer.deserialize(v) for k, v in item.items()}
 
-def process_match(match, division_name, division_id, event_name, event_id):
+def process_match(match, division_name, division_id, event_name, event_id, event_start):
     teams = extract_teams_from_match(match)
     for team in teams:
         team_id = team['team']['id']
         if 'id' in match:
             match_id = match['id']
             update_team_data_with_match(team_id, match_id)
-            update_match_data_with_match(match, division_name, division_id, event_name, event_id)
+            update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start)
         
 
 def extract_teams_from_match(match):
@@ -76,7 +76,7 @@ def update_team_data_with_ranking(team_id, ranking_id):
     )
     logging.info(f"Updated team-data for team ID {team_id} with ranking id {ranking_id}.")
 
-def update_match_data_with_match(match, division_name, division_id, event_name, event_id):
+def update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start):
     # Extract the match ID and use it as the primary key
     match_id = match.pop('id')  # This removes the 'id' key and gets its value
 
@@ -88,6 +88,7 @@ def update_match_data_with_match(match, division_name, division_id, event_name, 
             'division_id': division_id,
             'event_name': event_name,
             'event_id': event_id,
+            'event_start': event_start,
             **match  # Spread the remaining match data as item attributes
         }
     )
@@ -95,23 +96,28 @@ def update_match_data_with_match(match, division_name, division_id, event_name, 
 
 
 
-def update_rankings_data(division_name, division_id, event_name, event_id, ranking):
+def update_rankings_data(division_name, division_id, event_name, event_id, event_start, program, season, ranking):
     rankings_data_table.put_item(
         Item={
             'division_id': division_id,
             'division_name': division_name,
             'event_id': event_id,
             'event_name': event_name,
+            'event_start': event_start,
+            'program': program,
+            'season': season,
             **ranking  # Assuming the rest of the ranking information is to be stored as is
         }
     )
     logging.info(f"Updated ranking {ranking['id']} for division {division_name} ({division_id}) of event {event_name} ({event_id}).")
 
 
-def update_awards_data(event_id, awards):
+def update_awards_data(event_id, awards, program, season):
     for award in awards:
         awards_data_table.put_item(
             Item={
+                'program': program,
+                'season': season,
                 **award
             }
         )
@@ -243,8 +249,8 @@ def remove_match_for_team(team_id, match_id):
         )
         logging.info(f"Removed match {match_id} from team ID {team_id}")
 
-def process_skills_updates(updated_skills, event_id, event_name):
-    update_skills_ranking_data(updated_skills, event_id, event_name)
+def process_skills_updates(updated_skills, event_id, event_name, event_start, region):
+    update_skills_ranking_data(updated_skills, event_id, event_name, event_start, region)
     # Process each updated skill
     for skill in updated_skills:
         skill_id = skill['id']
@@ -257,6 +263,7 @@ def process_skills_updates(updated_skills, event_id, event_name):
                 'id': skill_id,
                 'event_id': event_id,
                 'event_name': event_name,
+                'event_start': event_start,
                 'team_id': team_id,
                 'team_number': team_number,
                 **skill  # Include all other skill attributes
@@ -267,7 +274,7 @@ def process_skills_updates(updated_skills, event_id, event_name):
 
     # Update skills-ranking-data table based on the updated skills
 
-def update_skills_ranking_data(skills, event_id, event_name):
+def update_skills_ranking_data(skills, event_id, event_name, event_start, region):
     highest_scores = {}  # Format: {(team_id, type): (score, skills_id, team_number)}
     unique_items = {}  # Items to be updated in the skills-ranking-data table
 
@@ -284,7 +291,7 @@ def update_skills_ranking_data(skills, event_id, event_name):
         response = team_data_table.get_item(Key={'id': team_id})
         team_info = response.get('Item', {})
         team_name = team_info.get('team_name', "")
-        team_org = team_info.get('team_org', "")
+        team_org = team_info.get('organization', "")
         program = team_info.get('program', "")
 
         key = (event_id, team_id, skill_type)
@@ -301,12 +308,14 @@ def update_skills_ranking_data(skills, event_id, event_name):
             'skills_id': skills_id,
             'event_id': event_id,
             'event_name': event_name,
+            'event_start': event_start,
             'team_id': team_id,
             'team_number': team_number,
             'team_name': team_name,
             'team_org': team_org,
             'season': season,
-            'program': program
+            'program': program,
+            'region': region
         }
 
         # Check for 'robot' entry creation
@@ -314,20 +323,41 @@ def update_skills_ranking_data(skills, event_id, event_name):
         opposite_key = (event_id, team_id, opposite_type)
         if opposite_key in highest_scores:
             robot_score = score + highest_scores[opposite_key][0]
-            robot_item_key = f"{event_id}-{team_id}-robot"
+            robot_item_key = f"{event_id}-{team_id}"
             unique_items[robot_item_key] = {
                 'event_team_id': robot_item_key,
                 'type': 'robot',
                 'score': robot_score,
                 'event_id': event_id,
                 'event_name': event_name,
+                'event_start': event_start,
                 'team_id': team_id,
                 'team_number': team_number,
                 'team_name': team_name,
                 'team_org': team_org,
                 'season': season,
-                'program': program
+                'program': program,
+                'region': region
             }
+        else:
+            # If the opposite type doesn't exist, use the same score for 'robot'
+            robot_item_key = f"{event_id}-{team_id}"
+            unique_items[robot_item_key] = {
+                'event_team_id': robot_item_key,
+                'type': 'robot',
+                'score': robot_score,
+                'event_id': event_id,
+                'event_name': event_name,
+                'event_start': event_start,
+                'team_id': team_id,
+                'team_number': team_number,
+                'team_name': team_name,
+                'team_org': team_org,
+                'season': season,
+                'program': program,
+                'region': region
+            }
+
 
     # Update skills-ranking-data table
     with skills_ranking_data_table.batch_writer() as batch:
@@ -343,6 +373,12 @@ def handler(aws_event, context):
             old_image = unmarshall_dynamodb_item(record['dynamodb']['OldImage'])
             event_id = new_image.get('id')
             event_name = new_image.get('name', None)
+            event_start = new_image.get('start', None)
+            program = new_image.get('program', None)
+            season_obj = new_image.get('season', None)
+            region = new_image.get('region', None)
+            if season_obj != None: season = season_obj.get('code', None)
+            else: season = None
             logging.error(f"Updating data from stream for event id: {event_id}, name: {event_name}")
             # Convert 'awards_finalized' to a lowercase string representation
             if 'awards_finalized' in new_image and isinstance(new_image['awards_finalized'], bool):
@@ -368,12 +404,12 @@ def handler(aws_event, context):
                 for updated_ranking in updated_rankings:
                     division_id = updated_ranking['division_id']
                     division_name = updated_ranking['division_name']
-                    update_rankings_data(division_name, division_id, event_name, event_id, updated_ranking)
+                    update_rankings_data(division_name, division_id, event_name, event_id, event_start, program, season, updated_ranking)
                     update_team_data_with_ranking(updated_ranking['team']['id'], updated_ranking['id'])
 
             if 'awards' in new_image and 'awards' in old_image:
                 updated_awards = find_updated_awards(old_image['awards'], new_image['awards'])
-                update_awards_data(new_image['id'], updated_awards)
+                update_awards_data(new_image['id'], updated_awards, program, season)
                 for award in updated_awards:
                     team_id = award.get('team', {}).get('id')
                     if team_id:
@@ -402,7 +438,7 @@ def handler(aws_event, context):
                 if updated_skills:
                     logging.info(f"Processing {len(updated_skills)} new/changed skills.")
                     # Assuming process_skills_updates is modified to accept only the updated_skills list
-                    process_skills_updates(updated_skills, event_id, event_name)
+                    process_skills_updates(updated_skills, event_id, event_name, event_start, region)
 
     logging.info("Process complete")
     return {
