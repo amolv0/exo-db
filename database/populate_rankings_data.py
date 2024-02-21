@@ -5,12 +5,13 @@ from decimal import Decimal
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
 
-def transform_ranking_data(ranking, division_id, division_name, event_id, event_name):
+def transform_ranking_data(ranking, division_id, division_name, event_id, event_name, event_start):
     if isinstance(ranking, dict) and 'id' in ranking:
         ranking['division_id'] = division_id
         ranking['division_name'] = division_name
         ranking['event_id'] = event_id
         ranking['event_name'] = event_name
+        ranking['event_start'] = event_start
         ranking.pop('event', None)
         ranking.pop('division', None)
         return ranking
@@ -20,6 +21,7 @@ def transform_ranking_data(ranking, division_id, division_name, event_id, event_
 def extract_rankings_from_event(item):
     event_id = item['id']
     event_name = item.get('name', None)
+    event_start = item.get('start', None)
     rankings = []
     if 'divisions' in item:
         for division in item['divisions']:
@@ -27,7 +29,7 @@ def extract_rankings_from_event(item):
             division_name = division.get('name', None)
             if 'rankings' in division:
                 for ranking in division['rankings']:
-                    transformed_ranking = transform_ranking_data(ranking, division_id, division_name, event_id, event_name)
+                    transformed_ranking = transform_ranking_data(ranking, division_id, division_name, event_id, event_name, event_start)
                     if transformed_ranking is not None:
                         rankings.append(transformed_ranking)
     return rankings
@@ -78,8 +80,8 @@ if __name__ == '__main__':
     
     
     # To update rankings for all events
-    update_rankings_for_all_events(event_table, ranking_table)
+    # update_rankings_for_all_events(event_table, ranking_table)
     
     # To update rankings for a single event 
-    # test_event_id = 36967
+    # test_event_id = 51500
     # update_rankings_for_single_event(event_table, ranking_table, test_event_id)

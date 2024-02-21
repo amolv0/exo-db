@@ -109,19 +109,22 @@ def calculate_and_update_rankings(event_id):
                 ranking['season'] = event_item['season']['id']
                 ranking['event_id'] = event_item['id']
                 ranking['event_name'] = event_item['name']
+                ranking['event_start'] = event_item['start']
                 ranking['division_id'] = division['id']
                 ranking['division_name'] = division['name']
 
-                # Post original ranking to rankings-data table
+                # Post ranking to rankings-data table
                 rankings_table.put_item(Item=ranking)
-
-                # Remove 'event' and 'division' attributes if present
+                # Remove attributes we dont want in event-data
                 ranking.pop('event_id', None)
                 ranking.pop('event_name', None)
+                ranking.pop('event_start', None)
                 ranking.pop('division_id', None)
                 ranking.pop('division_name', None)
                 ranking.pop('event', None)
                 ranking.pop('division', None)
+                ranking.pop('program', None)
+                ranking.pop('season', None)
 
         # Update the event item with the new rankings
         event_table.update_item(
@@ -132,7 +135,7 @@ def calculate_and_update_rankings(event_id):
         # print(f"Updated event {event_id}, division {division_id}")
 
 
-# calculate_and_update_rankings(32559)
+# calculate_and_update_rankings(33912)
     
 print("Starting process")
 process_rankings_for_all_events()
