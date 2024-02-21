@@ -10,6 +10,8 @@ interface Rank {
     team: TeamData;
     losses: number;
     ap: number;
+    opr:string;
+    dpr:string;
     ties: number;
     rank: number;
     wp: number;
@@ -46,10 +48,10 @@ class RankingsComponent extends Component<Props> {
                         </h3>
                         <h3 className = "flex justify-between" >
                             <span>
-                                High: {rank.high_score} | Avg: {rank.average_points}
+                                Avg: {rank.average_points} | OPR: {rank.opr} | DPR: {rank.dpr}
                             </span>
                             <span className="text-right">
-                            WP: {rank.wp} | AP: {rank.ap}
+                            WP: {rank.wp} | AP: {rank.ap} 
                             </span>
                         </h3>
                     </div>

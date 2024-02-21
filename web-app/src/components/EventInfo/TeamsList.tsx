@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 interface LocationData {
-  city: string;
-  region: string;
-  country: string;
+  city: string | null;
+  region: string | null;
+  country: string | null;
 }
 
 interface TeamDetail {
-  id: number;
-  number: string;
-  team_name: string;
-  organization: string;
-  location: LocationData;
+  id: number | null;
+  number: string | null;
+  team_name: string | null;
+  organization: string | null;
+  location: LocationData | null;
 }
 
 interface JSONComponentProps {
@@ -37,8 +37,8 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
           if (response.ok) {
             const data = await response.json();
             data.sort((a: TeamDetail, b: TeamDetail) => {
-              const numA = parseInt((a.number.match(/\d+/) || ['0'])[0]);
-              const numB = parseInt((b.number.match(/\d+/) || ['0'])[0]);
+              const numA = parseInt(((a.number && a.number.match(/\d+/)) || ['0'])[0]);
+              const numB = parseInt(((b.number && b.number.match(/\d+/)) || ['0'])[0]);
               return numA - numB;
             });
             setTeamDetails(data);
