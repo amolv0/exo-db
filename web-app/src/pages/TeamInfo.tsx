@@ -17,8 +17,7 @@ const TeamInfo: React.FC = () => {
         setTeamData(data);
 
         if (data && data.length > 0 && data[0].events) {
-          const eventIds = data[0].events.map((event: any) => String(event.id)); // Convert id to string
-          setEventIdsString(JSON.stringify(eventIds));
+          setEventIdsString(JSON.stringify(data[0].events));
         }
         setLoading(false); // Set loading state to false when data fetching is completed
       } catch (error) {
@@ -28,7 +27,7 @@ const TeamInfo: React.FC = () => {
   
     fetchteamData();
   }, [teamId]);
-
+  console.log(eventIdsString);
   // Loading indicator while fetching data
   if (loading) {
     return <div className="text-white text-2xl mb-4 mt-8 text-center">Loading...</div>;
