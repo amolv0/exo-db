@@ -5,10 +5,11 @@ from decimal import Decimal
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
 
-def transform_skill_data(skill, event_id, event_name):
+def transform_skill_data(skill, event_id, event_name, event_start):
     if isinstance(skill, dict) and 'id' in skill:
         skill['event_id'] = event_id
         skill['event_name'] = event_name
+        skill['event_start'] = event_start
         skill['team_id'] = skill['team']['id']
         skill['team_number'] = skill['team']['name']
         skill.pop('team', None)
@@ -20,10 +21,11 @@ def transform_skill_data(skill, event_id, event_name):
 def extract_skills_from_event(item):
     event_id = item['id']
     event_name = item.get('name', None)
+    event_start = item.get('start', None)
     skills = []
     if 'skills' in item:
         for skill in item['skills']:
-            transformed_skill = transform_skill_data(skill, event_id, event_name)
+            transformed_skill = transform_skill_data(skill, event_id, event_name, event_start)
             if transformed_skill is not None:
                 skills.append(transformed_skill)
     return skills
