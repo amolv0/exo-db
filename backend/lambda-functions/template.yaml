@@ -84,6 +84,16 @@ Resources:
       CodeUri: ./restApi/Rankings/rankingsId/rankingsIdGetPost
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
+  # Awards
+  awardsIdGetPost:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-awardsIdGetPostFunc
+      Handler: awardsIdGetPost.handler
+      Runtime: nodejs20.x 
+      CodeUri: ./restApi/Awards/awardsId/awardsIdGetPost
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    
   # Search
   searchGet:
     Type: AWS::Serverless::Function 
@@ -102,6 +112,16 @@ Resources:
       Handler: skillsIdGetPost.handler
       Runtime: nodejs20.x 
       CodeUri: ./restApi/Skills/skillsId/skillsIdGetPost
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
+  # SkillsRanking
+  skillsRankingGet:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-skillsRankingGetFunc
+      Handler: skillsRankingGet.handler
+      Runtime: nodejs20.x 
+      CodeUri: ./restApi/SkillsRanking/skillsRankingGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
   # Other Functions
