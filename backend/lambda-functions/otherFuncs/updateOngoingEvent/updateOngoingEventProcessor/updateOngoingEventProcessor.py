@@ -165,7 +165,9 @@ def process_ranking(rankings, matches):
     A = np.zeros((n, n))
     B_opr = np.zeros(n)
     B_dpr = np.zeros(n)
-    for match in matches:
+
+    qual_matches = [match for match in matches if match['round'] == 2]
+    for match in qual_matches:
         scores = [float(alliance['score']) for alliance in match['alliances']]
         for i, alliance in enumerate(match['alliances']):
             team_ids = [team['team']['id'] for team in alliance['teams']]
