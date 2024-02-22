@@ -47,7 +47,8 @@ def url_finder_handler(aws_event, context):
     queue_url = 'REDACTED_SQS_URL/updateFutureEventsUrlQueue'
 
     current_utc_datetime = datetime.now(pytz.utc)
-    time_to_check = (current_utc_datetime - timedelta(hours=2)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    time_to_check = (current_utc_datetime).strftime('%Y-%m-%dT%H:%M:%SZ')
+    # time_to_check = "2024-02-01"
     last_page = get_last_page(time_to_check, headers)
     logging.info(f"Time to check: {time_to_check}")
     event_urls = []
