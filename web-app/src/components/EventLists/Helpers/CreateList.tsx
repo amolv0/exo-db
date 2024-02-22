@@ -49,17 +49,17 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
       </div>
 
       <div>
-      {maps.map((event) => (
-            <EventBasic 
-              key={event.id} 
-              name={event.name} 
-              eventID={event.id} 
-              prog={event.program.code || event.program}
-              location={event.location}
-              start={event.start}
-              end={event.end}
-            />
-          ))}
+      {maps && Array.isArray(maps) && maps.map((event) => (
+        <EventBasic 
+          key={event.id} 
+          name={event.name} 
+          eventID={event.id}
+          prog={event.program.code || event.program}
+          location={event.location}
+          start={event.start}
+          end={event.end}
+        />
+      ))}
       </div>
 </div>
 
