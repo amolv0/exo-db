@@ -30,7 +30,7 @@ dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 event_data_table = dynamodb.Table('event-data')
 team_data_table = dynamodb.Table('team-data')
 
-def make_request_base(url, headers, initial_delay=5, retries = 5):
+def make_request_base(url, headers, initial_delay=5, retries = 10):
     for _ in range(retries):
         response = requests.get(url, headers=headers)
 
@@ -46,8 +46,23 @@ def make_request_base(url, headers, initial_delay=5, retries = 5):
 
     return []
 
+def make_request_team(team_id, url, headers, initial_delay = 5, retries = 10):    
+    for _ in range(retries):
+        response = requests.get(url, headers=headers)
 
-def make_request(event_id, url, headers, initial_delay = 5, retries = 5):    
+        if response.status_code == 200:
+            return response.json()
+        elif response.status_code == 429:
+            logging.info(f"Rate limit exceeded when attempting to get team data, Team id: {team_id}. Retrying in {initial_delay} seconds...")
+            time.sleep(initial_delay)
+            initial_delay *= 2
+        else:
+            logging.info(f"Request failed with status code: {response.status_code}")
+            break
+
+    return []
+
+def make_request(event_id, url, headers, initial_delay = 5, retries = 10):    
     for _ in range(retries):
         response = requests.get(url, headers=headers)
 
@@ -61,7 +76,7 @@ def make_request(event_id, url, headers, initial_delay = 5, retries = 5):
             logging.info(f"Request failed with status code: {response.status_code}")
             break
 
-    return []
+    return {}
 
 
 def get_teams(event_id):
@@ -100,7 +115,31 @@ def get_teams(event_id):
 
         # Process the response
         for team in response['Responses']['team-data']:
-            if 'registered' in team and team['registered'] == 'false':
+            if 'registered' not in team: # Signal that the team has basically not been processed at all
+                team_data = make_request_team(team['id'], f"https://www.robotevents.com/api/v2/teams/{team['id']}", headers={'Authorization': f'Bearer {API_KEY}'})
+                team_data_program = team_data.get('program').get('code')
+                team_data.pop('program', None)
+                if 'location' in team_data and 'region' in team_data['location'] and team_data['location']['region'] is not None:
+                    logging.info(f"new team region set to region for team {team['id']}")
+                    region = team_data['location']['region']
+                elif 'location' in team_data and 'country' in team_data['location']:
+                    logging.info(f"new team region set to country for team {team['id']}")
+                    region = team_data['location']['country']
+                else:
+                    region = "None"
+                    logging.error(f"New team_data {team['id']} could not set a region. team: {team_data}")
+                if region is None: 
+                    region = "None"
+                    logging.info(f"Could not set region for new team_data: {team['id']}")
+                converted_team_values = convert_values(team_data)
+                team_data_table.put_item(
+                    Item = {
+                        'program': team_data_program,
+                        'region': region,
+                        **converted_team_values      
+                    }              
+                )
+            if ('registered' in team and team['registered'] == 'false'):
                 teams_to_update.append(team['id'])
 
     # Updating 'registered' status for teams where necessary
@@ -136,14 +175,13 @@ def convert_values(obj): # Convert floats to decimals and 'ongoing' to a string
         return Decimal(str(obj))
     elif isinstance(obj, dict):
         for key, value in obj.items():
-            if key == 'ongoing' and isinstance(value, bool):
+            if (key == 'ongoing' and isinstance(value, bool)) or (key == 'registered' and isinstance(value, bool)):
                 obj[key] = str(value).lower()
             else:
                 obj[key] = convert_values(value)
     elif isinstance(obj, list):
         return [convert_values(v) for v in obj]
     return obj
-
 
 
 def get_item_from_dynamodb(table, event_id):
@@ -230,7 +268,7 @@ def handler(aws_event, context):
                 updated = False
 
                 # Attributes to check for changes
-                attributes_to_check = ['name', 'start', 'end', 'season', 'program', 'locations', 'location']
+                attributes_to_check = ['name', 'start', 'end', 'season', 'locations', 'location']
                 for attr in attributes_to_check:
                     new_value = event
                     try:
@@ -260,8 +298,9 @@ def handler(aws_event, context):
                     logging.error(f"While updating event {event_id} could not set/update a region")
                     # print(f"While updating event {event_id} could not set/update a region")
                 if ('region' not in current_event_data or event_region != current_event_data['region']) and event_region is not None:
-                    update_expression += "region = :region, "
-                    expression_attribute_names[':region'] = event_region
+                    update_expression += "#regionAttribute = :regionValue, "
+                    expression_attribute_names['#regionAttribute'] = 'region'  # Use a placeholder for the 'region' attribute
+                    expression_attribute_values[':regionValue'] = event_region  # Assign the actual value to a named placeholder in expression attribute values
                     updated = True
 
                 # Update 'teams' and 'team_numbers'
@@ -323,6 +362,151 @@ def handler(aws_event, context):
         'body': json.dumps('Process Completed Successfully')
     }
 
+def main():
+            print("Doing main")
+            event_id = 55293
+            url = f"https://www.robotevents.com/api/v2/events/{event_id}"
+            print(url)
+            event = make_request_team(event_id, url, headers={'Authorization': f'Bearer {API_KEY}'})
+            print(event)
+            event_id = event['id']
+            current_event_data = get_item_from_dynamodb(event_data_table, event_id)
+            
+            if current_event_data is None:
+                if 'location' in event and 'region' in event['location']:
+                    region = event['location']['region']
+                elif 'location' in event and 'country' in event['location']:
+                    region = event['location']['country']
+                else:
+                    region = None
+                    logging.error(f"New event {event_id} could not set a region")
+                # Event not found in DynamoDB, create a new one
+                # print(f"Region: {region}")
+                new_event_data = {
+                    'id': event_id,
+                    'name': event.get('name'),
+                    'start': event.get('start'),
+                    'end': event.get('end'),
+                    'season': event.get('season'),
+                    'program': event.get('program').get('code'),
+                    'location': event.get('location', {}).get('venue', ''),
+                    'teams': [],
+                    'team_numbers': [],
+                    'awards': [],
+                    'divisions': event.get('divisions', []),
+                    'region': region
+                }
+
+                # Convert values for DynamoDB compatibility
+                new_event_data = convert_values(new_event_data)
+
+                # Insert the new event into DynamoDB
+                try:
+                    event_data_table.put_item(Item=new_event_data)
+                    logging.info(f"New event {event_id} added to DynamoDB.")
+                except ClientError as e:
+                    logging.error(f"Failed to add new event {event_id} to DynamoDB: {e.response['Error']['Message']}")
+
+            else:
+                # Proceed with updates if the event already exists in DynamoDB
+                update_expression = "SET "
+                expression_attribute_values = {}
+                expression_attribute_names = {}
+                updated = False
+
+                # Attributes to check for changes
+                attributes_to_check = ['name', 'start', 'end', 'season', 'locations', 'location']
+                for attr in attributes_to_check:
+                    new_value = event
+                    try:
+                        for key in attr.split('.'):
+                            new_value = new_value[key] if key in new_value else None
+                    except TypeError:
+                        new_value = None
+
+                    if new_value is not None:
+                        new_value = convert_values(new_value)
+
+                    if attr not in current_event_data or current_event_data[attr] != new_value:                        
+                        placeholder = f"#{attr}"
+                        expression_attribute_names[placeholder] = attr
+                        update_expression += f"{placeholder} = :{attr}, "
+                        expression_attribute_values[f":{attr}"] = new_value
+                        updated = True
+
+
+                # Check if region is nonexistent or changed
+                event_region = None
+                if 'location' in event and 'region' in event['location']:
+                    event_region = event['location']['region']
+                elif 'location' in event and 'country' in event['location']:
+                    event_region = event['location']['country']
+                else:
+                    logging.error(f"While updating event {event_id} could not set/update a region")
+                    print(f"While updating event {event_id} could not set/update a region")
+                if ('region' not in current_event_data or event_region != current_event_data['region']) and event_region is not None:
+                    update_expression += "#regionAttribute = :regionValue, "
+                    expression_attribute_names['#regionAttribute'] = 'region'  # Use a placeholder for the 'region' attribute
+                    expression_attribute_values[':regionValue'] = event_region  # Assign the actual value to a named placeholder in expression attribute values
+                    updated = True
+
+                # Update 'teams' and 'team_numbers'
+                teams, team_numbers = get_teams(event_id)
+                if 'teams' not in current_event_data or current_event_data['teams'] != teams:
+                    update_expression += "teams = :teams, "
+                    expression_attribute_values[':teams'] = teams
+                    updated = True
+
+                if 'program' not in current_event_data or isinstance(current_event_data['program'], dict):
+                    update_expression += "program = :program, "
+                    expression_attribute_values[':program'] = event.get('program').get('code')
+                    updated = True
+
+                if 'team_numbers' not in current_event_data or current_event_data['team_numbers'] != team_numbers:
+                    update_expression += "team_numbers = :teamNumbers, "
+                    expression_attribute_values[':teamNumbers'] = team_numbers
+                    updated = True
+
+                # Update 'awards'
+                awards = get_awards(event_id)
+                if 'awards' not in current_event_data or current_event_data['awards'] != awards:
+                    update_expression += "awards = :awards, "
+                    expression_attribute_values[':awards'] = awards
+                    updated = True
+
+                # Update 'divisions'
+                if 'divisions' in current_event_data:
+                    divisions_changed = False
+                    for division in current_event_data['divisions']:
+                        if 'rankings' not in division:
+                            division['rankings'] = []
+                            divisions_changed = True
+                        if 'matches' not in division:
+                            division['matches'] = []
+                            divisions_changed = True
+
+                    if divisions_changed:
+                        update_expression += "divisions = :divisions, "
+                        expression_attribute_values[':divisions'] = current_event_data['divisions']
+                        updated = True
+
+                # Finalize and perform update if necessary
+                if updated:
+                    update_expression = update_expression.rstrip(", ")
+                    response = update_item_in_dynamodb(event_data_table, event_id, update_expression, expression_attribute_values, expression_attribute_names)
+                    if response:
+                        print(f"Event id {event_id} successfully updated in DynamoDB.")
+                        print(f"Event id {event_id} successfully updated in DynamoDB.")
+                        # print(f"Event id {event_id} successfully updated in DynamoDB.")
+                    else:
+                        print(f"Failed to update event id {event_id} in DynamoDB.")
+                        print(f"Failed to update event id {event_id} in DynamoDB.")
+                else:
+                    print(f"No updates required for event id {event_id}.")
+                    print(f"No updates required for event id {event_id}.")
+                    
+                    
+# main()
 
 # Test event:
 
