@@ -29,6 +29,8 @@ def process_match(match, division_name, division_id, event_name, event_id, event
         team_id = team['team']['id']
         if 'id' in match:
             match_id = match['id']
+            if event_id == 55293:
+                logging.error(f"Adding to match id: {match_id}")
             update_team_data_with_match(team_id, match_id)
             update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start)
         
@@ -36,6 +38,7 @@ def process_match(match, division_name, division_id, event_name, event_id, event
 def extract_teams_from_match(match):
     teams = []
     for alliance in match.get('alliances', []):
+        logging.error(f"Added team: {alliance.get('teams', [])} to match")
         teams.extend(alliance.get('teams', []))
     return teams
 
@@ -143,7 +146,15 @@ def find_updated_matches(old_divisions, new_divisions):
                                 'division_name': new_division.get('name', 'Unknown Division'),
                                 **new_match
                             })
-                            logging.info(f"Updated or new match found: {match_id}")
+                            logging.error(f"Updated/new match found: {match_id}")
+            elif 'matches' in new_division and 'matches' not in old_division:
+                for new_match in new_division['matches']:
+                    updated_matches.append({
+                        'division_id': new_division['id'],
+                        'division_name': new_division.get('name', 'Unknown Division'),
+                                **new_match
+                    })
+                    logging.error(f"New match found: {new_match['id']}")
 
     return updated_matches
 
@@ -165,6 +176,14 @@ def find_updated_rankings(old_divisions, new_divisions):
                                 **new_ranking
                             })
                             logging.info(f"Updated or new ranking found: {ranking_id}")
+            elif 'rankings' in new_division and 'rankings' not in old_division:
+                for new_ranking in new_division['rankings']:
+                    updated_rankings.append({
+                        'division_id': new_division['id'],
+                        'division_name': new_division.get('name', 'Unknown Division'),
+                                **new_ranking
+                    })
+                    logging.error(f"New ranking found: {new_ranking['id']}")
     return updated_rankings
 
 def find_updated_awards(old_awards, new_awards):
@@ -397,7 +416,7 @@ def handler(aws_event, context):
                 for match in updated_matches:
                     division_id = match['division_id']
                     division_name = match['division_name']
-                    process_match(match, division_name, division_id, event_name, event_id)
+                    process_match(match, division_name, division_id, event_name, event_id, event_start)
                 
 
                 # Process new/removed rankings within divisions
