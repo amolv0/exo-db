@@ -128,14 +128,12 @@ Operations:
 - GET /skillsranking?teamId to get all skillsranking items for a specific team. These will give the top skills scores the team made at every event they attended of all 3 types. It will by default be sorted by type.
 - GET /skillsranking?eventId={}&teamId={} to get the skillsranking items for a specific team at a specific event. It will essentially give the values of the highest skills run of each type the team made at the event. ex: `/skillsranking?eventId=28201&teamId=5226&type=robot`
   - The three above can be modified with ?type, which will cause them to only return skillsrankings for a specific `type` (robot, programming, driver). ex `/skillsranking?eventId=28201&teamId=5226&type=robot`
-- GET /skillsranking?season to get the skillsranking items from a specific season, sorted by score. By default will return the top 100 items, can be modified with ?responses
+- GET /skillsranking?season to get the skillsranking items from a specific season, sorted by score. By default will return the first page of the top 50 items of the given parameters. ?pages allows for page parsing.
   - Can be modified by responses or region:
   - GET /skillsranking?season={}&region={}
-  - GET /skillsranking?season={}&responses={}
-  - ex: `/skillsranking?season=102&responses=250`
-
-
-
+  - GET /skillsranking?season={}&page={} -- Will default to == 1
+  - GET /skillsranking?season={}&grade={} Valid options: ["High School", "Middle School", "Elementary School", "College"]
+  - GET /skillsranking?season={}&type={} Valid options: ["robot", "driver", "programming"] -- Will default to "robot"
 
 ## Init new typescript API function
 
