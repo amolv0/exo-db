@@ -236,7 +236,6 @@ def handler(event, context):
             for skill in skills:
                 skill.pop('event', None)
             awards = fetch_event_awards(event_id)
-
             # Compare and update DynamoDB if there are changes
             update_if_changed(event_id, {'divisions': divisions, 'skills': skills, 'awards': awards})
         else:
@@ -253,7 +252,7 @@ def handler(event, context):
 
 #     "Records": [
 #         {
-#             "body": "{\"id\": 30487}",
+#             "body": "{\"id\": 55194}",
 #         }
 #     ]
 # }
