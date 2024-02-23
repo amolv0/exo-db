@@ -120,7 +120,8 @@ Purpose: To get skills-ranking items in different ways
 
 Skills-ranking objects have partition keys `{event_id}-{team_id}` with sort key `type`
 It correponds to the highest skills score a certain team got at a certain event.
-The object also contains season data and region data (IN PROGRESS), so can be used to query the top skills score of any `type` from a season (global skills leaderboard) or a region and season.
+The highest skill score {team_id} got at {event_id}.
+The object also contains season data and region data, so can be used to query the top skills score of any `type` from a season (global skills leaderboard) or a region and season.
 
 Operations:
 
