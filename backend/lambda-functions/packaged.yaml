@@ -118,7 +118,7 @@ Resources:
       FunctionName: exodb-skillsRankingGetFunc
       Handler: skillsRankingGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/571a65f0d7cc97e833ca731667574c95
+      CodeUri: s3://exodblambdafunctions/c5246a12d73aded24a35bdc33008ea39
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: skillsRankingGet
@@ -138,7 +138,7 @@ Resources:
       FunctionName: exodb-updateTeamFromStream
       Handler: updateTeamFromStream.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/3786a6d66b547b267271d5d943336cdf
+      CodeUri: s3://exodblambdafunctions/1c021ad4f7118c25adf4d99309727378
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateTeamFromStream
@@ -168,7 +168,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventProcessor
       Handler: updateOngoingEventProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/6c8910217d08305d9c071f1d47df936e
+      CodeUri: s3://exodblambdafunctions/1a7bdaf27becc3ebc04151c9e418effc
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventProcessor
