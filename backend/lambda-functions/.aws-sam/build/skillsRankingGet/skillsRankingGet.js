@@ -79,89 +79,157 @@ const buildEventTeamQuery = async (event_id, team_id, type) => {
     }
     return params;
 };
-const buildSeasonQuery = (season, type, lastEvaluatedKey) => {
+const buildSeasonQuery = async (season, type, evaluateKey, fullFetch = false, grade, region, limit = 100) => {
+    console.log("building season query");
     const params = {
         TableName: 'skills-ranking-data',
         IndexName: 'SeasonScoreIndex',
         KeyConditionExpression: '#season = :season_val',
         ExpressionAttributeNames: {
             '#season': 'season',
+            '#type': 'type'
         },
         ExpressionAttributeValues: {
             ':season_val': season,
+            ':type_val': type,
         },
+        FilterExpression: '#type = :type_val',
         ScanIndexForward: false,
+        Limit: limit
     };
-    if (type) {
-        params.FilterExpression = '#type = :type_val';
-        params.ExpressionAttributeNames['#type'] = 'type';
-        params.ExpressionAttributeValues[':type_val'] = type;
+    if (!fullFetch) {
+        params.ProjectionExpression = 'team_id, score, #season, event_team_id, #type';
     }
-    if (lastEvaluatedKey) {
-        params.ExclusiveStartKey = lastEvaluatedKey;
+    if (grade) {
+        params.FilterExpression += ' AND #team_grade = :team_grade';
+        params.ExpressionAttributeNames['#team_grade'] = 'team_grade';
+        params.ExpressionAttributeValues[':team_grade'] = grade;
     }
+    if (region) {
+        params.FilterExpression += ' AND #region = :region';
+        params.ExpressionAttributeNames['#region'] = 'region';
+        params.ExpressionAttributeValues[':region'] = region;
+    }
+    if (evaluateKey) {
+        params.ExclusiveStartKey = evaluateKey;
+    }
+    console.log("returning query");
     return params;
+};
+const fetchPage = async (season, skills_type, desiredPage, grade, region) => {
+    const pageSize = 5;
+    let items = [];
+    let uniqueTeamIds = new Set();
+    let lastEvaluatedKey = null;
+    let specificEvaluatedKey = null;
+    let fullFetch = false;
+    let foundTeams = 0;
+    const neededTeamsBeforeFullFetch = pageSize * (desiredPage - 1);
+    console.log("In fetchpage");
+    let done = false;
+    if (desiredPage != 1) {
+        while (true) {
+            console.log("in while loop 1");
+            const queryParameters = await buildSeasonQuery(season, skills_type, lastEvaluatedKey, fullFetch, grade, region);
+            const command = new lib_dynamodb_1.QueryCommand(queryParameters);
+            const response = await docClient.send(command);
+            const filteredItems = response.Items || [];
+            for (const item of filteredItems) {
+                if (!uniqueTeamIds.has(item.team_id)) {
+                    uniqueTeamIds.add(item.team_id);
+                    foundTeams++;
+                    if (foundTeams >= neededTeamsBeforeFullFetch) {
+                        done = true;
+                        lastEvaluatedKey = response.LastEvaluatedKey;
+                        console.log(lastEvaluatedKey);
+                        specificEvaluatedKey = {
+                            'season': item.season,
+                            'score': item.score,
+                            'event_team_id': item.event_team_id,
+                            'type': item.type
+                        };
+                        console.log(specificEvaluatedKey);
+                        break;
+                    }
+                }
+            }
+            if (done) {
+                break;
+            }
+            lastEvaluatedKey = response.LastEvaluatedKey;
+        }
+    }
+    fullFetch = true;
+    while (true) {
+        console.log("in while loop 2");
+        const queryParameters = await buildSeasonQuery(season, skills_type, specificEvaluatedKey, fullFetch, grade, region);
+        const command = new lib_dynamodb_1.QueryCommand(queryParameters);
+        const response = await docClient.send(command);
+        const filteredItems = response.Items || [];
+        for (const item of filteredItems) {
+            if (!uniqueTeamIds.has(item.team_id)) {
+                uniqueTeamIds.add(item.team_id);
+                items.push(item);
+                if (items.length == pageSize) {
+                    return items;
+                }
+            }
+        }
+        specificEvaluatedKey = response.LastEvaluatedKey;
+    }
+    return items;
 };
 const handler = async (event) => {
     console.log('Received event:', event);
-    const event_id = parseInt(event.queryStringParameters?.eventId);
-    const team_id = parseInt(event.queryStringParameters?.teamId);
-    const skills_type = event.queryStringParameters?.type;
-    const season = parseInt(event.queryStringParameters?.season);
-    const number_of_responses = parseInt(event.queryStringParameters?.responses || '100');
+    const event_id = Number(event.queryStringParameters?.eventId);
+    const team_id = Number(event.queryStringParameters?.teamId);
+    const skills_type = event.queryStringParameters?.type || 'robot';
+    const season = Number(event.queryStringParameters?.season);
+    const page = Number(event.queryStringParameters?.page) || 1;
+    const grade = event.queryStringParameters?.grade;
+    const region = event.queryStringParameters?.region;
     // Build query parameters based on event_id, team_id, and skills_type
     let queryParameters;
-    let items = [];
-    let lastEvaluatedKey = undefined;
     if (event_id && team_id) {
+        console.log("eventId and teamId found");
         queryParameters = await buildEventTeamQuery(event_id, team_id, skills_type);
     }
     else if (event_id) {
-        console.log("doing event query");
+        console.log("eventId found");
         queryParameters = await buildEventQuery(event_id, skills_type);
     }
     else if (team_id) {
-        console.log("doing team query");
+        console.log("teamId found");
         queryParameters = await buildTeamQuery(team_id, skills_type, season);
     }
     else if (season) {
-        console.log("doing season query");
-        // Get the 'numberOfResponses' of top global skills rankings
-        queryParameters = await buildSeasonQuery(season, skills_type, lastEvaluatedKey);
-        let accumulatedResponses = 0;
-        do {
-            try {
-                const command = new lib_dynamodb_1.QueryCommand(queryParameters);
-                const response = await docClient.send(command);
-                const filteredItems = response.Items || [];
-                accumulatedResponses += filteredItems.length;
-                items = items.concat(filteredItems);
-                if (accumulatedResponses >= number_of_responses) {
-                    items = items.slice(0, number_of_responses);
-                    break;
+        console.log("Season query");
+        const result = await fetchPage(season, skills_type, page, grade, region);
+        if (skills_type === 'robot') {
+            result.sort((a, b) => {
+                const scoreA = Number(a.score.N);
+                const scoreB = Number(b.score.N);
+                const programmingScoreA = a.programming_score ? Number(a.programming_score.N) : 0;
+                const programmingScoreB = b.programming_score ? Number(b.programming_score.N) : 0;
+                // If scores are equal, sort by programming_score
+                if (scoreA === scoreB) {
+                    return programmingScoreB - programmingScoreA; // For descending order
                 }
-                lastEvaluatedKey = response.LastEvaluatedKey;
-            }
-            catch (error) {
-                console.error("Error querying data:", error);
-                throw error;
-            }
-        } while (lastEvaluatedKey && accumulatedResponses < number_of_responses);
+                // Otherwise, sort by score
+                return scoreB - scoreA; // For descending order
+            });
+        }
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify(items)
+            body: JSON.stringify(result)
         };
     }
-    else {
-        return {
-            statusCode: 400,
-            headers,
-            body: JSON.stringify({ error: "A required paramter is not set. Either eventId, teamId, or season MUST be included" })
-        };
-    }
+    let items = [];
+    let lastEvaluatedKey = undefined;
     do {
         try {
+            queryParameters.ExclusiveStartKey = lastEvaluatedKey;
             const command = new lib_dynamodb_1.QueryCommand(queryParameters);
             const response = await docClient.send(command);
             items = items.concat(response.Items || []);

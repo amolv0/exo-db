@@ -23,14 +23,13 @@ def process_skills_for_event(event_item):
     highest_scores = {}
     unique_items = {}
     event_season = event_item['season']['id']
-    program = event_item['program']
+    program_perma = event_item['program']
     event_start = event_item['start']
-    if 'region' in event_item:
-        region = event_item['region']
-    else: region = None
+    if 'teams' not in event_item:
+        print(f"Event {event_item['id']} has no registered teams, skipping")
+        return
     # Collect all unique team_ids
     team_ids = {int(skill_item['team']['id']) for skill_item in event_item['skills']}
-
     # Initialize DynamoDB client
     dynamodb = boto3.resource('dynamodb')
     team_data_table = dynamodb.Table('team-data')
@@ -60,16 +59,19 @@ def process_skills_for_event(event_item):
         team_info = team_data.get(team_id, {})
         team_name = team_info.get('team_name', "")
         team_org = team_info.get('organization', "")
-
+        team_grade = team_info.get('grade', "")
+        program = team_info.get('program', "")
+        region = team_info.get('region', "")
+        if program is None: program = program_perma
         if skill_type in ['programming', 'driver']:
             key = (team_id, skill_type)
             if key not in highest_scores or score > highest_scores[key][0]:
-                highest_scores[key] = (score, skills_id, team_name, team_org, team_number)
+                highest_scores[key] = (score, skills_id, team_name, team_org, team_number, team_grade, program, region)
 
     # Use batch_writer for batch writing
     with skills_ranking_data_table.batch_writer() as batch:
         # Processing
-        for (team_id, skill_type), (score, skills_id, team_name, team_org, team_number) in highest_scores.items():
+        for (team_id, skill_type), (score, skills_id, team_name, team_org, team_number, team_grade, program, region) in highest_scores.items():
             item_key = f"{event_item['id']}-{team_id}-{skill_type}"
             unique_items[item_key] = {
                 'event_team_id': f"{event_item['id']}-{team_id}",
@@ -83,6 +85,7 @@ def process_skills_for_event(event_item):
                 'team_number': team_number,
                 'team_name': team_name,
                 'team_org': team_org,
+                'team_grade': team_grade,
                 'season': event_season,
                 'program': program,
                 'region': region
@@ -90,9 +93,16 @@ def process_skills_for_event(event_item):
 
             # Check if the opposite type exists and create a 'robot' entry
             opposite_type = 'programming' if skill_type == 'driver' else 'driver'
-            if (team_id, opposite_type) in highest_scores:
-                robot_score = score + highest_scores[(team_id, opposite_type)][0]
+            opposite_entry = highest_scores.get((team_id, opposite_type))
+
+            if opposite_entry:
+                opposite_score, opposite_skills_id, _, _, _, _, _, _ = opposite_entry
+                robot_score = score + opposite_score
                 robot_key = f"{event_item['id']}-{team_id}"
+
+                driver_score = score if skill_type == 'driver' else opposite_score
+                programming_score = opposite_score if skill_type == 'driver' else score
+
                 unique_items[robot_key] = {
                     'event_team_id': f"{event_item['id']}-{team_id}",
                     'type': 'robot',
@@ -104,17 +114,23 @@ def process_skills_for_event(event_item):
                     'team_number': team_number,
                     'team_name': team_name,
                     'team_org': team_org,
+                    'team_grade': team_grade,
                     'season': event_season,
                     'program': program,
-                    'region': region
+                    'region': region,
+                    'driver_component': driver_score,
+                    'programming_component': programming_score
                 }
             else:
-                # If the opposite type doesn't exist, use the same score for 'robot'
+                # Setup for robot items where the opposite type doesn't exist
                 robot_key = f"{event_item['id']}-{team_id}"
+                driver_score = score if skill_type == 'driver' else 0
+                programming_score = score if skill_type == 'programming' else 0
+
                 unique_items[robot_key] = {
                     'event_team_id': f"{event_item['id']}-{team_id}",
                     'type': 'robot',
-                    'score': score,
+                    'score': score,  # Use the existing score since the opposite type doesn't exist
                     'event_id': event_item['id'],
                     'event_name': event_name,
                     'event_start': event_start,
@@ -122,9 +138,12 @@ def process_skills_for_event(event_item):
                     'team_number': team_number,
                     'team_name': team_name,
                     'team_org': team_org,
+                    'team_grade': team_grade,
                     'season': event_season,
                     'program': program,
-                    'region': region
+                    'region': region,
+                    'driver_component': driver_score,
+                    'programming_component': programming_score
                 }
 
         # Write unique items to the table
@@ -136,6 +155,7 @@ def process_skills_for_event(event_item):
 
 # Function to process a single event by event ID
 def process_single_event(event_id):
+    print("Starting")
     response = event_data_table.get_item(Key={'id': event_id})
     if 'Item' in response:
         event_item = response['Item']
@@ -167,4 +187,4 @@ def process_event_data():
         
 process_event_data()
 
-# process_single_event(39671)
+# process_single_event(51501)
