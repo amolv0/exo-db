@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import TeamLocation from '../components/TeamInfo/TeamLocation';
+import TeamAwards from '../components/TeamInfo/TeamAwards';
 import CreateList from '../components/EventLists/Helpers/CreateList';
 
 const TeamInfo: React.FC = () => {
@@ -27,7 +28,7 @@ const TeamInfo: React.FC = () => {
   
     fetchteamData();
   }, [teamId]);
-  console.log(eventIdsString);
+
   // Loading indicator while fetching data
   if (loading) {
     return <div className="text-white text-2xl mb-4 mt-8 text-center">Loading...</div>;
@@ -37,8 +38,10 @@ const TeamInfo: React.FC = () => {
     <div>
       <React.Fragment>
         <h2 className="text-white text-2xl mb-4 mt-8 text-center">{teamData[0].number}: {teamData[0].team_name}</h2>
-
-        <TeamLocation location={teamData[0].location} org={teamData[0].Orginization} program={teamData[0].program}></TeamLocation>
+        <div className="max-w-max mx-auto bg-black text-white p-4 rounded-lg shadow-md flex">
+          <TeamLocation location={teamData[0].location} org={teamData[0].Orginization} program={teamData[0].program}></TeamLocation>
+          <TeamAwards awards={teamData[0].awards}></TeamAwards>
+        </div>
         <div className="text-white text-2xl mb-4 mt-8 text-center">
           Events Attended
           <div className="flex justify-center text-sm">
