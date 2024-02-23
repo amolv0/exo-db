@@ -38,7 +38,7 @@ def process_match(match, division_name, division_id, event_name, event_id, event
 def extract_teams_from_match(match):
     teams = []
     for alliance in match.get('alliances', []):
-        logging.error(f"Added team: {alliance.get('teams', [])} to match")
+        # logging.error(f"Added team: {alliance.get('teams', [])} to match")
         teams.extend(alliance.get('teams', []))
     return teams
 
@@ -221,7 +221,7 @@ def find_updated_skills(old_skills, new_skills):
         if not old_skill or new_skill != old_skill:
             updated_skills.append(new_skill)
 
-    logging.info(f"Updated Skills: {updated_skills}")
+    logging.error(f"Found updated/new Skills:")
     return updated_skills
 
 def update_team_events(team_id, event_data):
@@ -268,8 +268,8 @@ def remove_match_for_team(team_id, match_id):
         )
         logging.info(f"Removed match {match_id} from team ID {team_id}")
 
-def process_skills_updates(updated_skills, event_id, event_name, event_start, region):
-    update_skills_ranking_data(updated_skills, event_id, event_name, event_start, region)
+def process_skills_updates(updated_skills, event_id, event_name, event_start):
+    update_skills_ranking_data(updated_skills, event_id, event_name, event_start)
     # Process each updated skill
     for skill in updated_skills:
         skill_id = skill['id']
@@ -293,32 +293,34 @@ def process_skills_updates(updated_skills, event_id, event_name, event_start, re
 
     # Update skills-ranking-data table based on the updated skills
 
-def update_skills_ranking_data(skills, event_id, event_name, event_start, region):
+def update_skills_ranking_data(skills, event_id, event_name, event_start):
     highest_scores = {}  # Format: {(team_id, type): (score, skills_id, team_number)}
     unique_items = {}  # Items to be updated in the skills-ranking-data table
 
     # Iterate through each skill item
     for skill_item in skills:
-        team_id = skill_item['team']['id']
+        team_id = skill_item['team']['id']   
         skill_type = skill_item['type']
         score = skill_item['score']
         skills_id = skill_item['id']
         season = skill_item['season']['id']
         team_number = skill_item['team']['name'] 
-
+        
         # Fetch team data
         response = team_data_table.get_item(Key={'id': team_id})
         team_info = response.get('Item', {})
         team_name = team_info.get('team_name', "")
         team_org = team_info.get('organization', "")
         program = team_info.get('program', "")
+        team_grade = team_info.get('grade', "")
+        region = team_info.get('region', "")
 
         key = (event_id, team_id, skill_type)
         if key not in highest_scores or score > highest_scores[key][0]:
-            highest_scores[key] = (score, skills_id, team_number, team_name, team_org)
+            highest_scores[key] = (score, skills_id, team_number, team_name, team_org, team_grade, program, region)
 
     # Prepare items for skills-ranking-data table
-    for (event_id, team_id, skill_type), (score, skills_id, team_number, team_name, team_org) in highest_scores.items():
+    for (event_id, team_id, skill_type), (score, skills_id, team_number, team_name, team_org, team_grade, program, region) in highest_scores.items():
         item_key = f"{event_id}-{team_id}-{skill_type}"
         unique_items[item_key] = {
             'event_team_id': item_key,
@@ -332,6 +334,7 @@ def update_skills_ranking_data(skills, event_id, event_name, event_start, region
             'team_number': team_number,
             'team_name': team_name,
             'team_org': team_org,
+            'team_grade': team_grade,
             'season': season,
             'program': program,
             'region': region
@@ -341,8 +344,13 @@ def update_skills_ranking_data(skills, event_id, event_name, event_start, region
         opposite_type = 'programming' if skill_type == 'driver' else 'driver'
         opposite_key = (event_id, team_id, opposite_type)
         if opposite_key in highest_scores:
-            robot_score = score + highest_scores[opposite_key][0]
+            opposite_score, opposite_skills_id, _, _, _, _, _, _ = highest_scores[opposite_key]
+            robot_score = score + opposite_score
             robot_item_key = f"{event_id}-{team_id}"
+
+            driver_score = score if skill_type == 'driver' else opposite_score
+            programming_score = opposite_score if skill_type == 'driver' else score
+
             unique_items[robot_item_key] = {
                 'event_team_id': robot_item_key,
                 'type': 'robot',
@@ -354,17 +362,23 @@ def update_skills_ranking_data(skills, event_id, event_name, event_start, region
                 'team_number': team_number,
                 'team_name': team_name,
                 'team_org': team_org,
+                'team_grade': team_grade,
                 'season': season,
                 'program': program,
-                'region': region
+                'region': region,
+                'driver_component': driver_score,
+                'programming_component': programming_score
             }
         else:
             # If the opposite type doesn't exist, use the same score for 'robot'
             robot_item_key = f"{event_id}-{team_id}"
+            driver_score = score if skill_type == 'driver' else 0
+            programming_score = score if skill_type == 'programming' else 0
+
             unique_items[robot_item_key] = {
                 'event_team_id': robot_item_key,
                 'type': 'robot',
-                'score': robot_score,
+                'score': score,  # Use the existing score since the opposite type doesn't exist
                 'event_id': event_id,
                 'event_name': event_name,
                 'event_start': event_start,
@@ -372,10 +386,14 @@ def update_skills_ranking_data(skills, event_id, event_name, event_start, region
                 'team_number': team_number,
                 'team_name': team_name,
                 'team_org': team_org,
+                'team_grade': team_grade,
                 'season': season,
                 'program': program,
-                'region': region
+                'region': region,
+                'driver_component': driver_score,
+                'programming_component': programming_score
             }
+
 
 
     # Update skills-ranking-data table
@@ -396,7 +414,7 @@ def handler(aws_event, context):
             program = new_image.get('program', None)
             season_obj = new_image.get('season', None)
             region = new_image.get('region', None)
-            if season_obj != None: season = season_obj.get('code', None)
+            if season_obj != None: season = season_obj.get('id', None)
             else: season = None
             logging.error(f"Updating data from stream for event id: {event_id}, name: {event_name}")
             # Convert 'awards_finalized' to a lowercase string representation
@@ -457,7 +475,7 @@ def handler(aws_event, context):
                 if updated_skills:
                     logging.info(f"Processing {len(updated_skills)} new/changed skills.")
                     # Assuming process_skills_updates is modified to accept only the updated_skills list
-                    process_skills_updates(updated_skills, event_id, event_name, event_start, region)
+                    process_skills_updates(updated_skills, event_id, event_name, event_start)
 
     logging.info("Process complete")
     return {
