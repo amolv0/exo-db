@@ -12,7 +12,7 @@ const headers = {
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
-// Function to get specific event details for a GET request
+// Function to get specifi event details for a GET request
 const getEventDetails = async (eventId) => {
     const numericEventId = Number(eventId); // Convert eventId to a number
     const params = {
@@ -39,6 +39,16 @@ const getMultipleEventDetails = async (eventIds) => {
         RequestItems: {
             'event-data': {
                 Keys: numericEventIds, // Use numericEventIds here
+                ProjectionExpression: "id, #name, #start, #end, #location, #region, #season, #program",
+                ExpressionAttributeNames: {
+                    "#name": "name",
+                    "#start": "start",
+                    "#end": "end",
+                    "#location": "location",
+                    "#region": "region",
+                    "#season": "season",
+                    "#program": "program"
+                }
             }
         }
     };

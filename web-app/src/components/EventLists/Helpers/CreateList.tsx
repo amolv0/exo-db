@@ -11,7 +11,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        const response = await fetch('https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events/', {
+        const response = await fetch('https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events/  ', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
