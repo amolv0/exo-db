@@ -98,7 +98,7 @@ Resources:
       FunctionName: exodb-searchGetFunc
       Handler: searchGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/ed0ddf4f8f446079636246cdc5e0b90f
+      CodeUri: s3://exodblambdafunctions/3142462a0c38a14cb644903e78669bae
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: searchGet
