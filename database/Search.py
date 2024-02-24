@@ -92,7 +92,7 @@ def search_opensearch(queryTerm):
         return None
 
 # Example usage
-queryTerm = "Washington State High School"  # This is the programmatically assigned query term
+queryTerm = "Washington State High"  # This is the programmatically assigned query term
 results = search_opensearch(queryTerm)
 if results:
     print(json.dumps(results, indent=2))
