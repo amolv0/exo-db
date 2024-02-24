@@ -9,24 +9,26 @@ const Navbar: React.FC = () => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-    handleSearch(event.target.value.replace(/\s/g, ''));
+    handleSearch(event.target.value);
   };
 
   const handleSearchQuery = () => {
     // Trigger search
-    handleSearch(query.replace(/\s/g, ''));
+    handleSearch(query);
     setShowDropdown(true); // Show dropdown
   };
   
   const handleSearch = async (searchQuery: string) => {
     try {
+      if(searchQuery.length < 1) return;
+      
+      const encodedQuery = encodeURIComponent(searchQuery);
       const response = await fetch(`EXODB_API_GATEWAY_BASE_URL/dev/search/${searchQuery}`);
+      console.log(`EXODB_API_GATEWAY_BASE_URL/dev/search/${searchQuery}`)
       const data = await response.json();
-      if (!data.hits){
-        console.log("No hits")
-        return;
-      }  
-
+      
+      if (!data.hits) return; 
+    
       const hits = data.hits.hits;
       const results = hits.map((hit: any) => {
         if (hit._source.team_id !== undefined) {
