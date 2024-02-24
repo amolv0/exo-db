@@ -18,7 +18,7 @@ Resources:
       FunctionName: exodb-eventIdGetPostFunc
       Handler: eventIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/b2099d9996aba96e50ba941d45b740c4
+      CodeUri: s3://exodblambdafunctions/39c1db278ea5fe1f83925152f80b0365
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventIdGetPost
@@ -98,7 +98,7 @@ Resources:
       FunctionName: exodb-searchGetFunc
       Handler: searchGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/8a460d2a14eebc2ba4b4c7bdf3a2ee61
+      CodeUri: s3://exodblambdafunctions/ed0ddf4f8f446079636246cdc5e0b90f
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: searchGet
