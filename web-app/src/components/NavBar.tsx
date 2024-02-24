@@ -22,7 +22,10 @@ const Navbar: React.FC = () => {
     try {
       const response = await fetch(`EXODB_API_GATEWAY_BASE_URL/dev/search/${searchQuery}`);
       const data = await response.json();
-      if (!data.hits) return;
+      if (!data.hits){
+        console.log("No hits")
+        return;
+      }  
 
       const hits = data.hits.hits;
       const results = hits.map((hit: any) => {
