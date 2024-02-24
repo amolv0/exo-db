@@ -36,7 +36,8 @@ const headers = {
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 const handler = async (event) => {
-    const queryTerm = event.pathParameters?.queryTerm;
+    const queryString = event.pathParameters?.queryTerm;
+    const queryTerm = queryString ? decodeURIComponent(queryString) : null;
     if (!queryTerm) {
         return {
             statusCode: 400,
@@ -77,6 +78,7 @@ const handler = async (event) => {
             headers: request.headers, // Cast headers to match axios expectations
             data: request.body,
         });
+        console.log("Success");
         return {
             statusCode: 200,
             headers,
