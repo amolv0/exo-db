@@ -24,8 +24,8 @@ interface LambdaResponse {
 
 
 export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
-    const queryTerm = event.pathParameters?.queryTerm;
-
+    const queryString = event.pathParameters?.queryTerm;
+    const queryTerm = queryString ? decodeURIComponent(queryString) : null;
     if (!queryTerm) {
         return {
             statusCode: 400,
@@ -33,7 +33,7 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
             body: JSON.stringify({ error: 'Query term is required as a path parameter.' }),
         };
     }
-
+    
     const host = 'search-team-data-search-xaeptdqqk2djjjmer2bq63eetq.us-east-1.es.amazonaws.com'
     const path = '/_search';
     const service = 'es';
@@ -71,7 +71,7 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
             headers: request.headers as Record<string, string>, // Cast headers to match axios expectations
             data: request.body,
         });
-
+        console.log("Success")
         return {
             statusCode: 200,
             headers,
