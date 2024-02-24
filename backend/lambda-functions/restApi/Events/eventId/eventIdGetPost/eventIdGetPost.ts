@@ -57,6 +57,16 @@ const getMultipleEventDetails = async (eventIds: string[]): Promise<any> => {
         RequestItems: {
             'event-data': {
                 Keys: numericEventIds, // Use numericEventIds here
+                ProjectionExpression: "id, #name, #start, #end, #location, #region, #season, #program",
+                ExpressionAttributeNames: {
+                    "#name": "name",
+                    "#start": "start",
+                    "#end": "end",
+                    "#location": "location",
+                    "#region": "region",
+                    "#season": "season",
+                    "#program": "program"
+                }
             }
         }
     };
