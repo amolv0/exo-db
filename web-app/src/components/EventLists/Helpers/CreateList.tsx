@@ -11,7 +11,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/events/', {
+        const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/events/  ', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
