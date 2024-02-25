@@ -17,6 +17,9 @@ def process_skills_item(skill_item):
     # Add the new attributes
     skill_item['team_id'] = int(skill_item['team']['id'])
     skill_item['event_id'] = int(skill_item['event']['id'])
+    skill_item['event_name'] = int(skill_item['event']['name'])
+    skill_item['team_number'] = skill_item['team']['name']
+    
     return skill_item
 
 # Function to write items to the skills-data table using batch writes
@@ -59,12 +62,12 @@ def process_event_data():
             if 'skills' in item:
                 transformed_skills = []
                 for skill_item in item['skills']:
-                    transformed_skill = process_skills_item(skill_item)
-                    transformed_skills.append(transformed_skill)
-                    update_team_data(transformed_skill['team_id'], int(transformed_skill['id']))
+                    # transformed_skill = process_skills_item(skill_item)
+                    # transformed_skills.append(transformed_skill)
+                    update_team_data(skill_item['team']['id'], int(skill_item['id']))
 
                 # Write the transformed skills to the skills-data table
-                batch_write_skills(transformed_skills)
+                # batch_write_skills(transformed_skills)
 
         # Check if there are more items to process
         if 'LastEvaluatedKey' in response:
@@ -82,9 +85,9 @@ def process_single_event(event_id):
         if 'skills' in item:
             transformed_skills = []
             for skill_item in item['skills']:
-                transformed_skill = process_skills_item(skill_item)
-                transformed_skills.append(transformed_skill)
-                update_team_data(transformed_skill['team_id'], int(transformed_skill['id']))
+                # transformed_skill = process_skills_item(skill_item)
+                # transformed_skills.append(transformed_skill)
+                update_team_data(skill_item['team']['id'], int(skill_item['id']))
 
             # Write the transformed skills to the skills-data table
             # batch_write_skills(transformed_skills)
@@ -92,5 +95,5 @@ def process_single_event(event_id):
         print(f"No event found with ID: {event_id}")
 
 
-# process_single_event(36837)
+# process_single_event(52370)
 process_event_data()

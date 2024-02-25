@@ -42,6 +42,7 @@ def make_request(url, headers, initial_delay=5, retries=3):
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 429:
+            logging.info(f"429, waiting for {initial_delay} seconds")
             time.sleep(initial_delay)
             initial_delay *= 2
         else:
@@ -168,7 +169,7 @@ def process_ranking(rankings, matches):
 
     qual_matches = [match for match in matches if match['round'] == 2]
     for match in qual_matches:
-        scores = [float(alliance['score']) for alliance in match['alliances']]
+        scores = [Decimal(alliance['score']) for alliance in match['alliances']]
         for i, alliance in enumerate(match['alliances']):
             team_ids = [team['team']['id'] for team in alliance['teams']]
             for team_id in team_ids:
@@ -204,6 +205,15 @@ def process_ranking(rankings, matches):
 
     return rankings
 
+def convert_values(obj): # Convert floats to decimals and 'ongoing' to a string
+    if isinstance(obj, float):
+        return Decimal(str(obj))
+    elif isinstance(obj, dict):
+        for key, value in obj.items():
+            obj[key] = convert_values(value)
+    elif isinstance(obj, list):
+        return [convert_values(v) for v in obj]
+    return obj
 
 
 def handler(event, context):
@@ -237,7 +247,7 @@ def handler(event, context):
                 skill.pop('event', None)
             awards = fetch_event_awards(event_id)
             # Compare and update DynamoDB if there are changes
-            update_if_changed(event_id, {'divisions': divisions, 'skills': skills, 'awards': awards})
+            update_if_changed(event_id, {'divisions': convert_values(divisions), 'skills': skills, 'awards': awards})
         else:
             logging.error(f"Failed to fetch data for event ID: {event_id}")
 
