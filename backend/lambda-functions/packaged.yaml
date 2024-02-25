@@ -18,7 +18,7 @@ Resources:
       FunctionName: exodb-eventIdGetPostFunc
       Handler: eventIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/39c1db278ea5fe1f83925152f80b0365
+      CodeUri: s3://exodblambdafunctions/644170f3807267d54be32d50f31ec8ae
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventIdGetPost
@@ -138,7 +138,7 @@ Resources:
       FunctionName: exodb-updateTeamFromStream
       Handler: updateTeamFromStream.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/1c021ad4f7118c25adf4d99309727378
+      CodeUri: s3://exodblambdafunctions/2d96904545f6b2839ea6cdcad639706a
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateTeamFromStream
@@ -168,7 +168,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventProcessor
       Handler: updateOngoingEventProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/1a7bdaf27becc3ebc04151c9e418effc
+      CodeUri: s3://exodblambdafunctions/3f4b1659256bcc1a232fb9bafaf65328
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventProcessor
@@ -182,6 +182,16 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventQueue
+  updateOngoingLeagueQueue:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-eventsUpdateOngoingLeagueQueue
+      Handler: updateOngoingLeagueQueue.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/50712028d46b94ef97f9c1e4f946555c
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: updateOngoingLeagueQueue
   updateFutureEventsUrlFinder:
     Type: AWS::Serverless::Function
     Properties:
