@@ -199,4 +199,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["skillsRankingGet"]
 
+[function_build_definitions.df4cf53b-1a13-4c84-8dc3-2d40bd72f2ef]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateOngoingEvent/updateOngoingLeagueQueue"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "updateOngoingLeagueQueue.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["updateOngoingLeagueQueue"]
+
 [layer_build_definitions]

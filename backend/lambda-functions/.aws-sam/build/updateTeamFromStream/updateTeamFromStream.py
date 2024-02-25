@@ -288,9 +288,17 @@ def process_skills_updates(updated_skills, event_id, event_name, event_start):
                 **skill  # Include all other skill attributes
             }
         )
-        logging.info(f"Updated skills-data for {skill_id}, of event {event_id}")
         # Since we're only dealing with updated skills, there's no need to check for removed skills here
-
+        team_data_table.update_item(
+            Key={'id': int(team_id)},
+            UpdateExpression='SET skills = list_append(if_not_exists(skills, :empty_list), :event_id)',
+            ExpressionAttributeValues={
+                ':event_id': [skill_id],  # Append the event_id directly
+                ':empty_list': [],
+            },
+            ReturnValues='UPDATED_NEW'
+        )
+        logging.info(f"Updated skills-data for {skill_id}, of event {event_id}")
     # Update skills-ranking-data table based on the updated skills
 
 def update_skills_ranking_data(skills, event_id, event_name, event_start):
