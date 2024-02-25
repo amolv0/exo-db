@@ -39,7 +39,7 @@ const getMultipleEventDetails = async (eventIds) => {
         RequestItems: {
             'event-data': {
                 Keys: numericEventIds, // Use numericEventIds here
-                ProjectionExpression: "id, #name, #start, #end, #location, #region, #season, #program",
+                ProjectionExpression: "id, #name, #start, #end, #location, #region, #season, #program, #level",
                 ExpressionAttributeNames: {
                     "#name": "name",
                     "#start": "start",
@@ -47,7 +47,8 @@ const getMultipleEventDetails = async (eventIds) => {
                     "#location": "location",
                     "#region": "region",
                     "#season": "season",
-                    "#program": "program"
+                    "#program": "program",
+                    "#level": "level"
                 }
             }
         }
