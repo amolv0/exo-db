@@ -179,6 +179,15 @@ Resources:
       Runtime: python3.10 
       CodeUri: ./otherFuncs/updateOngoingEvent/updateOngoingEventQueue
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
+  updateOngoingLeagueQueue:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-eventsUpdateOngoingLeagueQueue
+      Handler: updateOngoingLeagueQueue.handler
+      Runtime: python3.10 
+      CodeUri: ./otherFuncs/updateOngoingEvent/updateOngoingLeagueQueue
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
   
   updateFutureEventsUrlFinder:
     Type: AWS::Serverless::Function 
