@@ -12,6 +12,7 @@ interface Rank {
     ap: number;
     opr:string;
     dpr:string;
+    ccwm:string
     ties: number;
     rank: number;
     wp: number;
@@ -48,7 +49,7 @@ class RankingsComponent extends Component<Props> {
                         </h3>
                         <h3 className = "flex justify-between" >
                             <span>
-                                Avg: {rank.average_points} | OPR: {rank.opr} | DPR: {rank.dpr}
+                                Avg: {rank.average_points} | OPR: {rank.opr} | DPR: {rank.dpr} | CCWM: {rank.ccwm}
                             </span>
                             <span className="text-right">
                             WP: {rank.wp} | AP: {rank.ap} 
