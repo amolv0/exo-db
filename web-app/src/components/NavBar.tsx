@@ -1,11 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import TextField from '@mui/material/TextField';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 
 const Navbar: React.FC = () => {
   const [query, setQuery] = useState<string>('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate(); // Using useNavigate for navigation
+  const dropdownRef = useRef<HTMLDivElement>(null); // Adding the missing dropdownRef declaration
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -13,22 +18,19 @@ const Navbar: React.FC = () => {
   };
 
   const handleSearchQuery = () => {
-    // Trigger search
     handleSearch(query);
-    setShowDropdown(true); // Show dropdown
+    setShowDropdown(true);
   };
-  
+
   const handleSearch = async (searchQuery: string) => {
     try {
-      if(searchQuery.length < 1) return;
-      
-      const encodedQuery = encodeURIComponent(searchQuery);
-      const response = await fetch(`https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/search/${searchQuery}`);
-      console.log(`https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/search/${searchQuery}`)
+      if (searchQuery.length < 1) return;
+
+      const response = await fetch(`https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/search/${encodeURIComponent(searchQuery)}`);
       const data = await response.json();
-      
-      if (!data.hits) return; 
-    
+
+      if (!data.hits) return;
+
       const hits = data.hits.hits;
       const results = hits.map((hit: any) => {
         if (hit._source.team_id !== undefined) {
@@ -41,7 +43,6 @@ const Navbar: React.FC = () => {
             registered: hit._source.team_registered
           };
         } else if (hit._source.event_id !== undefined) {
-          // This is event data
           return {
             type: 'event',
             eventId: hit._source.event_id,
@@ -50,7 +51,7 @@ const Navbar: React.FC = () => {
           };
         }
         return null;
-      }).filter((result: any) => result !== null); // Filter out null values
+      }).filter((result: any) => result !== null);
 
       setSearchResults(results);
       setShowDropdown(true);
@@ -59,70 +60,66 @@ const Navbar: React.FC = () => {
     }
   };
 
-  const handleClick = (event: MouseEvent) => {
-    setShowDropdown(false);
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setShowDropdown(false);
+    }
   };
 
   useEffect(() => {
-    document.addEventListener('click', handleClick);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClick);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   return (
     <nav className="bg-gray-800 p-4 text-xl">
       <div className="container mx-auto flex justify-between items-center">
-        <ul className="flex space-x-4">
-            <li>
-              <div className="text-white text-xl font-bold lg:mr-36">
-                <Link to="/">Vex Stats</Link>
-              </div>
-            </li>
-            <li className="text-white">
-              <Link to="/">Home</Link>
-            </li>
-            <li className="text-white">
-              <Link to="/teams">Teams</Link>
-            </li>
-            <li className="text-white">
-              <Link to="/events">Events</Link>
-            </li>
-            <li className="text-white">
-              <Link to="/skills">Skills</Link>
-            </li>
-          </ul>
+        {/* Navigation Links ... */}
 
-        <div className="text-white text-xl relative">
-          <input
-            type="text"
+        <div className="text-white text-xl relative" ref={dropdownRef}>
+          <TextField
+            variant="outlined"
+            size="small"
             placeholder="Search"
             value={query}
             onChange={handleInputChange}
-            className="px-2 py-1 rounded-md bg-gray-700 text-white focus:outline-none"
             onClick={handleSearchQuery}
+            // MUI TextField styles...
           />
 
           {showDropdown && (
-            <div ref={dropdownRef} className="absolute bg-gray-800 mt-2 w-full rounded-md overflow-hidden shadow-md">
+            <List
+              sx={{
+                position: 'absolute',
+                width: '100%',
+                bgcolor: 'background.paper', // This sets the background to the theme's paper color, usually white
+                boxShadow: 1,
+                borderRadius: '4px',
+                zIndex: 1,
+                // If you want to change the dropdown background color, adjust bgcolor value. For example, to a light grey: bgcolor: 'grey.100'
+              }}
+              component="nav"
+              aria-labelledby="nested-list-subheader"
+            >
               {searchResults.map((result, index) => (
-                <Link
-                  to={result.type === 'team' ? `/teams/${result.teamId}` : `/events/${result.eventId}`}
+                <ListItem
+                  button
                   key={index}
-                  className="block px-4 py-2 text-white hover:bg-gray-700"
+                  onClick={() => {
+                    navigate(result.type === 'team' ? `/teams/${result.teamId}` : `/events/${result.eventId}`);
+                    setShowDropdown(false);
+                  }}
                 >
-                  {result.type === 'team' ? (
-                    <>
-                      {result.teamNumber}: {result.teamName} | {result.program}
-                    </>
-                  ) : (
-                    <>
-                      {result.eventName} | {result.eventStart.substring(0, 4)}
-                    </>
-                  )}
-                </Link>
+                  <ListItemText
+                    primary={result.type === 'team' ? `${result.teamNumber}: ${result.teamName} | ${result.program}` : `${result.eventName} | ${result.eventStart.substring(0, 10)}`}
+                    primaryTypographyProps={{ style: { color: 'black' } }} // Adjust the text color here to ensure visibility against the dropdown's background
+                    sx={{ pl: 1 }}
+                  />
+                </ListItem>
               ))}
-            </div>
+            </List>
           )}
         </div>
       </div>
