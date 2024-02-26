@@ -169,7 +169,7 @@ def process_ranking(rankings, matches):
 
     qual_matches = [match for match in matches if match['round'] == 2]
     for match in qual_matches:
-        scores = [Decimal(alliance['score']) for alliance in match['alliances']]
+        scores = [float(alliance['score']) for alliance in match['alliances']]
         for i, alliance in enumerate(match['alliances']):
             team_ids = [team['team']['id'] for team in alliance['teams']]
             for team_id in team_ids:
