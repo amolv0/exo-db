@@ -168,7 +168,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventProcessor
       Handler: updateOngoingEventProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/3f4b1659256bcc1a232fb9bafaf65328
+      CodeUri: s3://exodblambdafunctions/3e526cf79ab651c4e4c05a8709508e1b
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventProcessor
