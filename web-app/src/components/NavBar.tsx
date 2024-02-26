@@ -77,6 +77,22 @@ const Navbar: React.FC = () => {
     <nav className="bg-gray-800 p-4 text-xl">
       <div className="container mx-auto flex justify-between items-center">
         {/* Navigation Links ... */}
+        <ul className="flex space-x-4">
+          <li>
+            <div className="text-white text-xl font-bold lg:mr-36">
+              <Link to="/">Vex Stats</Link>
+            </div>
+          </li>
+          <li className="text-white">
+            <Link to="/">Home</Link>
+          </li>
+          <li className="text-white">
+            <Link to="/events">Events</Link>
+          </li>
+          <li className="text-white">
+            <Link to="/skills">Skills</Link>
+          </li>
+        </ul>
 
         <div className="text-white text-xl relative" ref={dropdownRef}>
           <TextField
@@ -86,6 +102,7 @@ const Navbar: React.FC = () => {
             value={query}
             onChange={handleInputChange}
             onClick={handleSearchQuery}
+            style={{ backgroundColor: "#f5f5f5" }}
             // MUI TextField styles...
           />
 
@@ -105,7 +122,6 @@ const Navbar: React.FC = () => {
             >
               {searchResults.map((result, index) => (
                 <ListItem
-                  button
                   key={index}
                   onClick={() => {
                     navigate(result.type === 'team' ? `/teams/${result.teamId}` : `/events/${result.eventId}`);
