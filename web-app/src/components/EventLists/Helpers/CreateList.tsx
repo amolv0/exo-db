@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Box, Typography } from '@mui/material';
 import EventBasic from './EventBasic';
 
 interface EventListDisplayProps {
@@ -6,12 +7,12 @@ interface EventListDisplayProps {
 }
 
 const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
-
   const [maps, setMaps] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        const response = await fetch('https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events/  ', {
+        const response = await fetch('https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -19,6 +20,10 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
           body: eventIdsString
         });
         const data = await response.json();
+
+        // Sort events by start date
+        data.sort((a: any, b: any) => new Date(b.start).getTime() - new Date(a.start).getTime());
+
         setMaps(data);
       } catch (error) {
         console.error('Error fetching or parsing JSON:', error);
@@ -31,24 +36,22 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   }, [eventIdsString]);
 
   return (
-    <div>
-      {/* Header for larger screens */}
-      <div className="text-xl font-bold text-gray-50 flex flex-wrap" style={{ width: '100%' }}>
-        <div className= "hidden md:block" style={{ flex: 1 }}>Program</div>
-        <div style={{ flex: 3 }}>Event</div>
-        <div style={{ flex: 2 }}>Location</div>
-        <div style={{ flex: 2 }}>Date</div>
-      </div>
+    <Box bgcolor="#333" color="#fff" p={2} borderRadius={4}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+        <Typography variant="subtitle1" flex={1}>
+          Program
+        </Typography>
+        <Typography variant="subtitle1" flex={3}>
+          Event
+        </Typography>
+        <Typography variant="subtitle1" flex={2}>
+          Location
+        </Typography>
+        <Typography variant="subtitle1" flex={2}>
+          Date
+        </Typography>
+      </Box>
 
-      {/* Header for smaller screens (invisible) */}
-      <div className="text-xl font-bold text-gray-50 invisible flex flex-wrap" style={{ width: '100%' }}>
-        <div className = "hidden md:block">Thisissomeweird</div>
-        <div className = "hidden md:block">solutionbutitworkthisijustfiller bufferheheIcantwithmyself</div>
-        <div className = "hidden md:block">soisitrightorwronglmao</div>
-        <div className = "hidden md:block">xdxdxdxdxd</div>
-      </div>
-
-      <div>
       {maps && Array.isArray(maps) && maps.map((event) => (
         <EventBasic 
           key={event.id} 
@@ -60,9 +63,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
           end={event.end}
         />
       ))}
-      </div>
-</div>
-
+    </Box>
   );
 };
 

@@ -56,9 +56,21 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
     setSeasonMap(seasonMap);
   }, [awardData]);
 
+  // Find the award with the highest ID
+  useEffect(() => {
+    if (awardData.length > 0) {
+      const highestIdAward = awardData.reduce((prev, current) => (prev.event.id > current.event.id ? prev : current));
+      setSelectedSeason(highestIdAward.season);
+    }
+  }, [awardData]);
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Awards</h2>
+      
+      {/* Display "No Awards Earned" if there are no awards */}
+      {awardData.length === 0 && <div>No Awards Earned</div>}
+      
       {/* Dropdown to select season */}
       <select
         value={selectedSeason ?? ''}
@@ -86,14 +98,12 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                   <Link to={`/events/${a.event.id}`}>
                     <li key={i}>{a.event.name}</li>
                   </Link>
-
                 ))}
               </ul>
             </div>
           ))}
         </div>
       )}
-
     </div>
   );
 };
