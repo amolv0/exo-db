@@ -1,6 +1,5 @@
 import React from 'react';
-
-// Define a functional component that takes in a JSON object as a prop
+import { Box, Typography, Grid } from '@mui/material';
 
 interface LocationData {
   country: string;
@@ -11,37 +10,63 @@ interface LocationData {
 
 interface JSONComponentProps {
   location: LocationData | null;
-  org: String | null;
-  program: String | null;
-
+  org: string | null;
+  program: string | null;
+  registered: string | null;
+  robotName: string | null;
 }
 
-const JSONComponent: React.FC<JSONComponentProps> = ({ location, org, program}) => {
+const JSONComponent: React.FC<JSONComponentProps> = ({ location, org, program, registered, robotName }) => {
   return (
-    <div className="max-w-md mx-auto bg-black text-white p-4 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Team Data</h2>
+    <Box maxWidth="md" mx="auto" bgcolor="#333" color="#fff" p={4} borderRadius={4} boxShadow={3}>
+      <Typography variant="h6" component="h2" fontWeight="bold" mb={4}>
+        Team Data
+      </Typography>
+
+      <Grid container spacing={2}>
         {location && (
-          <div className="mb-6">
-            <h3 className="text-lg font-medium mb-2">Location</h3>
-            <p>Country: {location.country || 'N/A'}</p>
-            <p>City: {location.city || 'N/A'}</p>
-            <p>Address: {location.address_1 || 'N/A'}</p>
-            <p>Region: {location.region || 'N/A'}</p>
-          </div>
+          <Grid item xs={12} sm={6} md={4}> {/* Adjust the sizing here */}
+            <Box mb={6}>
+              <Typography variant="subtitle1" component="h3" fontWeight="medium" mb={2}>
+                Location
+              </Typography>
+              <Typography variant="body1">
+                Country: {location.country || 'N/A'} <br />
+                City: {location.city || 'N/A'} <br />
+                Address: {location.address_1 || 'N/A'} <br />
+                Region: {location.region || 'N/A'}
+              </Typography>
+            </Box>
+          </Grid>
+        )}
+
+        {(robotName || program || registered) && (
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <Box mb={6}>
+              <Typography variant="subtitle1" component="h3" fontWeight="medium" mb={2}>
+                Info
+              </Typography>
+              <Typography variant="body1">
+                Robot Name: {robotName} <br />
+                Program: {program || 'N/A'} <br />
+                Registered: {registered || 'N/A'}
+              </Typography>
+            </Box>
+          </Grid>
         )}
         {org && (
-          <div className="mb-6">
-            <h3 className="text-lg font-medium mb-2">Orginization</h3>
-            <p>{org}</p>
-          </div>
+          <Grid item xs={12} sm={6} md={4}>
+            <Box mb={6}>
+              <Typography variant="subtitle1" component="h3" fontWeight="medium" mb={2}>
+                Organization
+              </Typography>
+              <Typography variant="body1">{org}</Typography>
+            </Box>
+          </Grid>
         )}
-        {program && (
-          <div className="mb-6">
-            <h3 className="text-lg font-medium mb-2">Program</h3>
-            <p>{program || 'N/A'}</p>
-          </div>
-        )}
-    </div>
+
+      </Grid>
+    </Box>
   );
 };
 
