@@ -33,6 +33,7 @@ interface TeamInfo {
 const MatchesDisplay: React.FC<{ division: Division }> = ({ division }) => {
 
   if (!division.matches || division.matches.length === 0) {
+    console.log("hi");
     return <p>No matches</p>;
   }
 
