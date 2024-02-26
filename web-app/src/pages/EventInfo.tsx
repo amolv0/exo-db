@@ -5,6 +5,7 @@ import TeamsList from '../components/EventInfo/TeamsList';
 import MatchesList from '../components/EventInfo/MatchesList';
 import EventRankings from '../components/EventInfo/EventRankings';
 import EventSkills from '../components/EventInfo/EventSkills';
+import EventElims from '../components/EventInfo/EventElims';
 import { Box, Typography, Button, ButtonGroup, CircularProgress } from '@mui/material';
 
 const EventInfo: React.FC = () => {
@@ -68,7 +69,7 @@ const EventInfo: React.FC = () => {
             {activeElement === 'TeamsList' && <TeamsList teams={eventData[0].teams} />}
             {activeElement === 'MatchesList' && <MatchesList division={eventData[0].divisions[0]} />}
             {activeElement === 'Rankings' && <EventRankings rankings={eventData[0].divisions[0].rankings} />}
-            {activeElement === 'Element4' && <Element4 />}
+            {activeElement === 'Elims' && <EventElims division={eventData[0].divisions[0]} />}
             {activeElement === 'Skills' && <EventSkills skills={eventData[0].skills} />}
           </Box>
         ) : (
