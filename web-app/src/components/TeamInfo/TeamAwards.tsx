@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getSeasonNameFromId } from '../../SeasonEnum';
 
 interface TeamAwardsProps {
   awards: number[];
@@ -79,7 +80,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
       >
         <option value="">Select Season</option>
         {Object.keys(seasonMap).map(season => (
-          <option key={season} value={season} className="text-white">{season}</option>
+          <option key={season} value={season} className="text-white">{getSeasonNameFromId(parseInt(season))}</option>
         ))}
       </select>
 
