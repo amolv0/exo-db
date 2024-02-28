@@ -52,16 +52,17 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         </Typography>
       </Box>
 
-      {maps && Array.isArray(maps) && maps.map((event) => (
-        <EventBasic 
-          key={event.id} 
-          name={event.name} 
-          eventID={event.id}
-          prog={event.program.code || event.program}
-          location={event.location}
-          start={event.start}
-          end={event.end}
-        />
+      {maps && Array.isArray(maps) && maps.map((event, index) => (
+        <Box key={event.id} borderTop={index === 0 ? '1px solid #555' : 'none'} borderBottom={index !== maps.length - 1 ? '1px solid #555' : 'none'}>
+          <EventBasic 
+            name={event.name} 
+            eventID={event.id}
+            prog={event.program.code || event.program}
+            location={event.location}
+            start={event.start}
+            end={event.end}
+          />
+        </Box>
       ))}
     </Box>
   );
