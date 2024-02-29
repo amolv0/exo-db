@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress } from '@mui/material';
 
 interface LocationData {
   city: string | null;
@@ -37,8 +38,8 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
           if (response.ok) {
             const data = await response.json();
             data.sort((a: TeamDetail, b: TeamDetail) => {
-              const numA = parseInt(((a.number && a.number.match(/\d+/)) || ['0'])[0]);
-              const numB = parseInt(((b.number && b.number.match(/\d+/)) || ['0'])[0]);
+              const numA = parseInt(((a.number && a.number.match(/\d+/)) || ['0'])[0], 10);
+              const numB = parseInt(((b.number && b.number.match(/\d+/)) || ['0'])[0], 10);
               return numA - numB;
             });
             setTeamDetails(data);
@@ -55,54 +56,56 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
   }, [teams]);
 
   return (
-    <div className="mx-auto bg-gray-700 text-white p-4 rounded-lg shadow-md mt-4">
+    <TableContainer component={Paper} sx={{ mt: 4, bgcolor: 'gray.700' }}>
       {loading ? (
-        <p className="text-lg">Loading...</p>
+        <CircularProgress color="inherit" />
       ) : teamDetails.length > 0 ? (
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Teams List</h2>
-          <table className="w-full">
-            <tbody>
+        <>
+          <Table>
+            <TableHead sx={{ backgroundColor: 'grey' }}>
+              <TableRow>
+                <TableCell>Number</TableCell>
+                <TableCell>Team Name</TableCell>
+                <TableCell>Organization</TableCell>
+                <TableCell>Location</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {teamDetails.map((team, index) => (
-                <tr key={index} className={index !== teamDetails.length - 1 ? "border-b border-gray-600 hover:text-blue-200" : "hover:text-blue-200"}>
-                  <td className="py-4">
-                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
-                      <span>{team.number}</span>
-                    </Link>
-                  </td>
-                  <td className="py-4">
-                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
-                      <span>{team.team_name}</span>
-                    </Link>
-                  </td>
-                  <td className="py-4">
-                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
-                      <span>{team.organization}</span>
-                    </Link>
-                  </td>
-                  <td className="py-4">
-                    <Link to={`/teams/${team.id}`} className="flex items-center justify-between">
-                      <span>
-                      {team.location && 
-                        <>
-                          {team.location.city && `${team.location.city}`}
-                          {team.location.region && `, ${team.location.region}`}
-                          {team.location.country && `, ${team.location.country}`}
-                        </>
-                      }
-                      </span>
-                    </Link>
-                  </td>
-                </tr>
+                <TableRow key={index} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableCell component="th" scope="row">
+                    <Typography sx={{ '& a': { color: 'black', textDecoration: 'none', '&:hover': { opacity: 0.7 } } }}>
+                      <Link to={`/teams/${team.id}`}>{team.number}</Link>
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography sx={{ '& a': { color: 'black', textDecoration: 'none', '&:hover': { opacity: 0.7 } } }}>
+                      <Link to={`/teams/${team.id}`}>{team.team_name}</Link>
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography sx={{ '& a': { color: 'black', textDecoration: 'none', '&:hover': { opacity: 0.7 } } }}>
+                      <Link to={`/teams/${team.id}`}>{team.organization}</Link>
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography sx={{ '& a': { color: 'black', textDecoration: 'none', '&:hover': { opacity: 0.7 } } }}>
+                      <Link to={`/teams/${team.id}`}>
+                        {team.location?.city}{team.location?.city && team.location?.region ? ', ' : ''}{team.location?.region}{team.location?.region && team.location?.country ? ', ' : ''}{team.location?.country}
+                      </Link>
+                    </Typography>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </TableBody>
+          </Table>
+        </>
       ) : (
-        <p className="text-lg">No teams available</p>
+        <Typography variant="h6" component="div" sx={{ p: 2, color: 'white', textAlign: 'center' }}>
+          No teams available
+        </Typography>
       )}
-    </div>
-
+    </TableContainer>
   );
 };
 
