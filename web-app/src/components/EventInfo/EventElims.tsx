@@ -1,155 +1,213 @@
 import React from 'react';
-import { SingleEliminationBracket, Match, SVGViewer } from '@g-loot/react-tournament-brackets';
-import { Box, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 
 interface Team {
-    id: string;
-    name: string;
+  sitting: boolean,
+  team: {
+    id: string,
+    name: string
   }
-  
-  interface Alliance {
-    color: string;
-    score: number;
-    teams: Team[];
-  }
-  
-  interface Match {
-    id: string;
-    round: number;
-    name: string;
-    alliances: Alliance[];
-    field?: string; 
-    instance?: number; 
-    matchnum?: number; 
-    scheduled?: string | null;  
-    scored?: boolean; 
-    session?: number;  
-    started?: string;
-  }
-  
+}
+
+interface Alliance {
+  color: 'red' | 'blue';
+  score: number;
+  teams: Team[];
+}
+
+interface Match {
+  id: string;
+  round: number;
+  name: string;
+  alliances: Alliance[];
+}
+
 interface Division {
   matches: Match[];
 }
 
-interface SVGWrapperProps extends React.SVGProps<SVGSVGElement> {
-    children: React.ReactNode; // Explicitly type 'children' as React nodes
-  }
+interface Participant {
+  id: string;
+  resultText: string;
+  isWinner: boolean;
+  status: string | null;
+  name: string;
+  color: 'red' | 'blue'; // Add this line
+}
 
-  const transformMatchesForBracket = (rawMatches: any[]): any[] => {
-    // Use parseMatches to filter and initially format the matches
-    const parsedMatches = parseMatches(rawMatches);
-  
-    // Transform parsed matches into the structure expected by the bracket component
-    return parsedMatches.map(match => {
-      // Logic to determine the winner, loser, and match state
-      const home = match.alliances[0];
-      const away = match.alliances[1];
-      const homeScore = home.score;
-      const awayScore = away.score;
-      const homeWin = homeScore > awayScore;
-  
-      return {
-        id: match.id,
-        name: match.name,
-        nextMatchId: null, // Adjust based on your data
-        tournamentRoundText: `Round ${match.round}`, // Customize round text
-        startTime: "Unknown", // Provide a default or extract from your data
-        state: "DONE", // Adjust based on your match state logic
-        participants: [
-          {
-            id: home.teams[0].id,
-            resultText: homeWin ? "WON" : "LOST",
-            isWinner: homeWin,
-            status: null, // Define status based on your data
-            name: home.teams.map(team => team.name).join(' & ')
-          },
-          {
-            id: away.teams[0].id,
-            resultText: !homeWin ? "WON" : "LOST",
-            isWinner: !homeWin,
-            status: null, // Define status based on your data
-            name: away.teams.map(team => team.name).join(' & ')
-          }
-        ]
-      };
-    });
+interface TransformedMatch {
+  id: string;
+  name: string;
+  nextMatchId: string | null;
+  tournamentRoundText: string;
+  startTime: string;
+  state: string;
+  participants: Participant[]; 
+}
+
+interface MatchComponentProps {
+  match: TransformedMatch;
+}
+
+interface MatchProps {
+  match: Match;
+}
+
+interface BracketProps {
+  matches: Match[];
+}
+
+interface EventElimsProps {
+  division: Division;
+}
+
+const roundMapping: Record<number, string> = {
+  6: "R16",
+  3: "Quarterfinals",
+  4: "Semifinals",
+  5: "Finals",
+};
+
+
+const sortRounds = (a: string, b: string) => {
+  const roundOrder = ["R16", "Quarterfinals", "Semifinals", "Finals"];
+  return roundOrder.indexOf(a) - roundOrder.indexOf(b);
+};
+
+const parseMatches = (rawMatches: Match[]): Match[] => {
+  // Filter and format matches for elimination rounds
+  return rawMatches.filter(match => match.round >= 3);
+};
+
+const transformMatchesForBracket = (rawMatches: Match[]): TransformedMatch[] => {
+  return parseMatches(rawMatches).map(match => {
+    console.log(match);
+    const home = match.alliances[0];
+    const away = match.alliances[1];
+    const homeScore = home.score;
+    const awayScore = away.score;
+    const homeWin = homeScore > awayScore;
+    console.log(home.teams[0]);
+    const roundName = roundMapping[match.round] || "Unknown Round";
+    return {
+      id: match.id,
+      name: match.name,
+      nextMatchId: null, // Adjust based on your data
+      tournamentRoundText: roundName,
+      startTime: "Unknown", // Provide a default or extract from your data
+      state: "DONE", // Adjust based on your match state logic
+      participants: home.teams.map(team => ({
+        id: team.team.id,
+        resultText: homeWin ? "WON" : "LOST",
+        isWinner: homeWin,
+        status: null,
+        name: team.team.name,
+        color: home.color, // Assign the color here
+      })).concat(away.teams.map(team => ({
+        id: team.team.id,
+        resultText: !homeWin ? "WON" : "LOST",
+        isWinner: !homeWin,
+        status: null,
+        name: team.team.name,
+        color: away.color, // And here
+      })))
+    };
+  });
+};
+
+
+
+const MatchComponent: React.FC<MatchComponentProps> = ({ match }) => {
+  const colorMap: Record<'red' | 'blue', string> = {
+      red: 'pink', // Color for the red alliance
+      blue: 'lightblue', // Color for the blue alliance
   };
 
+  // Function to create the content for each alliance box with static width
+  const renderAlliance = (allianceColor: 'red' | 'blue') => {
+      const teams = match.participants.filter(participant => participant.color === allianceColor).map(p => p.name);
+      const isWinner = match.participants.some(participant => participant.color === allianceColor && participant.isWinner);
 
-const parseMatches = (rawMatches: any[]): Match[] => {
-    console.log(rawMatches[0]);
-    return rawMatches
-      .filter(match => match.round >= 3) // Only include elimination rounds
-      .map(match => ({
-        id: match.id.toString(),
-        round: match.round,
-        name: match.name,
-        alliances: match.alliances.map((alliance: any) => ({
-            color: alliance.color,
-            score: alliance.score,
-            teams: alliance.teams.map((teamObj: any) => ({
-              id: teamObj.team.id.toString(),
-              name: teamObj.team.name, // Correctly navigate to the team name
-            })),
-          })),
-      }));
+      return (
+          <Box
+              bgcolor={colorMap[allianceColor]}
+              p={1}
+              m={1}
+              sx={{
+                  width: 200, // Static width for each box
+                  opacity: isWinner ? 1 : 0.5,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+              }}
+          >
+              {/* Team names aligned to the left and right margins */}
+              <Typography variant="body1" sx={{ textAlign: 'left', width: '50%' }}>
+                  {teams[0]}
+              </Typography>
+              <Typography variant="body1" sx={{ textAlign: 'right', width: '50%' }}>
+                  {teams[1]}
+              </Typography>
+          </Box>
+      );
   };
 
+  return (
+      <Box display="flex" flexDirection="column" alignItems="center" marginBottom={4}>
+          <Typography variant="h6" component="h2" gutterBottom>
 
-
-const roundLabels: { [key: number]: string } = {
-    3: 'Quarter Finals',
-    4: 'Semi Finals',
-    5: 'Finals',
-    6: 'Round of 16',
-  };
-  
-  const getRoundLabel = (round: number): string => roundLabels[round] || `Round ${round}`;
-
-
-
-const MatchComponent: React.FC<{ match: Match }> = ({ match }) => (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, p: 1, border: '1px solid #ddd', borderRadius: '4px' }}>
-      {match.alliances.map((alliance, index) => (
-        <Box key={index}>
-          <Typography sx={{ color: alliance.color === 'blue' ? '#2196f3' : '#f44336' }}>
-            {alliance.teams.map(team => team.name).join(' & ')} - {alliance.score}
           </Typography>
-        </Box>
-      ))}
-    </Box>
+          <Box display="flex" flexDirection="column" alignItems="center"> {/* Centering the boxes */}
+              {renderAlliance('red')}
+              {renderAlliance('blue')}
+          </Box>
+      </Box>
   );
+};
 
-  const RoundComponent: React.FC<{ matches: Match[] }> = ({ matches }) => (
-    <Box sx={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      mx: 1, 
-      maxHeight: '400px', // Set a maximum height
-      overflowY: 'auto' // Enable scrolling for overflow
-    }}>
-      <Typography variant="h6">{getRoundLabel(matches[0]?.round)}</Typography>
-      {matches.map(match => (
-        <MatchComponent key={match.id} match={match} />
-      ))}
+const groupMatchesByRound = (matches: TransformedMatch[]): Record<string, TransformedMatch[]> => {
+  return matches.reduce((acc, match) => {
+    const round = match.tournamentRoundText;
+    if (!acc[round]) {
+      acc[round] = [];
+    }
+    acc[round].push(match);
+    return acc;
+  }, {} as Record<string, TransformedMatch[]>);
+};
+
+
+
+const EventElims: React.FC<EventElimsProps> = ({ division }) => {
+  const transformedMatches = transformMatchesForBracket(division.matches);
+  const matchesByRound = groupMatchesByRound(transformedMatches);
+
+  return (
+    // Outer Box for horizontal scrolling
+    <Box sx={{ width: '100%', overflowX: 'auto' }}>
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          flexDirection: 'row', 
+          justifyContent: 'center', 
+          minWidth: 'max-content', // Ensure the inner content dictates the size
+          gap: 4 
+        }}
+      >
+        {["R16", "Quarterfinals", "Semifinals", "Finals"].map((round) => (
+          <Box key={round} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+            <Typography variant="h6" sx={{ marginTop: 2, marginBottom: 2 }}>{round}</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', flex: 1, width: '100%' }}>
+              {matchesByRound[round]?.map((match) => (
+                <MatchComponent key={match.id} match={match} />
+              ))}
+            </Box>
+          </Box>
+        ))}
+      </Box>
     </Box>
   );
-  
-  const EventElims: React.FC<{ division: Division }> = ({ division }) => {
-    const transformedMatches = transformMatchesForBracket(division.matches);
-  
-    const svgWrapper: React.FC<SVGWrapperProps> = ({ children, ...props }) => (
-      <SVGViewer width={500} height={500} {...props}>
-        {children}
-      </SVGViewer>
-    );
-  
-    return (
-      <SingleEliminationBracket
-        matches={transformedMatches}
-        matchComponent={Match}
-        svgWrapper={svgWrapper}
-      />
-    );
-  };
+};
+
+
 export default EventElims;
