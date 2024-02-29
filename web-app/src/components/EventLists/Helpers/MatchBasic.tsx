@@ -1,4 +1,8 @@
 import React from 'react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import { useTheme } from '@mui/material/styles';
 
 interface Match {
   scheduled: string;
@@ -26,43 +30,64 @@ interface TeamInfo {
 }
 
 const MatchDisplay: React.FC<{ match: Match }> = ({ match }) => {
+  const theme = useTheme();
   const { name, field, scheduled, started, alliances } = match;
 
-  // Determine if the match has started and get the starting time
   const startTime = started ? new Date(started).toLocaleTimeString() : new Date(scheduled).toLocaleTimeString();
 
-  const blueAlliance = alliances[0];
-  const redAlliance = alliances[1];
+  const blueAlliance = alliances.find(alliance => alliance.color === 'blue')!;
+  const redAlliance = alliances.find(alliance => alliance.color === 'red')!;
   
-  // Determine the higher score
   const blueScore = blueAlliance.score;
   const redScore = redAlliance.score;
-  if (blueScore === 0 && redScore === 0) {
-    return null;
-  }
-  const winningColor = blueScore > redScore ? 'blue' : 'red';
+
+  // Function to get the background color based on the team's score
+  const getBackgroundColor = (color: 'blue' | 'red', isWinning: boolean): string => {
+    const opacity = isWinning ? 1 : 0.5; // Faded color for the losing team
+    switch (color) {
+      case 'blue':
+        return `rgba(25, 118, 210, ${opacity})`; // Adjust RGB for blue
+      case 'red':
+        return `rgba(211, 47, 47, ${opacity})`; // Adjust RGB for red
+    }
+  };
+
+  const isBlueWinning = blueScore > redScore;
+
   return (
-<div className="max-w-6xl mx-auto mt-4 bg-gray-700 p-4 rounded-lg flex">
-  <div className="flex-grow">
-    <h2 className="text-lg font-semibold mb-2">{name}</h2>
-    <p className="mb-2">Field: {field}</p>
-    <p>Start Time: {startTime}</p>
-  </div>
-  <div className={`flex-grow w-1/3 ${winningColor === 'blue' ? 'bg-blue-600' : 'bg-gray-700'} p-4 rounded-lg`}>
-    {blueAlliance.teams.map((teamData, index) => (
-      <p key={index} className="text-white">{teamData.team.name}</p>
-    ))}
-    <p>Score: {blueScore}</p>
-  </div>
-  <div className={`flex-grow w-1/3 ${winningColor === 'red' ? 'bg-red-600' : 'bg-gray-700'} p-4 rounded-lg`}>
-    {redAlliance.teams.map((teamData, index) => (
-      <p key={index} className="text-white">{teamData.team.name}</p>
-    ))}
-    <p>Score: {redScore}</p>
-  </div>
-</div>
-
-
+    <Box sx={{ maxWidth: '6xl', mt: 4, p: 4, bgcolor: 'gray.700', borderRadius: 'lg', display: 'flex', mx: 'auto', color: theme.palette.grey[300] }}>
+      <Box sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: 'text.primary' }}>{name}</Typography>
+        <Typography sx={{ mb: 2, color: 'text.secondary' }}>Field: {field}</Typography>
+        <Typography sx={{ color: 'text.secondary' }}>Start Time: {startTime}</Typography>
+      </Box>
+      <Paper elevation={3} sx={{ 
+          flexGrow: 1, 
+          bgcolor: getBackgroundColor('blue', isBlueWinning), 
+          p: 2, 
+          borderRadius: 'lg', 
+          mx: 1,
+          color: 'white'
+        }}>
+        {blueAlliance.teams.map((teamData, index) => (
+          <Typography key={index}>{teamData.team.name}</Typography>
+        ))}
+        <Typography>Score: {blueScore}</Typography>
+      </Paper>
+      <Paper elevation={3} sx={{ 
+          flexGrow: 1, 
+          bgcolor: getBackgroundColor('red', !isBlueWinning), 
+          p: 2, 
+          borderRadius: 'lg', 
+          mx: 1,
+          color: 'white'
+        }}>
+        {redAlliance.teams.map((teamData, index) => (
+          <Typography key={index}>{teamData.team.name}</Typography>
+        ))}
+        <Typography>Score: {redScore}</Typography>
+      </Paper>
+    </Box>
   );
 };
 
