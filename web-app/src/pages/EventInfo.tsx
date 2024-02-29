@@ -45,7 +45,7 @@ const EventInfo: React.FC = () => {
               Event Details for {eventData[0].name}
             </Typography>
             
-            <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: 'darkgrey', p: 1, borderRadius: '4px' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: 'darkgrey', p: 1, borderRadius: '4px', mb: 4 }}>
               <ButtonGroup variant="contained" aria-label="outlined primary button group">
                 {['Event Info', 'Teams List', 'Matches', 'Rankings', 'Elims', 'Skills'].map((element, index) => (
                   <Button

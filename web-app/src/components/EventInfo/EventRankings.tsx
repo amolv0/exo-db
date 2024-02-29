@@ -42,7 +42,7 @@ class RankingsComponent extends Component<Props> {
         const sortedRankings = [...rankings].sort((a, b) => a.rank - b.rank);
 
         const headerStyle = {
-            backgroundColor: 'darkgrey', // Custom color for the header background
+            backgroundColor: '#595959', // Custom color for the header background
             color: 'white', // Text color for the header
         };
 
