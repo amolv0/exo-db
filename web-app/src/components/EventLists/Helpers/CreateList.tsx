@@ -22,8 +22,8 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         const data = await response.json();
 
         // Sort events by start date
-        data.sort((a: any, b: any) => new Date(b.start).getTime() - new Date(a.start).getTime());
-
+        //data.sort((a: any, b: any) => new Date(b.start).getTime() - new Date(a.start).getTime());
+        data.sort((a: any, b: any) => new Date(a.start).getTime() - new Date(b.start).getTime());
         setMaps(data);
       } catch (error) {
         console.error('Error fetching or parsing JSON:', error);
