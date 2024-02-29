@@ -2,7 +2,7 @@ import React from 'react';
 import MatchBasic from '../EventLists/Helpers/MatchBasic';
 
 interface Division {
-  matches : Match[];
+  matches: Match[];
 }
 
 interface Match {
@@ -31,15 +31,27 @@ interface TeamInfo {
 }
 
 const MatchesDisplay: React.FC<{ division: Division }> = ({ division }) => {
-
   if (!division.matches || division.matches.length === 0) {
     console.log("hi");
     return <p>No matches</p>;
   }
 
+  const customOrder = [1, 2, 6, 3, 4, 5];
+
+  // Sort the matches according to the custom order
+  const sortedMatches = division.matches.sort((a, b) => {
+    let indexA = customOrder.indexOf(a.round);
+    let indexB = customOrder.indexOf(b.round);
+
+    if (indexA === -1) indexA = customOrder.length;
+    if (indexB === -1) indexB = customOrder.length;
+
+    return indexA - indexB;
+  });
+
   return (
     <div>
-      {division.matches.map((match, index) => (
+      {sortedMatches.map((match, index) => (
         <MatchBasic key={index} match={match} />
       ))}
     </div>
