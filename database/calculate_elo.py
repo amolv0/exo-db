@@ -5,7 +5,7 @@ from boto3.dynamodb.conditions import Key, Attr
 # Constants
 DEFAULT_ELO = 1000
 K_FACTOR = 40
-SEASON_ID = 181
+SEASON_ID = 88
 
 dynamodb = boto3.resource('dynamodb')
 events_table = dynamodb.Table('event-data')
@@ -24,40 +24,37 @@ def update_elo(win_elo, lose_elo):
 
 
 def fetch_events():
-
     all_event_ids = []
-    
 
     last_evaluated_key = None
     page = 0
     print("Scanning events")
 
+    # Correct the date range for the query
+    # KeyConditionExpression=Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').gte('2023-06-01T00:00:00-05:00'),
+    start_date = '2012-03-01T00:00:00-05:00'  # Start of the range
+    end_date = '2013-02-14T00:00:00-05:00'    # End of the range
+
     while True:
         page += 1
         print(f"Scanned page {page}")
 
+        query_kwargs = {
+            'IndexName': 'EventsByStartDateGSI',
+            'KeyConditionExpression': Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').between(start_date, end_date),
+            'FilterExpression': Attr('program').is_in(['VRC', 'VEXU'])
+        }
+
         if last_evaluated_key:
-            response = events_table.query(
-                IndexName='EventsByStartDateGSI',
-                KeyConditionExpression=Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').gte('2023-06-01T00:00:00-05:00'),
-                FilterExpression=Attr('program').is_in(['VRC', 'VIQRC', 'VEXU']),
-                ExclusiveStartKey=last_evaluated_key  
-            )
-        else:
-            response = events_table.query(
-                IndexName='EventsByStartDateGSI',
-                KeyConditionExpression=Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').gte('2023-06-01T00:00:00-05:00'),
-                FilterExpression=Attr('program').is_in(['VRC', 'VIQRC', 'VEXU'])
-            )
-        
+            query_kwargs['ExclusiveStartKey'] = last_evaluated_key
 
+        response = events_table.query(**query_kwargs)
         all_event_ids.extend([item['id'] for item in response['Items']])
-        
-
         last_evaluated_key = response.get('LastEvaluatedKey')
+        
         if not last_evaluated_key:
-            break  
-    
+            break
+
     return all_event_ids
 
 
@@ -76,6 +73,8 @@ def process_events():
         if not event_details:
             print("Event details could not be fetched.")
             return
+
+        if event_details['season']['id'] != SEASON_ID: continue
         
         for division in event_details['divisions']:
             if 'matches' not in division: continue
@@ -118,7 +117,7 @@ def process_events():
     for team_id, elo in team_elos.items():
         count += 1
         print(f"Updated team {team_id} with ELO, {count} teams updated")
-        update_team_elo(team_id, elo, SEASON_ID)  #
+        update_team_elo(team_id, elo, SEASON_ID) 
         
         
 def process_event(event_id):
