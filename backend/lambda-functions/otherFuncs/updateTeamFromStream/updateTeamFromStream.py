@@ -91,7 +91,17 @@ def update_team_trueskill(team_id, mu, sigma, season):
             }
         )
     except Exception as e:
-        print(f"Error updating TrueSkill for team {team_id}: {e}")
+        try:
+            team_data_table.update_item(
+                Key={'id': team_id},
+                UpdateExpression="SET teamskill = :new_skill",
+                ExpressionAttributeValues={
+                    ':new_skill': {str(season): {'mu': Decimal(str(mu)), 'sigma': Decimal(str(sigma))}}
+                }
+            )
+            logging.info(f"Initialized teamskill for team {team_id} for season {season} teams updated")
+        except Exception as e:
+            logging.error(f"Error initializing teamskill for team {team_id}: {e}")
             
 def get_team_trueskill(team_id, season):
     try:
@@ -147,11 +157,6 @@ def update_elo(avg_win_elo, avg_lose_elo):
     return win_elo_updated, lose_elo_updated
 
 def determine_match_outcome_ts(match):
-    """
-    Determine the winning, losing teams, and draws based on the score.
-    Returns a tuple of lists: (winning_team_ids, losing_team_ids, draw_team_ids).
-    In the case of a draw, both winning_team_ids and losing_team_ids will be empty, and draw_team_ids will contain the IDs of all teams involved in the match.
-    """
     alliances = match['alliances']
     scores = {alliance['color']: (int(alliance['score']), [team['team']['id'] for team in alliance['teams']]) for alliance in alliances}
     
