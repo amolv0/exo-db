@@ -61,15 +61,8 @@ def update_ts_data_with_match(match, season):
             # Prepare teams and ranks for TrueSkill rating update
             teams_in_draw = [[team_ratings[team_id]] for team_id in draw_team_ids]  # Each team in its own list
             ranks = [0] * len(teams_in_draw)  # Same rank for all, indicating a draw
-
-            # Update TrueSkill ratings
             new_ratings = env.rate(teams_in_draw, ranks=ranks)
-
-            # Flatten the list of new ratings since env.rate returns a list of lists
-            flat_new_ratings = [rating for sublist in new_ratings for rating in sublist]
-
-            # Update team TrueSkill ratings with new values
-            
+            flat_new_ratings = [rating for sublist in new_ratings for rating in sublist]            
             for team_id, new_rating in zip(draw_team_ids, flat_new_ratings):
                 logging.error(f"updating trueskill for team {team_id}, match {match['id']}, was a tie")
                 update_team_trueskill(team_id, new_rating.mu, new_rating.sigma, season)
@@ -98,7 +91,17 @@ def update_team_trueskill(team_id, mu, sigma, season):
             }
         )
     except Exception as e:
-        print(f"Error updating TrueSkill for team {team_id}: {e}")
+        try:
+            team_data_table.update_item(
+                Key={'id': team_id},
+                UpdateExpression="SET teamskill = :new_skill",
+                ExpressionAttributeValues={
+                    ':new_skill': {str(season): {'mu': Decimal(str(mu)), 'sigma': Decimal(str(sigma))}}
+                }
+            )
+            logging.info(f"Initialized teamskill for team {team_id} for season {season} teams updated")
+        except Exception as e:
+            logging.error(f"Error initializing teamskill for team {team_id}: {e}")
             
 def get_team_trueskill(team_id, season):
     try:
