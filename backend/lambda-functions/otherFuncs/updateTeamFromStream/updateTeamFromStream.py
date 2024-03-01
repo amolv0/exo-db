@@ -2,6 +2,9 @@ import boto3
 import json
 import logging
 from boto3.dynamodb.types import TypeDeserializer
+import trueskill
+from decimal import Decimal
+
 
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
@@ -16,24 +19,169 @@ skills_data_table = dynamodb.Table('skills-data')
 skills_ranking_data_table = dynamodb.Table('skills-ranking-data')
 rankings_data_table = dynamodb.Table('rankings-data')
 awards_data_table = dynamodb.Table('award-data')
+elo_data_table = dynamodb.Table('elo-rankings')
+trueskill_data_table = dynamodb.Table('trueskill-rankings')
+
+env = trueskill.TrueSkill(draw_probability=0.01)
 
 logging = logging.getLogger()
 logging.setLevel("ERROR")
 
+DEFAULT_ELO = 1000
+K_FACTOR = 40
+
 def unmarshall_dynamodb_item(item):
     return {k: deserializer.deserialize(v) for k, v in item.items()}
 
-def process_match(match, division_name, division_id, event_name, event_id, event_start):
+def process_match(match, division_name, division_id, event_name, event_id, event_start, season):
+    update_ts_data_with_match(match, season)
+    update_elo_data_with_match(match, season)  
     teams = extract_teams_from_match(match)
     for team in teams:
         team_id = team['team']['id']
         if 'id' in match:
             match_id = match['id']
-            if event_id == 55293:
-                logging.error(f"Adding to match id: {match_id}")
             update_team_data_with_match(team_id, match_id)
             update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start)
+                
+            
+            
+def update_ts_data_with_match(match, season):
+    if match['scored'] == False:
+        logging.error("match not yet scored, not adjusting trueskill")
+        return
+    if season is not None:
+        teams = extract_teams_from_match(match)
+        team_ids = [team['team']['id'] for team in teams]
+        team_ratings = {team_id: get_team_trueskill(team_id, season) for team_id in team_ids}
         
+        winning_team_ids, losing_team_ids, draw_team_ids = determine_match_outcome_ts(match)
+        
+        if draw_team_ids:  # Handle draws
+            # Prepare teams and ranks for TrueSkill rating update
+            teams_in_draw = [[team_ratings[team_id]] for team_id in draw_team_ids]  # Each team in its own list
+            ranks = [0] * len(teams_in_draw)  # Same rank for all, indicating a draw
+            new_ratings = env.rate(teams_in_draw, ranks=ranks)
+            flat_new_ratings = [rating for sublist in new_ratings for rating in sublist]            
+            for team_id, new_rating in zip(draw_team_ids, flat_new_ratings):
+                logging.error(f"updating trueskill for team {team_id}, match {match['id']}, was a tie")
+                update_team_trueskill(team_id, new_rating.mu, new_rating.sigma, season)
+        else:  # Handle win/lose
+            winners = [team_ratings[team_id] for team_id in winning_team_ids]
+            losers = [team_ratings[team_id] for team_id in losing_team_ids]
+            new_ratings = env.rate([winners, losers], ranks=[0, 1])
+            for team_id, rating in zip(winning_team_ids, new_ratings[0]):
+                logging.error(f"updating trueskill for team {team_id}, match {match['id']}")
+                update_team_trueskill(team_id, rating.mu, rating.sigma, season)
+            for team_id, rating in zip(losing_team_ids, new_ratings[1]):
+                logging.error(f"updating trueskill for team {team_id}, match {match['id']}")
+                update_team_trueskill(team_id, rating.mu, rating.sigma, season)
+            
+def update_team_trueskill(team_id, mu, sigma, season):
+    if season != 181 or season != 182:
+        logging.error("not a current vrc/vexu season match")
+        return
+    try:
+        team_data_table.update_item(
+            Key={'id': team_id},
+            UpdateExpression="SET teamskill.#season = :rating",
+            ExpressionAttributeNames={'#season': str(season)},
+            ExpressionAttributeValues={
+                ':rating': {'mu': Decimal(str(mu)), 'sigma': Decimal(str(sigma))}
+            }
+        )
+    except Exception as e:
+        print(f"Error updating TrueSkill for team {team_id}: {e}")
+            
+def get_team_trueskill(team_id, season):
+    try:
+        response = team_data_table.get_item(
+            Key={'id': team_id},
+            ProjectionExpression=f"teamskill.#season",
+            ExpressionAttributeNames={'#season': str(season)}
+        )
+        if 'Item' in response and season in response['Item'].get('teamskill', {}):
+            ts_data = response['Item']['teamskill'][str(season)]
+            return env.create_rating(mu=ts_data['mu'], sigma=ts_data['sigma'])
+        else:
+            return env.create_rating()
+    except Exception as e:
+        print(f"Error fetching TrueSkill for team {team_id}: {e}")
+        return env.create_rating()
+    
+        
+def update_elo_data_with_match(match, season):
+    if match['scored'] == False:
+        logging.error("match not yet scored, not adjusting elo")
+        return
+    if season is not None:
+        winning_team_ids, losing_team_ids = determine_match_outcome_elo(match)
+        if not (len(winning_team_ids) == 0 or len(losing_team_ids) == 0):
+            # Fetch current ELO ratings for all teams involved in the match
+            team_elos = {team_id: get_team_elo(team_id, season) for team_id in winning_team_ids + losing_team_ids}
+            
+            # Calculate and update new ELO ratings individually for each team based on match outcome
+            for team_id in winning_team_ids:
+                avg_lose_elo = sum(team_elos[team_id] for team_id in losing_team_ids) / len(losing_team_ids)
+                new_elo, _ = update_elo(team_elos[team_id], avg_lose_elo)
+                logging.info(f"updating elo for {team_id}")
+                update_team_elo(team_id, new_elo, season)
+
+            for team_id in losing_team_ids:
+                avg_win_elo = sum(team_elos[team_id] for team_id in winning_team_ids) / len(winning_team_ids)
+                _, new_elo = update_elo(avg_win_elo, team_elos[team_id])
+                logging.info(f"updating elo for {team_id}")
+                update_team_elo(team_id, new_elo, season)
+
+   
+def expected_score(rating_a, rating_b):
+    return 1 / (1 + 10 ** ((rating_b - rating_a) / 400))
+
+def update_elo(avg_win_elo, avg_lose_elo):
+    expected_win_score = expected_score(avg_win_elo, avg_lose_elo)
+    expected_lose_score = expected_score(avg_lose_elo, avg_win_elo)
+
+    win_elo_updated = round(avg_win_elo + K_FACTOR * (1 - expected_win_score), 2)
+    lose_elo_updated = round(avg_lose_elo + K_FACTOR * (0 - expected_lose_score), 2)
+
+    return win_elo_updated, lose_elo_updated
+
+def determine_match_outcome_ts(match):
+    """
+    Determine the winning, losing teams, and draws based on the score.
+    Returns a tuple of lists: (winning_team_ids, losing_team_ids, draw_team_ids).
+    In the case of a draw, both winning_team_ids and losing_team_ids will be empty, and draw_team_ids will contain the IDs of all teams involved in the match.
+    """
+    alliances = match['alliances']
+    scores = {alliance['color']: (int(alliance['score']), [team['team']['id'] for team in alliance['teams']]) for alliance in alliances}
+    
+    # Check if it's a draw
+    if scores['red'][0] == scores['blue'][0]:
+        # It's a draw, combine both teams
+        draw_team_ids = scores['red'][1] + scores['blue'][1]
+        return [], [], draw_team_ids
+    else:
+        # Determine winner and loser based on score
+        winner_color = max(scores, key=lambda x: scores[x][0])
+        loser_color = 'blue' if winner_color == 'red' else 'red'
+        
+        winning_team_ids = scores[winner_color][1]
+        losing_team_ids = scores[loser_color][1]
+        
+        return winning_team_ids, losing_team_ids, []
+             
+def determine_match_outcome_elo(match):
+    alliances = match['alliances']
+    scores = {alliance['color']: (int(alliance['score']), [team['team']['id'] for team in alliance['teams']]) for alliance in alliances}
+    
+    # Determine winner and loser based on score
+    winner_color = max(scores, key=lambda x: scores[x][0])
+    loser_color = 'blue' if winner_color == 'red' else 'red'
+    
+    winning_team_ids = scores[winner_color][1]
+    losing_team_ids = scores[loser_color][1]
+    
+    return winning_team_ids, losing_team_ids
 
 def extract_teams_from_match(match):
     teams = []
@@ -42,6 +190,31 @@ def extract_teams_from_match(match):
         teams.extend(alliance.get('teams', []))
     return teams
 
+def update_team_elo(team_id, new_elo, season):
+    try:
+        team_data_table.update_item(
+            Key={'id': team_id},
+            UpdateExpression="SET elo.#season_id = :new_elo",
+            ExpressionAttributeNames={'#season_id': str(season)},
+            ExpressionAttributeValues={':new_elo': Decimal(new_elo)},
+        )
+    except Exception as e:
+        print(f"Error updating ELO for team {team_id}: {e}")
+
+def get_team_elo(team_id, season):
+    try:
+        response = team_data_table.get_item(
+            Key={'id': team_id},
+            ProjectionExpression="elo"
+        )
+        if 'Item' in response and season in response['Item'].get('elo', {}):
+            return Decimal(response['Item']['elo'][str(season)])
+        else:
+            return Decimal(DEFAULT_ELO)
+    except Exception as e:
+        print(f"Error fetching ELO for team {team_id}: {e}")
+        return Decimal(DEFAULT_ELO)
+    
 def update_team_data_with_match(team_id, match_id):
     # Ensure the match data is in the correct format for DynamoDB
     response = team_data_table.update_item(
@@ -442,7 +615,7 @@ def handler(aws_event, context):
                 for match in updated_matches:
                     division_id = match['division_id']
                     division_name = match['division_name']
-                    process_match(match, division_name, division_id, event_name, event_id, event_start)
+                    process_match(match, division_name, division_id, event_name, event_id, event_start, season)
                 
 
                 # Process new/removed rankings within divisions
