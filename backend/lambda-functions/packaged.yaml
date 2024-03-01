@@ -138,7 +138,7 @@ Resources:
       FunctionName: exodb-updateTeamFromStream
       Handler: updateTeamFromStream.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/2d96904545f6b2839ea6cdcad639706a
+      CodeUri: s3://exodblambdafunctions/0ba3522c1409beb94eb5cb53a0fb38d9
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateTeamFromStream

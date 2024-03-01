@@ -7,7 +7,7 @@ export function getSeasonNameFromId(id: number): string {
         case 180:
         return 'VIQRC Full Volume';
 
-        case 174:
+        case 174: //AAAHHH ITS SLAPSHOT
         return 'VEXU Spin Up';
 
         case 173:
