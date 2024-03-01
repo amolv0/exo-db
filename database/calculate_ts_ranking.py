@@ -3,11 +3,11 @@ from boto3.dynamodb.conditions import Key
 from decimal import Decimal
 
 dynamodb = boto3.resource('dynamodb')
-elo_table = dynamodb.Table('elo-rankings')
+trueskill_table = dynamodb.Table('trueskill-rankings')
 team_table = dynamodb.Table('team-data')
 
 SEASON = 93
- 
+
 def update_team_rankings(season):
 
     rank_counter = 1
@@ -19,15 +19,15 @@ def update_team_rankings(season):
         page += 1
         print(f"Examining page {page}")
         if last_evaluated_key:
-            response = elo_table.query(
-                IndexName='SeasonEloIndex',
+            response = trueskill_table.query(
+                IndexName='SeasonMuIndex',
                 KeyConditionExpression=Key('season').eq(season),
                 ScanIndexForward=False,  
                 ExclusiveStartKey=last_evaluated_key
             )
         else:
-            response = elo_table.query(
-                IndexName='SeasonEloIndex',
+            response = trueskill_table.query(
+                IndexName='SeasonMuIndex',
                 KeyConditionExpression=Key('season').eq(season),
                 ScanIndexForward=False  
             )
@@ -47,13 +47,14 @@ def update_team_rankings(season):
 
 def update_team_data_with_rank(team_id, season, rank):
     # Update the team-data table with the rank for the specified season
-    # If elo_rankings does not exist, it initializes as an empty map
+    # If teamskills_rankings does not exist, it initializes as an empty map
+        
     try:
         # Attempt to directly set the season's ELO rating within elo_rankings
         response = team_table.update_item(
             Key={'id': team_id},
-            UpdateExpression="SET elo_rankings.#season_id = :rank",
-            ConditionExpression="attribute_exists(elo_rankings)",
+            UpdateExpression="SET teamskill_rankings.#season_id = :rank",
+            ConditionExpression="attribute_exists(teamskill_rankings)",
             ExpressionAttributeNames={'#season_id': str(season)},
             ExpressionAttributeValues={':rank': Decimal(str(rank))},
             ReturnValues="UPDATED_NEW"
@@ -62,7 +63,7 @@ def update_team_data_with_rank(team_id, season, rank):
         # If elo_rankings does not exist, initialize it and then set the season's ELO rating
         response = team_table.update_item(
             Key={'id': team_id},
-            UpdateExpression="SET elo_rankings = :empty_map",
+            UpdateExpression="SET teamskill_rankings = :empty_map",
             ExpressionAttributeValues={':empty_map': {str(season): Decimal(str(rank))}},
             ReturnValues="UPDATED_NEW"
         )
