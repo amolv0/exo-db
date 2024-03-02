@@ -122,6 +122,26 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: skillsRankingGet
+  eloRankingsGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-eloRankingsGet
+      Handler: eloRankingsGet.handler
+      Runtime: nodejs20.x
+      CodeUri: eloRankingsGet
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: eloRankingsGet
+  tsRankingsGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-tsRankingsGet
+      Handler: tsRankingsGet.handler
+      Runtime: nodejs20.x
+      CodeUri: tsRankingsGet
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: tsRankingsGet
   auditOngoing:
     Type: AWS::Serverless::Function
     Properties:
@@ -232,3 +252,33 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditTeamDataQueue
+  calculateEloRankings:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-calculateEloRankingsFunc
+      Handler: calculateEloRankings.handler
+      Runtime: python3.10
+      CodeUri: calculateEloRankings
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: calculateEloRankings
+  calculateTsRankings:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-calculateTsRankingsFunc
+      Handler: calculateTsRankings.handler
+      Runtime: python3.10
+      CodeUri: calculateTsRankings
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: calculateTsRankings
+  calculateSkillsRankings:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-calculateSkillsRankingsFunc
+      Handler: calculateSkillsRankings.handler
+      Runtime: python3.10
+      CodeUri: calculateSkillsRankings
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: calculateSkillsRankings
