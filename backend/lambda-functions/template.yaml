@@ -124,6 +124,26 @@ Resources:
       CodeUri: ./restApi/SkillsRanking/skillsRankingGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
+  # EloRankings
+  eloRankingsGet:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-eloRankingsGet
+      Handler: eloRankingsGet.handler
+      Runtime: nodejs20.x 
+      CodeUri: ./restApi/EloRankings/eloRankingsGet
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
+  # TsRankings
+  tsRankingsGet:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-tsRankingsGet
+      Handler: tsRankingsGet.handler
+      Runtime: nodejs20.x 
+      CodeUri: ./restApi/TsRankings/tsRankingsGet
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
   # Other Functions
 
   auditOngoing:
@@ -223,5 +243,32 @@ Resources:
       Handler: auditTeamDataQueue.handler
       Runtime: python3.10 
       CodeUri: ./otherFuncs/auditTeamData/auditTeamDataQueue/
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
+  calculateEloRankings:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-calculateEloRankingsFunc
+      Handler: calculateEloRankings.handler
+      Runtime: python3.10 
+      CodeUri: ./otherFuncs/calculateRankings/calculateEloRankings/
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+  
+  calculateTsRankings:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-calculateTsRankingsFunc
+      Handler: calculateTsRankings.handler
+      Runtime: python3.10 
+      CodeUri: ./otherFuncs/calculateRankings/calculateTsRankings/
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
+  calculateSkillsRankings:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-calculateSkillsRankingsFunc
+      Handler: calculateSkillsRankings.handler
+      Runtime: python3.10 
+      CodeUri: ./otherFuncs/calculateRankings/calculateSkillsRankings/
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
       
