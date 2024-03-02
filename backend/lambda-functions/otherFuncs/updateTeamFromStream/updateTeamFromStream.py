@@ -36,26 +36,38 @@ def unmarshall_dynamodb_item(item):
 def process_match(match, division_name, division_id, event_name, event_id, event_start, season):
     update_ts_data_with_match(match, season)
     update_elo_data_with_match(match, season)  
+    update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start)
     teams = extract_teams_from_match(match)
     for team in teams:
         team_id = team['team']['id']
         if 'id' in match:
             match_id = match['id']
             update_team_data_with_match(team_id, match_id)
-            update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start)
-                
             
+
+def remove_match(match, event_id):
+    logging.error(f"Removing match {match['id']} from event: {event_id}")
+    remove_match_from_match_data(match['id']) 
+    teams = extract_teams_from_match(match)
+    for team in teams:
+        team_id = team['team']['id']
+        if 'id' in match:
+            match_id = match['id']
+            remove_match_from_team_data(team_id, match_id)
             
 def update_ts_data_with_match(match, season):
-    if match['scored'] == False:
-        logging.error("match not yet scored, not adjusting trueskill")
-        return
     if season is not None:
         teams = extract_teams_from_match(match)
         team_ids = [team['team']['id'] for team in teams]
         team_ratings = {team_id: get_team_trueskill(team_id, season) for team_id in team_ids}
         
-        winning_team_ids, losing_team_ids, draw_team_ids = determine_match_outcome_ts(match)
+        winning_team_ids, losing_team_ids, draw_team_ids, skip_match = determine_match_outcome_ts(match)
+        
+        if skip_match:
+            logging.info(f"match {match['id']} not yet scored, not adjusting trueskill")
+            return
+        
+        updates = []
         
         if draw_team_ids:  # Handle draws
             # Prepare teams and ranks for TrueSkill rating update
@@ -64,22 +76,58 @@ def update_ts_data_with_match(match, season):
             new_ratings = env.rate(teams_in_draw, ranks=ranks)
             flat_new_ratings = [rating for sublist in new_ratings for rating in sublist]            
             for team_id, new_rating in zip(draw_team_ids, flat_new_ratings):
-                logging.error(f"updating trueskill for team {team_id}, match {match['id']}, was a tie")
+                logging.info(f"updating trueskill for team {team_id}, match {match['id']}, was a tie")
                 update_team_trueskill(team_id, new_rating.mu, new_rating.sigma, season)
-        else:  # Handle win/lose
+                updates.append((team_id, new_rating.mu, new_rating.sigma))
+        else: # Handle win/lose
             winners = [team_ratings[team_id] for team_id in winning_team_ids]
             losers = [team_ratings[team_id] for team_id in losing_team_ids]
             new_ratings = env.rate([winners, losers], ranks=[0, 1])
             for team_id, rating in zip(winning_team_ids, new_ratings[0]):
-                logging.error(f"updating trueskill for team {team_id}, match {match['id']}")
+                logging.info(f"updating trueskill for team {team_id}, match {match['id']}")
                 update_team_trueskill(team_id, rating.mu, rating.sigma, season)
+                updates.append((team_id, rating.mu, rating.sigma))
             for team_id, rating in zip(losing_team_ids, new_ratings[1]):
-                logging.error(f"updating trueskill for team {team_id}, match {match['id']}")
+                logging.info(f"updating trueskill for team {team_id}, match {match['id']}")
                 update_team_trueskill(team_id, rating.mu, rating.sigma, season)
+                updates.append((team_id, rating.mu, rating.sigma))
+        
+        for team_id, mu, sigma in updates:
+            partition_key = f"{season}-{team_id}"
+            try:
+                # Step 1: Attempt to update the item
+                trueskill_data_table.update_item(
+                    Key={'season-team': partition_key},
+                    UpdateExpression="SET mu = :mu, sigma = :sigma",
+                    ExpressionAttributeValues={
+                        ":mu": Decimal(str(mu)),
+                        ":sigma": Decimal(str(sigma))
+                    },
+                    ConditionExpression="attribute_exists(season-team)"  # Ensures the item exists
+                )
+            except trueskill_data_table.meta.client.exceptions.ConditionalCheckFailedException:
+                # Step 2: Item does not exist, so fetch region and create the item
+                team_data = team_data_table.get_item(
+                    Key={'team_id': team_id}
+                ).get('Item', {})
+                
+                region = team_data.get('region', 'Unknown')  # Default region if not found
+                
+                # Step 3: Create the item with necessary attributes including region
+                trueskill_data_table.put_item(
+                    Item={
+                        'season-team': partition_key,
+                        'mu': Decimal(str(mu)),
+                        'sigma': Decimal(str(sigma)),
+                        'team_id': team_id,
+                        'season': season,
+                        'region': region
+                    }
+                )
             
 def update_team_trueskill(team_id, mu, sigma, season):
     if season != 181 or season != 182:
-        logging.error("not a current vrc/vexu season match")
+        logging.info("not a current vrc/vexu season match")
         return
     try:
         team_data_table.update_item(
@@ -110,9 +158,9 @@ def get_team_trueskill(team_id, season):
             ProjectionExpression=f"teamskill.#season",
             ExpressionAttributeNames={'#season': str(season)}
         )
-        if 'Item' in response and season in response['Item'].get('teamskill', {}):
+        if 'Item' in response and str(season) in response['Item'].get('teamskill', {}):
             ts_data = response['Item']['teamskill'][str(season)]
-            return env.create_rating(mu=ts_data['mu'], sigma=ts_data['sigma'])
+            return env.create_rating(mu=float(ts_data['mu']), sigma=float(ts_data['sigma']))
         else:
             return env.create_rating()
     except Exception as e:
@@ -121,14 +169,17 @@ def get_team_trueskill(team_id, season):
     
         
 def update_elo_data_with_match(match, season):
-    if match['scored'] == False:
-        logging.error("match not yet scored, not adjusting elo")
-        return
     if season is not None:
-        winning_team_ids, losing_team_ids = determine_match_outcome_elo(match)
+        winning_team_ids, losing_team_ids, skip_match = determine_match_outcome_elo(match)
+        
+        if skip_match:
+            logging.info(f"match {match['id']} not yet scored, not adjusting elo")
+            return
         if not (len(winning_team_ids) == 0 or len(losing_team_ids) == 0):
             # Fetch current ELO ratings for all teams involved in the match
             team_elos = {team_id: get_team_elo(team_id, season) for team_id in winning_team_ids + losing_team_ids}
+            
+            updates = {}
             
             # Calculate and update new ELO ratings individually for each team based on match outcome
             for team_id in winning_team_ids:
@@ -136,13 +187,44 @@ def update_elo_data_with_match(match, season):
                 new_elo, _ = update_elo(team_elos[team_id], avg_lose_elo)
                 logging.info(f"updating elo for {team_id}")
                 update_team_elo(team_id, new_elo, season)
+                updates[team_id] = new_elo
 
             for team_id in losing_team_ids:
                 avg_win_elo = sum(team_elos[team_id] for team_id in winning_team_ids) / len(winning_team_ids)
                 _, new_elo = update_elo(avg_win_elo, team_elos[team_id])
                 logging.info(f"updating elo for {team_id}")
                 update_team_elo(team_id, new_elo, season)
+                updates[team_id] = new_elo
 
+            batch_write_elo_updates(updates, season)
+            
+def batch_write_elo_updates(team_elos, season_id):
+    for team_id, elo in team_elos.items():
+        partition_key = f"{season_id}-{team_id}"
+        try:
+            # Attempt to update the item with a conditional expression to ensure it exists
+            elo_data_table.update_item(
+                Key={'season-team': partition_key},
+                UpdateExpression="SET elo = :elo",
+                ExpressionAttributeValues={":elo": Decimal(str(elo))},
+                ConditionExpression="attribute_exists(season-team)"
+            )
+        except elo_data_table.meta.client.exceptions.ConditionalCheckFailedException:
+            # If the item does not exist, fetch the region for the team and create the item
+            team_data = team_data_table.get_item(Key={'team_id': team_id}).get('Item', {})
+            region = team_data.get('region', 'Unknown')  # Default region if not found
+            
+            # Create the item with elo, region, and any other necessary attributes
+            elo_data_table.put_item(
+                Item={
+                    'season-team': partition_key,
+                    'elo': Decimal(str(elo)),
+                    'team_id': team_id,
+                    'season': season_id,
+                    'region': region
+                }
+            )
+    logging.info(f"Individually processed ELO updates for {len(team_elos)} teams for season {season_id}.")
    
 def expected_score(rating_a, rating_b):
     return 1 / (1 + 10 ** ((rating_b - rating_a) / 400))
@@ -160,11 +242,14 @@ def determine_match_outcome_ts(match):
     alliances = match['alliances']
     scores = {alliance['color']: (int(alliance['score']), [team['team']['id'] for team in alliance['teams']]) for alliance in alliances}
     
+    if scores['red'][0] == 0 and scores['blue'][0] == 0:
+        return [], [], [], True  # Return an additional flag indicating to skip this match
+    
     # Check if it's a draw
     if scores['red'][0] == scores['blue'][0]:
         # It's a draw, combine both teams
         draw_team_ids = scores['red'][1] + scores['blue'][1]
-        return [], [], draw_team_ids
+        return [], [], draw_team_ids, False
     else:
         # Determine winner and loser based on score
         winner_color = max(scores, key=lambda x: scores[x][0])
@@ -173,20 +258,22 @@ def determine_match_outcome_ts(match):
         winning_team_ids = scores[winner_color][1]
         losing_team_ids = scores[loser_color][1]
         
-        return winning_team_ids, losing_team_ids, []
+        return winning_team_ids, losing_team_ids, [], False
              
 def determine_match_outcome_elo(match):
     alliances = match['alliances']
     scores = {alliance['color']: (int(alliance['score']), [team['team']['id'] for team in alliance['teams']]) for alliance in alliances}
     
-    # Determine winner and loser based on score
+    if scores['red'][0] == 0 and scores['blue'][0] == 0:
+        return [], [], True
+
     winner_color = max(scores, key=lambda x: scores[x][0])
     loser_color = 'blue' if winner_color == 'red' else 'red'
     
     winning_team_ids = scores[winner_color][1]
     losing_team_ids = scores[loser_color][1]
     
-    return winning_team_ids, losing_team_ids
+    return winning_team_ids, losing_team_ids, False
 
 def extract_teams_from_match(match):
     teams = []
@@ -212,7 +299,7 @@ def get_team_elo(team_id, season):
             Key={'id': team_id},
             ProjectionExpression="elo"
         )
-        if 'Item' in response and season in response['Item'].get('elo', {}):
+        if 'Item' in response and str(season) in response['Item'].get('elo', {}):
             return Decimal(response['Item']['elo'][str(season)])
         else:
             return Decimal(DEFAULT_ELO)
@@ -233,6 +320,39 @@ def update_team_data_with_match(team_id, match_id):
     )
     logging.info(f"Updated team-data for team ID {team_id} with match id {match_id}.")
 
+def remove_match_from_team_data(team_id, match_id):
+    response = team_data_table.get_item(
+        Key={'id': int(team_id)}
+    )
+    matches = response['Item']['matches'] if 'Item' in response and 'matches' in response['Item'] else []
+
+    match_index = None
+    for index, m_id in enumerate(matches):
+        if m_id == match_id:
+            match_index = index
+            break
+
+    if match_index is not None:
+        try:
+            update_response = team_data_table.update_item(
+                Key={'id': int(team_id)},
+                UpdateExpression=f'REMOVE matches[{match_index}]',
+                ReturnValues='UPDATED_NEW'
+            )
+            logging.error(f"Updated team-data for team ID {team_id} with removed match id {match_id}")
+        except Exception as e:
+            logging.error(f"Error updating team-data for team ID {team_id}: {e}")
+    else:
+        logging.info(f"Match ID {match_id} not found in matches for team ID {team_id}.")
+    
+def remove_match_from_match_data(match_id):
+    response = match_data_table.delete_item(
+        Key={
+            'id': match_id 
+        }
+    )
+    logging.info(f"Removed match data with match ID {match_id} from DynamoDB")
+    
 def update_team_data_with_award(team_id, award_id):
     response = team_data_table.update_item(
         Key={'id': int(team_id)},
@@ -304,37 +424,46 @@ def update_awards_data(event_id, awards, program, season):
         )
         logging.info(f"Posted award data with award ID {award['id']} to DynamoDB.")
 
-def find_updated_matches(old_divisions, new_divisions):
+def find_match_differences(old_divisions, new_divisions):
     updated_matches = []
-    for new_division in new_divisions:
-        for old_division in old_divisions:
-            if new_division['id'] == old_division['id'] and 'matches' in new_division and 'matches' in old_division:
-                logging.info(f"Looking at division id: {new_division['id']}")
+    removed_matches = []
 
+    # Convert new matches to a dictionary for easier lookup
+    new_matches_dict = {}
+    for new_division in new_divisions:
+        if 'matches' in new_division:
+            new_matches_dict[new_division['id']] = {match['id']: match for match in new_division['matches'] if isinstance(match, dict)}
+    
+    for old_division in old_divisions:
+        old_division_id = old_division['id']
+        for new_division in new_divisions:
+            if old_division_id == new_division['id'] and 'matches' in old_division:
+                logging.info(f"Looking at division id: {old_division_id}")
+                
                 # Convert old matches to a dictionary for easier lookup by match id
                 old_matches_dict = {match['id']: match for match in old_division['matches'] if isinstance(match, dict)}
 
-                for new_match in new_division['matches']:
-                    if isinstance(new_match, dict):
-                        match_id = new_match['id']
-                        # Check if the match is new or if the match data has changed
-                        if match_id not in old_matches_dict or new_match != old_matches_dict[match_id]:
-                            updated_matches.append({
-                                'division_id': new_division['id'],
-                                'division_name': new_division.get('name', 'Unknown Division'),
-                                **new_match
-                            })
-                            logging.error(f"Updated/new match found: {match_id}")
-            elif 'matches' in new_division and 'matches' not in old_division:
-                for new_match in new_division['matches']:
-                    updated_matches.append({
-                        'division_id': new_division['id'],
-                        'division_name': new_division.get('name', 'Unknown Division'),
-                                **new_match
-                    })
-                    logging.error(f"New match found: {new_match['id']}")
+                # Check for updated or new matches
+                for match_id, new_match in new_matches_dict.get(old_division_id, {}).items():
+                    if match_id not in old_matches_dict or new_match != old_matches_dict[match_id]:
+                        updated_matches.append({
+                            'division_id': old_division_id,
+                            'division_name': new_division.get('name', 'Unknown Division'),
+                            **new_match
+                        })
+                        logging.error(f"Updated/new match found: {match_id}")
 
-    return updated_matches
+                # Check for removed matches
+                for match_id, old_match in old_matches_dict.items():
+                    if old_division_id not in new_matches_dict or match_id not in new_matches_dict[old_division_id]:
+                        removed_matches.append({
+                            'division_id': old_division_id,
+                            'division_name': old_division.get('name', 'Unknown Division'),
+                            **old_match
+                        })
+                        logging.error(f"Removed match found: {match_id}")
+
+    return updated_matches, removed_matches
 
 def find_updated_rankings(old_divisions, new_divisions):
     updated_rankings = []
@@ -399,7 +528,7 @@ def find_updated_skills(old_skills, new_skills):
         if not old_skill or new_skill != old_skill:
             updated_skills.append(new_skill)
 
-    logging.error(f"Found updated/new Skills:")
+    logging.error(f"Found updated/new Skills")
     return updated_skills
 
 def update_team_events(team_id, event_data):
@@ -430,21 +559,6 @@ def remove_event_for_team(team_id, event_id):
                 ExpressionAttributeValues={':updated_events': updated_events}
             )
             logging.info(f"Removed event {event_id} from team ID {team_id}")
-
-def remove_match_for_team(team_id, match_id):
-    # Fetch the current team item
-    response = team_data_table.get_item(Key={'id': int(team_id)})
-    if 'Item' in response and 'matches' in response['Item']:
-        # Filter out the match to be removed
-        updated_matches = [match for match in response['Item']['matches'] if match != match_id]
-        
-        # Update the team item with the modified matches list
-        team_data_table.update_item(
-            Key={'id': int(team_id)},
-            UpdateExpression='SET matches = :updated_matches',
-            ExpressionAttributeValues={':updated_matches': updated_matches}
-        )
-        logging.info(f"Removed match {match_id} from team ID {team_id}")
 
 def process_skills_updates(updated_skills, event_id, event_name, event_start):
     update_skills_ranking_data(updated_skills, event_id, event_name, event_start)
@@ -613,7 +727,7 @@ def handler(aws_event, context):
                 new_divisions = new_image['divisions']
                 old_divisions = old_image['divisions']
                 updated_rankings = find_updated_rankings(old_divisions, new_divisions)
-                updated_matches = find_updated_matches(old_divisions, new_divisions)
+                updated_matches, removed_matches = find_match_differences(old_divisions, new_divisions)
                 logging.info(updated_matches)
 
                 # Process new/removed matches within divisions
@@ -621,6 +735,10 @@ def handler(aws_event, context):
                     division_id = match['division_id']
                     division_name = match['division_name']
                     process_match(match, division_name, division_id, event_name, event_id, event_start, season)
+                    
+                for match in removed_matches:
+                    logging.info(f"Found removed matches: {removed_matches}")
+                    remove_match(match, event_id)
                 
 
                 # Process new/removed rankings within divisions
