@@ -5,7 +5,7 @@ from boto3.dynamodb.conditions import Key, Attr
 # Constants
 DEFAULT_ELO = 1000
 K_FACTOR = 40
-SEASON_ID = 88
+SEASON_ID = 103
 
 dynamodb = boto3.resource('dynamodb')
 events_table = dynamodb.Table('event-data')
@@ -32,8 +32,8 @@ def fetch_events():
 
     # Correct the date range for the query
     # KeyConditionExpression=Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').gte('2023-06-01T00:00:00-05:00'),
-    start_date = '2012-03-01T00:00:00-05:00'  # Start of the range
-    end_date = '2013-02-14T00:00:00-05:00'    # End of the range
+    start_date = '2014-03-01T00:00:00-05:00'  # Start of the range
+    end_date = '2015-02-14T00:00:00-05:00'    # End of the range
 
     while True:
         page += 1
@@ -42,7 +42,7 @@ def fetch_events():
         query_kwargs = {
             'IndexName': 'EventsByStartDateGSI',
             'KeyConditionExpression': Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').between(start_date, end_date),
-            'FilterExpression': Attr('program').is_in(['VRC', 'VEXU'])
+            'FilterExpression': Attr('program').is_in(['VEXU'])
         }
 
         if last_evaluated_key:
@@ -114,10 +114,10 @@ def process_events():
     print("finished batch writing to elo-rankings")
     
     count = 0
-    for team_id, elo in team_elos.items():
-        count += 1
-        print(f"Updated team {team_id} with ELO, {count} teams updated")
-        update_team_elo(team_id, elo, SEASON_ID) 
+    # for team_id, elo in team_elos.items():
+    #     count += 1
+    #     print(f"Updated team {team_id} with ELO, {count} teams updated")
+    #     update_team_elo(team_id, elo, SEASON_ID) 
         
         
 def process_event(event_id):
@@ -159,9 +159,9 @@ def process_event(event_id):
         for team_id, elo in sorted_team_elos:
             file.write(f"Team ID: {team_id}, ELO: {elo}\n")
 
-    # print("batch writing to elo-rankings")
-    # batch_write_elo_updates(team_elos, SEASON_ID)
-    # print("finished batch writing to elo-rankings")
+    print("batch writing to elo-rankings")
+    batch_write_elo_updates(team_elos, SEASON_ID)
+    print("finished batch writing to elo-rankings")
     # Update team data in the database with new ELO ratings
     count = 0
     for team_id, elo in team_elos.items():
@@ -197,21 +197,54 @@ def determine_match_outcome(match):
     
     return winning_team_ids, losing_team_ids
 
+def fetch_team_data(team_ids):
+    team_regions = {}
+    team_names = {}
+    team_numbers = {}
+    team_orgs = {}
+    for team_id in team_ids:
+        try:
+            response = teams_table.get_item(Key={'id': team_id})
+            if 'Item' in response:
+                if 'region' in response['Item']:
+                    team_regions[team_id] = response['Item']['region']
+                if 'team_name' in response['Item']:
+                    team_names[team_id] = response['Item']['team_name']
+                if 'organization' in response['Item']:
+                    team_orgs[team_id] = response['Item']['organization']
+                if 'number' in response['Item']:
+                    team_numbers[team_id] = response['Item']['number']
+            else:
+                team_regions[team_id] = "Unknown"
+        except Exception as e:
+            print(f"Error fetching region for team ID {team_id}: {e}")
+            team_regions[team_id] = "Error"
+    return team_regions, team_names, team_numbers, team_orgs
+
 def batch_write_elo_updates(team_elos, season_id):
-    """
-    Performs batch writes to the elo-rankings table for updated ELO ratings.
-    """
+    team_ids = list(team_elos.keys())
+    team_regions, team_names, team_numbers, team_orgs = fetch_team_data(team_ids)
+
     with elo_table.batch_writer() as batch:
         for team_id, elo in team_elos.items():
+            region = team_regions.get(team_id, "Unknown")
+            team_number = team_numbers.get(team_id, "Unknown")
+            team_name = team_names.get(team_id, "Unknown")
+            team_org = team_orgs.get(team_id, "Unknown")
             batch.put_item(
                 Item={
-                    'season-team': f"{Decimal(season_id)}" + "-" + str(team_id),
+                    'season-team': f"{season_id}-{team_id}",
                     'elo': Decimal(str(elo)),
                     'team_id': team_id,
-                    'season': Decimal(season_id)
+                    'team_number': team_number,
+                    'team_name': team_name,
+                    'team_org': team_org,
+                    'season': Decimal(season_id),
+                    'region': region
                 }
             )
     print(f"Batch updated {len(team_elos)} team ELO ratings for season {season_id}.")
+
 
 def update_team_elo(team_id, elo, season_id):
     """

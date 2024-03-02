@@ -4,7 +4,7 @@ from decimal import Decimal
 import trueskill
 
 # Constants
-SEASON_ID = 88
+SEASON_ID = 103
 
 # Initialize TrueSkill environment
 env = trueskill.TrueSkill(draw_probability=0.01)  # Adjust draw_probability as needed
@@ -23,8 +23,8 @@ def fetch_events():
     print("Scanning events")
 
     # Correct the date range for the query
-    start_date = '2012-03-01T00:00:00-05:00'  # Start of the range
-    end_date = '2013-02-14T00:00:00-05:00'    # End of the range
+    start_date = '2014-03-01T00:00:00-05:00'  # Start of the range
+    end_date = '2015-02-14T00:00:00-05:00'    # End of the range
     
     while True:
         page += 1
@@ -33,7 +33,7 @@ def fetch_events():
         query_kwargs = {
             'IndexName': 'EventsByStartDateGSI',
             'KeyConditionExpression': Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').between(start_date, end_date),
-            'FilterExpression': Attr('program').is_in(['VRC', 'VEXU'])
+            'FilterExpression': Attr('program').is_in(['VEXU'])
         }
 
         if last_evaluated_key:
@@ -134,26 +134,59 @@ def update_trueskill_ratings(winning_team_ids, losing_team_ids, draw_team_ids):
         for team_id, new_rating in zip(draw_teams_combined, updated_ratings_combined):
             team_ratings[team_id] = trueskill.Rating(mu=round(new_rating.mu, 2), sigma=round(new_rating.sigma, 2))
 
+   
+def fetch_team_data(team_ids):
+    team_regions = {}
+    team_names = {}
+    team_numbers = {}
+    team_orgs = {}
+    for team_id in team_ids:
+        try:
+            response = teams_table.get_item(Key={'id': team_id})
+            if 'Item' in response:
+                if 'region' in response['Item']:
+                    team_regions[team_id] = response['Item']['region']
+                if 'team_name' in response['Item']:
+                    team_names[team_id] = response['Item']['team_name']
+                if 'organization' in response['Item']:
+                    team_orgs[team_id] = response['Item']['organization']
+                if 'number' in response['Item']:
+                    team_numbers[team_id] = response['Item']['number']
+            else:
+                team_regions[team_id] = "Unknown"
+        except Exception as e:
+            print(f"Error fetching region for team ID {team_id}: {e}")
+            team_regions[team_id] = "Error"
+    return team_regions, team_names, team_numbers, team_orgs
 
 def log_and_write_final_ratings():
     global team_ratings
-    # Log the final TrueSkill ratings to a file and batch write updates to DynamoDB
+    team_regions, team_names, team_numbers, team_orgs = fetch_team_data(team_ratings.keys())  # Fetch all team regions at once
+
     log_file_path = "logs/trueskill.log"
     with open(log_file_path, "w") as file, trueskill_table.batch_writer() as batch:
         file.write("Final TrueSkill Ratings:\n")
         for team_id, rating in team_ratings.items():
-            file.write(f"Team ID: {team_id}, Mu: {rating.mu}, Sigma: {rating.sigma}\n")
+            region = team_regions.get(team_id, "Unknown")
+            team_name = team_names.get(team_id, "Unknown")
+            team_number = team_numbers.get(team_id, "Unknown")
+            team_org = team_orgs.get(team_id, "Unknown")
+            file.write(f"Team ID: {team_id}, Mu: {rating.mu}, Sigma: {rating.sigma}, Region: {region}\n")
             batch.put_item(
                 Item={
                     'season-team': f"{SEASON_ID}-{team_id}",
                     'mu': Decimal(str(rating.mu)),
                     'sigma': Decimal(str(rating.sigma)),
                     'team_id': team_id,
-                    'season': SEASON_ID
+                    'team_name': team_name,
+                    'team_number': team_number,
+                    'team_org': team_org,
+                    'season': SEASON_ID,
+                    'region': region  # Include region in the item
                 }
             )
-
-            update_team_trueskill(team_id, rating.mu, rating.sigma, SEASON_ID)
+            
+            # update_team_trueskill(team_id, rating.mu, rating.sigma, SEASON_ID)
             
 def update_team_trueskill(team_id, mu, sigma, season_id):
     global count
