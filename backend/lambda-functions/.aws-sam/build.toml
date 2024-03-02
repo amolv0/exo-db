@@ -208,4 +208,49 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["updateOngoingLeagueQueue"]
 
+[function_build_definitions.96242c04-b266-41b4-a434-4f1f08b43eca]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/calculateRankings/calculateEloRankings"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "calculateEloRankings.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["calculateEloRankings"]
+
+[function_build_definitions.dd3a65c8-54f8-4728-aff8-c75f4b4a923c]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/calculateRankings/calculateTsRankings"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "calculateTsRankings.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["calculateTsRankings"]
+
+[function_build_definitions.d0ac4253-c56b-415b-8256-bbd10fa25e9c]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/calculateRankings/calculateSkillsRankings"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "calculateSkillsRankings.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["calculateSkillsRankings"]
+
+[function_build_definitions.dc591801-b934-4789-9fb6-0208e9696789]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/EloRankings/eloRankingsGet"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "eloRankingsGet.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["eloRankingsGet"]
+
+[function_build_definitions.dadddae4-0704-4f8d-812b-af7b2c1b0334]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/TsRankings/tsRankingsGet"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "tsRankingsGet.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["tsRankingsGet"]
+
 [layer_build_definitions]

@@ -1,0 +1,875 @@
+{
+    "meta": {
+        "current_page": 1,
+        "first_page_url": "https://www.robotevents.com/api/v2/seasons?page=1",
+        "from": 1,
+        "last_page": 1,
+        "last_page_url": "https://www.robotevents.com/api/v2/seasons?page=1",
+        "next_page_url": null,
+        "path": "https://www.robotevents.com/api/v2/seasons",
+        "per_page": 250,
+        "prev_page_url": null,
+        "to": 66,
+        "total": 66
+    },
+    "data": [
+        {
+            "id": 180,
+            "name": "VIQRC 2023-2024: Full Volume",
+            "program": {
+                "id": 41,
+                "name": "VEX IQ Robotics Competition",
+                "code": "VIQRC"
+            },
+            "start": "2023-04-05T09:30:00-04:00",
+            "end": "2023-12-15T23:59:00-05:00",
+            "years_start": 2023,
+            "years_end": 2024
+        },
+        {
+            "id": 181,
+            "name": "VRC 2023-2024: Over Under",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2023-04-05T09:30:00-04:00",
+            "end": "2024-02-01T23:59:00-05:00",
+            "years_start": 2023,
+            "years_end": 2024
+        },
+        {
+            "id": 182,
+            "name": "VEXU 2023-2024: Over Under",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2023-04-05T09:30:00-04:00",
+            "end": "2024-02-01T09:54:00-05:00",
+            "years_start": 2023,
+            "years_end": 2024
+        },
+        {
+            "id": 185,
+            "name": "VAIRC 2023-2024: Over Under",
+            "program": {
+                "id": 57,
+                "name": "VEX AI Robotics Competition",
+                "code": "VAIRC"
+            },
+            "start": "2023-10-03T12:00:00-04:00",
+            "end": "2024-05-15T23:59:00-04:00",
+            "years_start": 2023,
+            "years_end": 2024
+        },
+        {
+            "id": 188,
+            "name": "FAC 2023-2024",
+            "program": {
+                "id": 56,
+                "name": "VEX  Factory Automation Competition",
+                "code": "FAC"
+            },
+            "start": "2023-12-18T12:00:00-05:00",
+            "end": "2024-11-30T12:00:00-05:00",
+            "years_start": 2023,
+            "years_end": 2024
+        },
+        {
+            "id": 184,
+            "name": "Aerial Drone Competition 2023-2024",
+            "program": {
+                "id": 44,
+                "name": "Aerial Drone Competition",
+                "code": "ADC"
+            },
+            "start": "2023-04-05T09:30:38-04:00",
+            "end": "2024-05-15T23:59:00-04:00",
+            "years_start": 2023,
+            "years_end": 2024
+        },
+        {
+            "id": 118,
+            "name": "Workshops & Camps",
+            "program": {
+                "id": 37,
+                "name": "Workshops & Camps",
+                "code": "WORKSHOP"
+            },
+            "start": "2016-03-01T00:00:00-05:00",
+            "end": "2025-05-01T00:00:00-04:00",
+            "years_start": 2023,
+            "years_end": 2024
+        },
+        {
+            "id": 186,
+            "name": "TSA VEX IQ 2023-2024",
+            "program": {
+                "id": 47,
+                "name": "TSA VEX IQ Robotics Competition",
+                "code": "TVIQRC"
+            },
+            "start": "2023-11-13T12:00:00-05:00",
+            "end": "2024-03-01T12:00:00-05:00",
+            "years_start": 2023,
+            "years_end": 2024
+        },
+        {
+            "id": 187,
+            "name": "TSA VRC 2023-2024",
+            "program": {
+                "id": 46,
+                "name": "TSA VEX Robotics Competition",
+                "code": "TVRC"
+            },
+            "start": "2023-11-13T12:00:00-05:00",
+            "end": "2024-03-01T12:00:00-05:00",
+            "years_start": 2023,
+            "years_end": 2024
+        },
+        {
+            "id": 174,
+            "name": "VIQC 2022-2023: Slapshot",
+            "program": {
+                "id": 41,
+                "name": "VEX IQ Robotics Competition",
+                "code": "VIQRC"
+            },
+            "start": "2022-04-18T07:00:00-04:00",
+            "end": "2023-04-01T07:00:00-04:00",
+            "years_start": 2022,
+            "years_end": 2023
+        },
+        {
+            "id": 173,
+            "name": "VRC 2022-2023: Spin Up",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2022-04-18T07:00:00-04:00",
+            "end": "2023-04-01T07:00:00-04:00",
+            "years_start": 2022,
+            "years_end": 2023
+        },
+        {
+            "id": 175,
+            "name": "VEXU 2022-2023: Spin Up",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2022-04-18T07:00:00-04:00",
+            "end": "2023-04-01T07:00:00-04:00",
+            "years_start": 2022,
+            "years_end": 2023
+        },
+        {
+            "id": 177,
+            "name": "FAC 2022-2023",
+            "program": {
+                "id": 56,
+                "name": "VEX  Factory Automation Competition",
+                "code": "FAC"
+            },
+            "start": "2022-11-01T00:00:00-04:00",
+            "end": "2023-05-31T23:59:59-04:00",
+            "years_start": 2022,
+            "years_end": 2023
+        },
+        {
+            "id": 176,
+            "name": "Aerial Drone Competition 2022-2023",
+            "program": {
+                "id": 44,
+                "name": "Aerial Drone Competition",
+                "code": "ADC"
+            },
+            "start": "2022-04-18T07:00:00-04:00",
+            "end": "2023-04-01T07:00:00-04:00",
+            "years_start": 2022,
+            "years_end": 2023
+        },
+        {
+            "id": 178,
+            "name": "TSA VEX IQ 2022-2023",
+            "program": {
+                "id": 47,
+                "name": "TSA VEX IQ Robotics Competition",
+                "code": "TVIQRC"
+            },
+            "start": "2022-10-11T00:00:00-04:00",
+            "end": "2023-06-03T17:42:18-04:00",
+            "years_start": 2022,
+            "years_end": 2023
+        },
+        {
+            "id": 179,
+            "name": "TSA VRC 2022-2023",
+            "program": {
+                "id": 46,
+                "name": "TSA VEX Robotics Competition",
+                "code": "TVRC"
+            },
+            "start": "2022-10-11T00:00:00-04:00",
+            "end": "2023-06-03T17:44:35-04:00",
+            "years_start": 2022,
+            "years_end": 2023
+        },
+        {
+            "id": 155,
+            "name": "VIQC 2021-2022: Pitching In",
+            "program": {
+                "id": 41,
+                "name": "VEX IQ Robotics Competition",
+                "code": "VIQRC"
+            },
+            "start": "2021-04-15T07:00:00-04:00",
+            "end": "2022-04-18T00:00:00-04:00",
+            "years_start": 2021,
+            "years_end": 2022
+        },
+        {
+            "id": 154,
+            "name": "VRC 2021-2022: Tipping Point",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2021-04-15T07:00:00-04:00",
+            "end": "2022-04-18T00:00:00-04:00",
+            "years_start": 2021,
+            "years_end": 2022
+        },
+        {
+            "id": 156,
+            "name": "VEXU 2021-2022: Tipping Point",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2021-04-30T00:00:00-04:00",
+            "end": "2022-05-02T00:00:00-04:00",
+            "years_start": 2021,
+            "years_end": 2022
+        },
+        {
+            "id": 171,
+            "name": "VAIC 2021-2022: Tipping Point",
+            "program": {
+                "id": 57,
+                "name": "VEX AI Robotics Competition",
+                "code": "VAIRC"
+            },
+            "start": "2022-01-14T13:00:00-05:00",
+            "end": "2022-03-09T00:00:00-05:00",
+            "years_start": 2021,
+            "years_end": 2022
+        },
+        {
+            "id": 165,
+            "name": "FAC 2021-2022",
+            "program": {
+                "id": 56,
+                "name": "VEX  Factory Automation Competition",
+                "code": "FAC"
+            },
+            "start": "2021-10-04T00:00:01-04:00",
+            "end": "2022-05-31T23:59:59-04:00",
+            "years_start": 2021,
+            "years_end": 2022
+        },
+        {
+            "id": 158,
+            "name": "RADC 2021-2022 : DownDraft 2",
+            "program": {
+                "id": 44,
+                "name": "Aerial Drone Competition",
+                "code": "ADC"
+            },
+            "start": "2021-04-15T07:00:00-04:00",
+            "end": "2022-04-18T00:00:00-04:00",
+            "years_start": 2021,
+            "years_end": 2022
+        },
+        {
+            "id": 166,
+            "name": "TSA VEX IQ 2021-2022",
+            "program": {
+                "id": 47,
+                "name": "TSA VEX IQ Robotics Competition",
+                "code": "TVIQRC"
+            },
+            "start": "2021-09-20T16:41:13-04:00",
+            "end": "2022-06-27T16:41:22-04:00",
+            "years_start": 2021,
+            "years_end": 2022
+        },
+        {
+            "id": 167,
+            "name": "TSA VRC 2021-2022",
+            "program": {
+                "id": 46,
+                "name": "TSA VEX Robotics Competition",
+                "code": "TVRC"
+            },
+            "start": "2021-09-20T16:42:53-04:00",
+            "end": "2022-06-27T16:42:56-04:00",
+            "years_start": 2021,
+            "years_end": 2022
+        },
+        {
+            "id": 138,
+            "name": "VIQC 2020-2021: Rise Above",
+            "program": {
+                "id": 41,
+                "name": "VEX IQ Robotics Competition",
+                "code": "VIQRC"
+            },
+            "start": "2020-04-25T13:02:20-04:00",
+            "end": "2021-05-15T23:00:00-04:00",
+            "years_start": 2020,
+            "years_end": 2021
+        },
+        {
+            "id": 139,
+            "name": "VRC 2020-2021: Change Up ",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2020-04-25T13:00:00-04:00",
+            "end": "2021-05-18T23:00:00-04:00",
+            "years_start": 2020,
+            "years_end": 2021
+        },
+        {
+            "id": 140,
+            "name": "VEXU 2020-2021: Change Up",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2020-04-25T13:03:24-04:00",
+            "end": "2021-05-08T00:00:00-04:00",
+            "years_start": 2020,
+            "years_end": 2021
+        },
+        {
+            "id": 144,
+            "name": "RADC 2020-2021",
+            "program": {
+                "id": 44,
+                "name": "Aerial Drone Competition",
+                "code": "ADC"
+            },
+            "start": "2020-05-04T00:00:00-04:00",
+            "end": "2021-05-16T00:00:00-04:00",
+            "years_start": 2020,
+            "years_end": 2021
+        },
+        {
+            "id": 141,
+            "name": "TSA VEX IQ 2020-2021",
+            "program": {
+                "id": 47,
+                "name": "TSA VEX IQ Robotics Competition",
+                "code": "TVIQRC"
+            },
+            "start": "2020-08-12T00:00:00-04:00",
+            "end": "2021-06-28T00:00:00-04:00",
+            "years_start": 2020,
+            "years_end": 2021
+        },
+        {
+            "id": 142,
+            "name": "TSA VRC 2020-2021",
+            "program": {
+                "id": 46,
+                "name": "TSA VEX Robotics Competition",
+                "code": "TVRC"
+            },
+            "start": "2020-08-12T00:00:00-04:00",
+            "end": "2021-06-29T08:00:00-04:00",
+            "years_start": 2020,
+            "years_end": 2021
+        },
+        {
+            "id": 129,
+            "name": "VIQC 2019-2020: Squared Away",
+            "program": {
+                "id": 41,
+                "name": "VEX IQ Robotics Competition",
+                "code": "VIQRC"
+            },
+            "start": "2019-04-30T16:00:00-04:00",
+            "end": "2020-04-16T00:00:00-04:00",
+            "years_start": 2019,
+            "years_end": 2020
+        },
+        {
+            "id": 130,
+            "name": "VRC 2019-2020: Tower Takeover",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2019-04-27T00:00:00-04:00",
+            "end": "2020-04-16T00:00:00-04:00",
+            "years_start": 2019,
+            "years_end": 2020
+        },
+        {
+            "id": 131,
+            "name": "VEXU 2019-2020: Tower Takeover",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2019-04-27T00:00:00-04:00",
+            "end": "2020-04-16T00:00:00-04:00",
+            "years_start": 2019,
+            "years_end": 2020
+        },
+        {
+            "id": 134,
+            "name": "RADC 2019-2020",
+            "program": {
+                "id": 44,
+                "name": "Aerial Drone Competition",
+                "code": "ADC"
+            },
+            "start": "2019-10-16T12:00:00-04:00",
+            "end": "2020-04-01T17:00:00-04:00",
+            "years_start": 2019,
+            "years_end": 2020
+        },
+        {
+            "id": 135,
+            "name": "TSA VEX IQ 2019-2020",
+            "program": {
+                "id": 47,
+                "name": "TSA VEX IQ Robotics Competition",
+                "code": "TVIQRC"
+            },
+            "start": "2019-10-28T06:14:48-04:00",
+            "end": "2020-06-30T06:14:52-04:00",
+            "years_start": 2019,
+            "years_end": 2020
+        },
+        {
+            "id": 136,
+            "name": "TSA VRC 2019-2020",
+            "program": {
+                "id": 46,
+                "name": "TSA VEX Robotics Competition",
+                "code": "TVRC"
+            },
+            "start": "2019-10-28T06:39:30-04:00",
+            "end": "2020-06-30T06:39:34-04:00",
+            "years_start": 2019,
+            "years_end": 2020
+        },
+        {
+            "id": 137,
+            "name": "NRL 2019-2020",
+            "program": {
+                "id": 43,
+                "name": "National Robotics League",
+                "code": "NRL"
+            },
+            "start": "2019-11-21T09:47:13-05:00",
+            "end": "2020-05-16T09:48:56-04:00",
+            "years_start": 2019,
+            "years_end": 2020
+        },
+        {
+            "id": 124,
+            "name": "VIQC 2018-2019: Next Level",
+            "program": {
+                "id": 41,
+                "name": "VEX IQ Robotics Competition",
+                "code": "VIQRC"
+            },
+            "start": "2018-05-01T00:00:00-04:00",
+            "end": "2019-04-16T00:00:00-04:00",
+            "years_start": 2018,
+            "years_end": 2019
+        },
+        {
+            "id": 125,
+            "name": "VRC 2018-2019: Turning Point",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2018-04-27T00:00:00-04:00",
+            "end": "2019-04-16T00:00:00-04:00",
+            "years_start": 2018,
+            "years_end": 2019
+        },
+        {
+            "id": 126,
+            "name": "VEXU 2018-2019: Turning Point",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2018-04-27T00:00:00-04:00",
+            "end": "2019-04-16T00:00:00-04:00",
+            "years_start": 2018,
+            "years_end": 2019
+        },
+        {
+            "id": 121,
+            "name": "VIQC 2017-2018: Ringmaster",
+            "program": {
+                "id": 41,
+                "name": "VEX IQ Robotics Competition",
+                "code": "VIQRC"
+            },
+            "start": "2017-05-05T00:00:00-04:00",
+            "end": "2018-04-18T12:00:00-04:00",
+            "years_start": 2017,
+            "years_end": 2018
+        },
+        {
+            "id": 119,
+            "name": "VRC 2017-2018: In the Zone",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2017-05-05T00:00:00-04:00",
+            "end": "2018-04-18T12:00:00-04:00",
+            "years_start": 2017,
+            "years_end": 2018
+        },
+        {
+            "id": 120,
+            "name": "VEXU 2017-2018: In the Zone",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2017-05-05T00:00:00-04:00",
+            "end": "2018-04-18T12:00:00-04:00",
+            "years_start": 2017,
+            "years_end": 2018
+        },
+        {
+            "id": 114,
+            "name": "VIQC 2016-2017: Crossover",
+            "program": {
+                "id": 41,
+                "name": "VEX IQ Robotics Competition",
+                "code": "VIQRC"
+            },
+            "start": "2016-03-01T00:00:00-05:00",
+            "end": "2017-02-14T00:00:00-05:00",
+            "years_start": 2016,
+            "years_end": 2017
+        },
+        {
+            "id": 115,
+            "name": "VRC 2016-2017: Starstruck",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2016-03-01T00:00:00-05:00",
+            "end": "2017-02-14T00:00:00-05:00",
+            "years_start": 2016,
+            "years_end": 2017
+        },
+        {
+            "id": 116,
+            "name": "VEXU 2016-2017: Starstruck",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2016-03-01T00:00:00-05:00",
+            "end": "2017-02-14T00:00:00-05:00",
+            "years_start": 2016,
+            "years_end": 2017
+        },
+        {
+            "id": 109,
+            "name": "VIQC 2015-2016: Bank Shot",
+            "program": {
+                "id": 41,
+                "name": "VEX IQ Robotics Competition",
+                "code": "VIQRC"
+            },
+            "start": "2015-03-01T00:00:00-05:00",
+            "end": "2016-02-14T00:00:00-05:00",
+            "years_start": 2015,
+            "years_end": 2016
+        },
+        {
+            "id": 110,
+            "name": "VRC 2015-2016: Nothing But Net",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2015-03-01T00:00:00-05:00",
+            "end": "2016-02-14T00:00:00-05:00",
+            "years_start": 2015,
+            "years_end": 2016
+        },
+        {
+            "id": 111,
+            "name": "VEXU 2015-2016: Nothing But Net",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2015-03-01T00:00:00-05:00",
+            "end": "2016-02-14T00:00:00-05:00",
+            "years_start": 2015,
+            "years_end": 2016
+        },
+        {
+            "id": 113,
+            "name": "Workshops & Camps",
+            "program": {
+                "id": 37,
+                "name": "Workshops & Camps",
+                "code": "WORKSHOP"
+            },
+            "start": "2015-03-01T00:00:00-05:00",
+            "end": "2016-02-14T00:00:00-05:00",
+            "years_start": 2015,
+            "years_end": 2016
+        },
+        {
+            "id": 101,
+            "name": "VIQC 2014-2015: Highrise",
+            "program": {
+                "id": 41,
+                "name": "VEX IQ Robotics Competition",
+                "code": "VIQRC"
+            },
+            "start": "2014-03-01T00:00:00-05:00",
+            "end": "2015-02-14T00:00:00-05:00",
+            "years_start": 2014,
+            "years_end": 2015
+        },
+        {
+            "id": 102,
+            "name": "VRC 2014-2015: Skyrise",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2014-03-01T00:00:00-05:00",
+            "end": "2015-02-14T00:00:00-05:00",
+            "years_start": 2014,
+            "years_end": 2015
+        },
+        {
+            "id": 103,
+            "name": "VEXU 2014-2015: Skyrise",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2014-03-01T00:00:00-05:00",
+            "end": "2015-02-14T00:00:00-05:00",
+            "years_start": 2014,
+            "years_end": 2015
+        },
+        {
+            "id": 107,
+            "name": "Workshop 2014-2015",
+            "program": {
+                "id": 37,
+                "name": "Workshops & Camps",
+                "code": "WORKSHOP"
+            },
+            "start": "2014-03-01T00:00:00-05:00",
+            "end": "2015-02-14T00:00:00-05:00",
+            "years_start": 2014,
+            "years_end": 2015
+        },
+        {
+            "id": 96,
+            "name": "VIQC 2013-2014: Add It Up",
+            "program": {
+                "id": 41,
+                "name": "VEX IQ Robotics Competition",
+                "code": "VIQRC"
+            },
+            "start": "2013-03-01T00:00:00-05:00",
+            "end": "2014-02-14T00:00:00-05:00",
+            "years_start": 2013,
+            "years_end": 2014
+        },
+        {
+            "id": 92,
+            "name": "VRC 2013-2014: Toss Up",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2013-03-01T00:00:00-05:00",
+            "end": "2014-02-14T00:00:00-05:00",
+            "years_start": 2013,
+            "years_end": 2014
+        },
+        {
+            "id": 93,
+            "name": "VEXU 2013-2014: Toss Up",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2013-03-01T00:00:00-05:00",
+            "end": "2014-02-14T00:00:00-05:00",
+            "years_start": 2013,
+            "years_end": 2014
+        },
+        {
+            "id": 98,
+            "name": "Workshop 2013-2014",
+            "program": {
+                "id": 37,
+                "name": "Workshops & Camps",
+                "code": "WORKSHOP"
+            },
+            "start": "2013-03-01T00:00:00-05:00",
+            "end": "2014-02-14T00:00:00-05:00",
+            "years_start": 2013,
+            "years_end": 2014
+        },
+        {
+            "id": 85,
+            "name": "VRC 2012-2013: Sack Attack",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2012-03-01T00:00:00-05:00",
+            "end": "2013-02-14T00:00:00-05:00",
+            "years_start": 2012,
+            "years_end": 2013
+        },
+        {
+            "id": 88,
+            "name": "VRCC 2012-2013: Sack Attack",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2012-03-01T00:00:00-05:00",
+            "end": "2013-02-14T00:00:00-05:00",
+            "years_start": 2012,
+            "years_end": 2013
+        },
+        {
+            "id": 73,
+            "name": "VRC 2011-2012: Gateway",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2011-03-01T00:00:00-05:00",
+            "end": "2012-02-14T00:00:00-05:00",
+            "years_start": 2011,
+            "years_end": 2012
+        },
+        {
+            "id": 76,
+            "name": "VRCC 2011-2012: Gateway",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2011-03-01T00:00:00-05:00",
+            "end": "2012-02-14T00:00:00-05:00",
+            "years_start": 2011,
+            "years_end": 2012
+        },
+        {
+            "id": 7,
+            "name": "VRC: Round Up",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2010-03-01T00:00:00-05:00",
+            "end": "2011-02-14T00:00:00-05:00",
+            "years_start": 2010,
+            "years_end": 2011
+        },
+        {
+            "id": 10,
+            "name": "VRCC: Round Up",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2010-03-01T00:00:00-05:00",
+            "end": "2011-02-14T00:00:00-05:00",
+            "years_start": 2010,
+            "years_end": 2011
+        },
+        {
+            "id": 1,
+            "name": "Clean Sweep",
+            "program": {
+                "id": 1,
+                "name": "VEX Robotics Competition",
+                "code": "VRC"
+            },
+            "start": "2009-03-01T00:00:00-05:00",
+            "end": "2010-02-14T00:00:00-05:00",
+            "years_start": 2009,
+            "years_end": 2010
+        },
+        {
+            "id": 4,
+            "name": "Clean Sweep",
+            "program": {
+                "id": 4,
+                "name": "VEX U",
+                "code": "VEXU"
+            },
+            "start": "2009-03-01T00:00:00-05:00",
+            "end": "2010-02-14T00:00:00-05:00",
+            "years_start": 2009,
+            "years_end": 2010
+        }
+    ]
+}
