@@ -112,7 +112,7 @@ const buildEventTeamQuery = async (event_id: number, team_id: number, type?: str
 }
 
 const buildSeasonQuery = async (season: number, type: string, evaluateKey?: any, fullFetch = false, grade?: string, region?: string, limit = 100) => {
-    console.log("building season query");
+    // console.log("building season query");
     const params: any = {
         TableName: 'skills-ranking-data',
         IndexName: 'SeasonScoreIndex',
@@ -149,7 +149,7 @@ const buildSeasonQuery = async (season: number, type: string, evaluateKey?: any,
     if (evaluateKey) {
         params.ExclusiveStartKey = evaluateKey;
     }
-    console.log("returning query");
+    // console.log("returning query");
     return params;
 };
 
@@ -162,11 +162,11 @@ const fetchPage = async (season: number, skills_type: string, desiredPage: numbe
     let fullFetch = false;
     let foundTeams = 0
     const neededTeamsBeforeFullFetch = pageSize*(desiredPage-1);
-    console.log("In fetchpage");
+    // console.log("In fetchpage");
     let done = false;
     if(desiredPage != 1){
         while (true){
-            console.log("in while loop 1");
+            // console.log("in while loop 1");
             const queryParameters = await buildSeasonQuery(season, skills_type, lastEvaluatedKey, fullFetch, grade, region);
             const command = new QueryCommand(queryParameters);
             const response = await docClient.send(command);
@@ -178,14 +178,14 @@ const fetchPage = async (season: number, skills_type: string, desiredPage: numbe
                     if (foundTeams >= neededTeamsBeforeFullFetch){
                         done = true;
                         lastEvaluatedKey = response.LastEvaluatedKey;
-                        console.log(lastEvaluatedKey);
+                        // console.log(lastEvaluatedKey);
                         specificEvaluatedKey = {
                             'season': item.season,
                             'score': item.score,
                             'event_team_id': item.event_team_id,
                             'type': item.type
                         }
-                        console.log(specificEvaluatedKey);
+                        // console.log(specificEvaluatedKey);
                         break;
                     }
                 }
@@ -198,7 +198,7 @@ const fetchPage = async (season: number, skills_type: string, desiredPage: numbe
     }
     fullFetch = true;
     while (true){
-        console.log("in while loop 2");
+        // console.log("in while loop 2");
         const queryParameters = await buildSeasonQuery(season, skills_type, specificEvaluatedKey, fullFetch, grade, region);
         const command = new QueryCommand(queryParameters);
         const response = await docClient.send(command);
@@ -232,16 +232,16 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
     let queryParameters;
 
     if(event_id && team_id){
-        console.log("eventId and teamId found");
+        // console.log("eventId and teamId found");
         queryParameters = await buildEventTeamQuery(event_id, team_id, skills_type)
     } else if(event_id){
-        console.log("eventId found");
+        // console.log("eventId found");
         queryParameters = await buildEventQuery(event_id, skills_type);
     } else if(team_id){
-        console.log("teamId found");
+        // console.log("teamId found");
         queryParameters = await buildTeamQuery(team_id, skills_type, season)
     } else if(season){
-        console.log("Season query");
+        // console.log("Season query");
         const result = await fetchPage(season, skills_type, page, grade, region);
         if(skills_type === 'robot'){
             result.sort((a, b) => {
