@@ -199,6 +199,48 @@ Operations:
   - GET `/skillsranking?season={}&grade={}` Valid options: ["High School", "Middle School", "Elementary School", "College"]
   - GET `/skillsranking?season={}&type={}` Valid options: ["robot", "driver", "programming"] -- Will default to "robot"
 
+## EloRanking
+
+Resource Path: `eloranking`
+
+Purpose: To get elo-rankings for seasons and regions
+
+Elo Ranking objects have partition keys `{season}-{team_id}` with sort key `elo`
+
+3 query parameters, `season`, `page`, `region`. They all work together in any combination.
+
+For proper use, page and season should be provided instead of relying on defaults
+
+Pages are made up of 50 results
+
+Operations:
+
+- GET `/eloranking` to get the first page of elorankings for the default season, `181`
+- GET `/eloranking?page={}` to get a specific page of elorankings for the default season `181`
+- GET `/eloranking?season={}&page={}` to get a specific page of elorankings for a specific season (Ideal way to use)
+- GET `/elorankings?region={}` to get the first page of elorankings for the default season, `181` for a specific region. The ?region modifier works with any other modifiers
+
+## TsRanking
+
+Resource Path: `tsranking`
+
+Purpose: To get elo-rankings for seasons and regions
+
+Elo Ranking objects have partition keys `{season}-{team_id}` with sort key `mu`
+
+3 query parameters, `season`, `page`, `region`. They all work together in any combination.
+
+For proper use, page and season should be provided instead of relying on defaults
+
+Pages are made up of 50 results
+
+Operations:
+
+- GET `/tsranking` to get the first page of tsranking for the default season, `181`
+- GET `/tsranking?page={}` to get a specific page of tsranking for the default season `181`
+- GET `/tsranking?season={}&page={}` to get a specific page of tsranking for a specific season (Ideal way to use)
+- GET `/tsranking?region={}` to get the first page of tsranking for the default season, `181` for a specific region. The ?region modifier works with any other modifiers
+
 ## Init new typescript API function
 
 npm init -y
