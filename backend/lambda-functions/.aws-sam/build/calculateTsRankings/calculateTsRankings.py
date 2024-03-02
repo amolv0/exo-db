@@ -1,15 +1,16 @@
 import boto3
 from boto3.dynamodb.conditions import Key
 from decimal import Decimal
+import logging
 
 dynamodb = boto3.resource('dynamodb')
 trueskill_table = dynamodb.Table('trueskill-rankings')
 team_table = dynamodb.Table('team-data')
 
-SEASON = 93
+logging = logging.getLogger()
+logging.setLevel("INFO")
 
 def update_team_rankings(season):
-
     rank_counter = 1
     page = 0
     count = 0
@@ -18,7 +19,7 @@ def update_team_rankings(season):
     last_evaluated_key = None
     while True:
         page += 1
-        print(f"Examining page {page}")
+        logging.info(f"Examining page {page}")
         if last_evaluated_key:
             response = trueskill_table.query(
                 IndexName='SeasonMuIndex',
@@ -32,14 +33,12 @@ def update_team_rankings(season):
                 KeyConditionExpression=Key('season').eq(season),
                 ScanIndexForward=False  
             )
-        
-
-        
+            
         for item in response['Items']:
             count += 1
             team_id = item['team_id']
-            region = item.get('region')  # Assuming 'region' is a key in the item
-            print(f"Updating team_id {team_id}, {count} teams updated")
+            region = item.get('region') 
+            # logging.info(f"Updating team_id {team_id}, {count} teams updated")
             update_team_data_with_rank(team_id, season, rank_counter)
             rank_counter += 1
             
@@ -77,7 +76,7 @@ def update_team_data_with_regional_rank(team_id, season, regional_rank):
             ReturnValues="UPDATED_NEW"
         )
     except Exception as e:
-        print(f"Error updating team elo rank: {e}")
+        logging.error(f"Error updating team elo rank: {e}")
         
 def update_team_data_with_rank(team_id, season, rank):
     # Update the team-data table with the rank for the specified season
@@ -102,7 +101,10 @@ def update_team_data_with_rank(team_id, season, rank):
             ReturnValues="UPDATED_NEW"
         )
     except Exception as e:
-        print(f"Error updating team elo rank: {e}")
+        logging.error(f"Error updating team elo rank: {e}")
         
-
-update_team_rankings(SEASON)
+def handler(event, context):
+    logging.info("Starting process")
+    seasons = [181, 182]
+    for season in seasons:
+        update_team_rankings(season)
