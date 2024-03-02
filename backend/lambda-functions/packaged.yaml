@@ -118,10 +118,30 @@ Resources:
       FunctionName: exodb-skillsRankingGetFunc
       Handler: skillsRankingGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/3225c3705f32e8f58b32c7b1c73514fb
+      CodeUri: s3://exodblambdafunctions/d2356b6c55c842087687485e5b05f07d
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: skillsRankingGet
+  eloRankingsGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-eloRankingsGet
+      Handler: eloRankingsGet.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/85a0b465183e72bda229d3d432336508
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: eloRankingsGet
+  tsRankingsGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-tsRankingsGet
+      Handler: tsRankingsGet.handler
+      Runtime: nodejs20.x
+      CodeUri: s3://exodblambdafunctions/9389cb090f2d7b1005d4ddfade40c753
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: tsRankingsGet
   auditOngoing:
     Type: AWS::Serverless::Function
     Properties:
@@ -232,3 +252,33 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditTeamDataQueue
+  calculateEloRankings:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-calculateEloRankingsFunc
+      Handler: calculateEloRankings.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/fc5498d53408fa2f7f5969a31c2f7105
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: calculateEloRankings
+  calculateTsRankings:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-calculateTsRankingsFunc
+      Handler: calculateTsRankings.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/cea231aa6318db9dc6910c2384279460
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: calculateTsRankings
+  calculateSkillsRankings:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-calculateSkillsRankingsFunc
+      Handler: calculateSkillsRankings.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/309da05985ff31f36f135e49b2a7a72f
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: calculateSkillsRankings
