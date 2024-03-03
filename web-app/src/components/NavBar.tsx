@@ -92,6 +92,9 @@ const Navbar: React.FC = () => {
           <li className="text-white">
             <Link to="/skills">Skills</Link>
           </li>
+          <li className="text-white">
+            <Link to="/rankings">Rankings</Link>
+          </li>
         </ul>
 
         <div className="text-white text-xl relative" ref={dropdownRef}>
