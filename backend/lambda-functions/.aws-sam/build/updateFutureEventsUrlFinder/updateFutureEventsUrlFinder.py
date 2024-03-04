@@ -25,7 +25,7 @@ sqs_client = boto3.client('sqs')
 
 def get_last_page(time_to_check, initial_delay=5, retries=5):
     for _ in range(retries):
-        response = requests.get(f"https://www.robotevents.com/api/v2/events?start={time_to_check}&page=1&per_page=250", headers=headers)
+        response = requests.get(f"https://www.robotevents.com/api/v2/events?start={time_to_check}&page=1&per_page=50", headers=headers)
 
         if response.status_code == 200:
             return response.json().get('meta', [])['last_page']
@@ -53,7 +53,7 @@ def url_finder_handler(aws_event, context):
     logging.info(f"Time to check: {time_to_check}")
     event_urls = []
     for i in range(1, last_page + 1):
-        url = f'https://www.robotevents.com/api/v2/events?start={time_to_check}&page={i}&per_page=250'
+        url = f'https://www.robotevents.com/api/v2/events?start={time_to_check}&page={i}&per_page=50'
         logging.info(f"Appended {url}")
         event_urls.append(url)
 
