@@ -75,6 +75,13 @@ const handler = async (event) => {
     const page = Number(event.queryStringParameters?.page) || 1;
     try {
         const pageData = await fetchPage(season, page, region);
+        if (pageData.length == 0) {
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify("Error: Page does not exist")
+            };
+        }
         return {
             statusCode: 200,
             headers,

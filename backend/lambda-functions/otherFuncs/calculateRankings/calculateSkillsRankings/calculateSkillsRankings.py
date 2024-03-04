@@ -15,7 +15,9 @@ def query_skills_scores(season, skill_type):
     items = []
     last_evaluated_key = None
     logging.info("Scanning")
+    page = 0
     while True:
+        page += 1
         if last_evaluated_key:
             response = skills_table.query(
                 IndexName='SeasonScoreIndex',
@@ -38,34 +40,53 @@ def query_skills_scores(season, skill_type):
             break
     return items
 
-def compute_rankings(items):
+def compute_rankings(items, skill_type):
+    # Initialize dictionaries for global rankings and regional rankings
     global_rankings = {}
     regional_rankings = {}
-    seen_teams = set()
-    for item in items:
-        
-        team_id = item['team_id']
-        region = item['region']
-        score = item['score']
-        if team_id not in seen_teams:
-            
-            seen_teams.add(team_id)
-            # Update global ranking
-            if team_id not in global_rankings:
-                global_rankings[team_id] = score
 
-            # # Update regional ranking
-            if region not in regional_rankings:
-                regional_rankings[region] = {}
-            if team_id not in regional_rankings[region]:
-                regional_rankings[region][team_id] = score
+    # Initialize counters and seen sets for each grade level globally and regionally
+    grade_levels = ['High School', 'Middle School', 'College']
+    global_counters = {grade: 0 for grade in grade_levels}
+    regional_counters = {}
+    seen_global = {grade: set() for grade in grade_levels}
+    seen_regional = {}
+
+    # Sort items by score and, if equal, by programming_component
+    sorted_items = sorted(items, key=lambda x: (-x['score'], -x.get('programming_component', 0)))
+    for item in sorted_items:
+        if 'team_grade' not in item or item['team_grade'] is None or item['team_grade'] == '': 
+            continue
+        team_id = item['team_id']
+        team_grade = item['team_grade']
+        region = item['region']
+
+        # Update global rankings
+        if team_id not in seen_global[team_grade]:
+            seen_global[team_grade].add(team_id)
+            global_counters[team_grade] += 1
+            global_rankings[team_id] = global_counters[team_grade]
+
+        # Initialize regional data structures if this is the first entry for the region
+        if region not in seen_regional:
+            seen_regional[region] = {grade: set() for grade in grade_levels}
+            regional_counters[region] = {grade: 0 for grade in grade_levels}
+            regional_rankings[region] = {}
+
+        # Update regional rankings
+        if team_id not in seen_regional[region][team_grade]:
+            seen_regional[region][team_grade].add(team_id)
+            regional_counters[region][team_grade] += 1
+            # Ensure regional rankings are stored under the region and directly map team_id to rank
+            regional_rankings[region][team_id] = regional_counters[region][team_grade]
 
     return global_rankings, regional_rankings
 
 
+
 def update_skills_rankings(team_id, season, skill_type, rank):
     try:
-        # Attempt to directly set the season's ELO rating within elo_rankings
+        # Attempt to directly set the season's skills_ranking within skills_ranking
         response = team_table.update_item(
             Key={'id': team_id},
             UpdateExpression="SET skills_rankings.#season_id.#skill_type = :rank",
@@ -76,7 +97,7 @@ def update_skills_rankings(team_id, season, skill_type, rank):
         )
         # logging.info(f"Updated team skills rank for team {team_id} for type: {skill_type}, season {season}")
     except team_table.meta.client.exceptions.ConditionalCheckFailedException:
-        # If elo_rankings does not exist, initialize it and then set the season's ELO rating
+        # If skills_ranking does not exist, initialize it and then set the season's skills_ranking rating
         response = team_table.update_item(
             Key={'id': team_id},
             UpdateExpression="SET skills_rankings = :empty_map",
@@ -153,22 +174,28 @@ def delete_skills_rankings_for_and_teams(team_id):
 
 def update_team_rankings(season):
     skill_types = ['robot', 'programming', 'driver']
-
     for skill_type in skill_types:
         items = query_skills_scores(season, skill_type)
-        global_rankings, regional_rankings = compute_rankings(items)
+        global_rankings, regional_rankings = compute_rankings(items, skill_type)
         # Update global rankings
-        for rank, (team_id, score) in enumerate(global_rankings.items(), start=1):
+        for team_id, rank in global_rankings.items():
             update_skills_rankings(team_id, season, skill_type, rank)
 
         # Update regional rankings
         for region, rankings in regional_rankings.items():
-            for rank, (team_id, score) in enumerate(rankings.items(), start=1):
+            for team_id, rank in rankings.items():
                 update_skills_regional_rankings(team_id, season, skill_type, rank)
                 
 
-def handler(event, context):
+def handler():
     logging.info("Starting process")
+    # seasons = [181, 182, 173, 175, 154, 156, 139, 140, 130, 131, 125, 126, 119, 120, 115, 116, 110, 111, 102, 103]
     seasons = [181, 182]
     for season in seasons:
+        logging.info(f"Processing season {season}")
         update_team_rankings(season)
+
+
+logging.info("Starting process")
+handler()
+logging.info("Completed process")
