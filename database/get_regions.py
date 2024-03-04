@@ -31,7 +31,7 @@ def unique_regions_all_pages():
 
     scan_kwargs = {
         'TableName': table_name,
-        'ProjectionExpression': "#r",
+        'ProjectionExpression': "#r, program, id",
         'ExpressionAttributeNames': {"#r": "region"}, 
     }
 
@@ -45,7 +45,7 @@ def unique_regions_all_pages():
             scan_kwargs['ExclusiveStartKey'] = start_key
         response = dynamodb.scan(**scan_kwargs)
         for item in response['Items']:
-            if 'region' in item:
+            if 'region' in item and 'program' in item and 'S' in item['program'] and item['program']['S'] == 'VRC':
                 region = item['region']['S']
                 unique_regions.add(region)
         start_key = response.get('LastEvaluatedKey', None)
