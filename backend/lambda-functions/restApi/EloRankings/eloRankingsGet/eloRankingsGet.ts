@@ -81,7 +81,8 @@ const fetchPage = async (season: number, desiredPage: number = 1, region?: strin
 
         ExclusiveStartKey = response.LastEvaluatedKey;
         itemsFetched += response.Items?.length || 0;
-        
+
+       
         // Break the loop if there are no more items to fetch or we've already collected enough items
         if (!ExclusiveStartKey || (results.length >= pageSize)) {
             break;
@@ -103,6 +104,13 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
 
     try {
         const pageData = await fetchPage(season, page, region);
+        if(pageData.length == 0){
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify("Error: Page does not exist")
+            }
+        }
         return {
             statusCode: 200,
             headers,

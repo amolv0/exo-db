@@ -118,7 +118,7 @@ Resources:
       FunctionName: exodb-skillsRankingGetFunc
       Handler: skillsRankingGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/d2356b6c55c842087687485e5b05f07d
+      CodeUri: s3://exodblambdafunctions/de9bb04c64d8d50c5dc8dbaf6381307c
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: skillsRankingGet
@@ -128,7 +128,7 @@ Resources:
       FunctionName: exodb-eloRankingsGet
       Handler: eloRankingsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/85a0b465183e72bda229d3d432336508
+      CodeUri: s3://exodblambdafunctions/72ac2b2caf3da7f3133557d92286a41f
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eloRankingsGet
@@ -138,7 +138,7 @@ Resources:
       FunctionName: exodb-tsRankingsGet
       Handler: tsRankingsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/9389cb090f2d7b1005d4ddfade40c753
+      CodeUri: s3://exodblambdafunctions/8d60a7eace7c4daa3525d0a6c13ef107
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: tsRankingsGet
@@ -168,7 +168,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
       Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/c0be9fe9aadab48a8fce9c92858654e0
+      CodeUri: s3://exodblambdafunctions/7340067f541e3cb01827c7cbb7466b66
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsDataProcessor
@@ -218,7 +218,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncUrlFinder
       Handler: updateFutureEventsUrlFinder.url_finder_handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/978ce74089ce8bcd11d546eef68c11d3
+      CodeUri: s3://exodblambdafunctions/86601c9409fa4262c67fb50d50d35910
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsUrlFinder
@@ -278,7 +278,7 @@ Resources:
       FunctionName: exodb-calculateSkillsRankingsFunc
       Handler: calculateSkillsRankings.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/309da05985ff31f36f135e49b2a7a72f
+      CodeUri: s3://exodblambdafunctions/d6be89c2e8d8a286f31762e46ad496bd
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: calculateSkillsRankings
