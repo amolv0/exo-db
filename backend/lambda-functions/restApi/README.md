@@ -240,6 +240,30 @@ Operations:
 - GET `/tsranking?page={}` to get a specific page of tsranking for the default season `181`
 - GET `/tsranking?season={}&page={}` to get a specific page of tsranking for a specific season (Ideal way to use)
 - GET `/tsranking?region={}` to get the first page of tsranking for the default season, `181` for a specific region. The ?region modifier works with any other modifiers
+  
+## LastPage
+
+Resource Path `/lastpage`
+
+Purpose: To manage information about the last page of different types of paginated queries
+
+### Sub-Resource: id
+
+Resource Path: `/lastpage/{id}`
+
+Purpose: Handle information about the last page of a specific paginated query
+
+`id` is formed by `{querytype}-{season}` with an optional `-{region}`
+
+For example:
+
+- `trueskill-181-Washington`
+- `elo-182-New Jersey`
+- `skills-182`
+
+Operations:
+
+- GET `/lastpage/{id}` to get the last page of the specific query
 
 ## Init new typescript API function
 
