@@ -134,6 +134,7 @@ const fetchPage = async (season, skills_type, desiredPage, grade, region) => {
             const command = new lib_dynamodb_1.QueryCommand(queryParameters);
             const response = await docClient.send(command);
             const filteredItems = response.Items || [];
+            lastEvaluatedKey = response.LastEvaluatedKey;
             for (const item of filteredItems) {
                 if (!uniqueTeamIds.has(item.team_id)) {
                     uniqueTeamIds.add(item.team_id);
@@ -153,10 +154,12 @@ const fetchPage = async (season, skills_type, desiredPage, grade, region) => {
                     }
                 }
             }
+            if (!lastEvaluatedKey) {
+                break;
+            }
             if (done) {
                 break;
             }
-            lastEvaluatedKey = response.LastEvaluatedKey;
         }
     }
     fullFetch = true;
@@ -166,16 +169,19 @@ const fetchPage = async (season, skills_type, desiredPage, grade, region) => {
         const command = new lib_dynamodb_1.QueryCommand(queryParameters);
         const response = await docClient.send(command);
         const filteredItems = response.Items || [];
+        specificEvaluatedKey = response.LastEvaluatedKey;
         for (const item of filteredItems) {
             if (!uniqueTeamIds.has(item.team_id)) {
                 uniqueTeamIds.add(item.team_id);
                 items.push(item);
-                if (items.length == pageSize) {
+                if (items.length == pageSize || !specificEvaluatedKey) {
                     return items;
                 }
             }
         }
-        specificEvaluatedKey = response.LastEvaluatedKey;
+        if (!specificEvaluatedKey) {
+            break;
+        }
     }
     return items;
 };
@@ -205,12 +211,19 @@ const handler = async (event) => {
     else if (season) {
         // console.log("Season query");
         const result = await fetchPage(season, skills_type, page, grade, region);
+        if (result.length == 0) {
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify("Error: Page does not exist")
+            };
+        }
         if (skills_type === 'robot') {
             result.sort((a, b) => {
-                const scoreA = Number(a.score.N);
-                const scoreB = Number(b.score.N);
-                const programmingScoreA = a.programming_score ? Number(a.programming_score.N) : 0;
-                const programmingScoreB = b.programming_score ? Number(b.programming_score.N) : 0;
+                const scoreA = Number(a.score);
+                const scoreB = Number(b.score);
+                const programmingScoreA = a.programming_component ? Number(a.programming_component) : 0;
+                const programmingScoreB = b.programming_component ? Number(b.programming_component) : 0;
                 // If scores are equal, sort by programming_score
                 if (scoreA === scoreB) {
                     return programmingScoreB - programmingScoreA; // For descending order
