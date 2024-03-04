@@ -253,4 +253,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["tsRankingsGet"]
 
+[function_build_definitions.5c4ccbc4-a828-4140-9b40-54dffa36f4d6]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/LastPage/lastPageId/lastPageIdGet"
+runtime = "nodejs20.x"
+architecture = "x86_64"
+handler = "lastPageIdGet.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["lastPageIdGet"]
+
 [layer_build_definitions]
