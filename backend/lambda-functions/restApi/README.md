@@ -253,13 +253,21 @@ Resource Path: `/lastpage/{id}`
 
 Purpose: Handle information about the last page of a specific paginated query
 
-`id` is formed by `{querytype}-{season}` with an optional `-{region}`
+`id` for elo and trueskill is formed by `{querytype}-{season}` with an optional `-{region}`
 
 For example:
 
 - `trueskill-181-Washington`
 - `elo-182-New Jersey`
-- `skills-182`
+- `elo-182`
+
+`id` for skills is formed by `{querytype}-{season}-{skills_type}-{grade}` with an optional `-{region}`, with grade being either `ms`, `hs`, or `college`
+
+For example:
+
+- `skills-181-robot-college-Nebraska`
+- `skills-175-programming-ms-Washington`
+- `skills-154-driver-hs`
 
 Operations:
 
