@@ -46,7 +46,7 @@ def process_match(match, division_name, division_id, event_name, event_id, event
             
 
 def remove_match(match, event_id):
-    logging.error(f"Removing match {match['id']} from event: {event_id}")
+    logging.info(f"Removing match {match['id']} from event: {event_id}")
     remove_match_from_match_data(match['id']) 
     teams = extract_teams_from_match(match)
     for team in teams:
@@ -76,7 +76,7 @@ def update_ts_data_with_match(match, season):
             new_ratings = env.rate(teams_in_draw, ranks=ranks)
             flat_new_ratings = [rating for sublist in new_ratings for rating in sublist]            
             for team_id, new_rating in zip(draw_team_ids, flat_new_ratings):
-                logging.info(f"updating trueskill for team {team_id}, match {match['id']}, was a tie")
+                logging.error(f"updating trueskill for team {team_id}, match {match['id']}, was a tie")
                 update_team_trueskill(team_id, new_rating.mu, new_rating.sigma, season)
                 updates.append((team_id, new_rating.mu, new_rating.sigma))
         else: # Handle win/lose
@@ -84,11 +84,11 @@ def update_ts_data_with_match(match, season):
             losers = [team_ratings[team_id] for team_id in losing_team_ids]
             new_ratings = env.rate([winners, losers], ranks=[0, 1])
             for team_id, rating in zip(winning_team_ids, new_ratings[0]):
-                logging.info(f"updating trueskill for team {team_id}, match {match['id']}")
+                logging.error(f"updating trueskill for team {team_id}, match {match['id']}")
                 update_team_trueskill(team_id, rating.mu, rating.sigma, season)
                 updates.append((team_id, rating.mu, rating.sigma))
             for team_id, rating in zip(losing_team_ids, new_ratings[1]):
-                logging.info(f"updating trueskill for team {team_id}, match {match['id']}")
+                logging.error(f"updating trueskill for team {team_id}, match {match['id']}")
                 update_team_trueskill(team_id, rating.mu, rating.sigma, season)
                 updates.append((team_id, rating.mu, rating.sigma))
         
@@ -103,15 +103,21 @@ def update_ts_data_with_match(match, season):
                         ":mu": Decimal(str(mu)),
                         ":sigma": Decimal(str(sigma))
                     },
-                    ConditionExpression="attribute_exists(season-team)"  # Ensures the item exists
+                    ExpressionAttributeNames={
+                        "#seasonTeam": "season-team", 
+                    },
+                    ConditionExpression="attribute_exists(#seasonTeam)" 
                 )
             except trueskill_data_table.meta.client.exceptions.ConditionalCheckFailedException:
                 # Step 2: Item does not exist, so fetch region and create the item
                 team_data = team_data_table.get_item(
-                    Key={'team_id': team_id}
+                    Key={'id': team_id}
                 ).get('Item', {})
                 
-                region = team_data.get('region', 'Unknown')  # Default region if not found
+                region = team_data.get('region', 'Unknown')
+                team_number = team_data.get('number', 'Unknown')
+                team_name = team_data.get('team_name', 'Unknown')
+                team_org = team_data.get('organization', 'Unknown')
                 
                 # Step 3: Create the item with necessary attributes including region
                 trueskill_data_table.put_item(
@@ -120,15 +126,17 @@ def update_ts_data_with_match(match, season):
                         'mu': Decimal(str(mu)),
                         'sigma': Decimal(str(sigma)),
                         'team_id': team_id,
+                        'team_number': team_number,
+                        'team_name': team_name,
+                        'team_org': team_org,
                         'season': season,
                         'region': region
                     }
                 )
             
 def update_team_trueskill(team_id, mu, sigma, season):
-    if season != 181 or season != 182:
-        logging.info("not a current vrc/vexu season match")
-        return
+    if season not in [181, 182]:
+        logging.error(f"{season} not applicable, not updating trueskill")
     try:
         team_data_table.update_item(
             Key={'id': team_id},
@@ -138,6 +146,7 @@ def update_team_trueskill(team_id, mu, sigma, season):
                 ':rating': {'mu': Decimal(str(mu)), 'sigma': Decimal(str(sigma))}
             }
         )
+        logging.error(f"Updated teamskill for team {team_id} for season {season}")
     except Exception as e:
         try:
             team_data_table.update_item(
@@ -147,7 +156,7 @@ def update_team_trueskill(team_id, mu, sigma, season):
                     ':new_skill': {str(season): {'mu': Decimal(str(mu)), 'sigma': Decimal(str(sigma))}}
                 }
             )
-            logging.info(f"Initialized teamskill for team {team_id} for season {season} teams updated")
+            logging.error(f"Initialized teamskill for team {team_id} for season {season}")
         except Exception as e:
             logging.error(f"Error initializing teamskill for team {team_id}: {e}")
             
@@ -185,14 +194,14 @@ def update_elo_data_with_match(match, season):
             for team_id in winning_team_ids:
                 avg_lose_elo = sum(team_elos[team_id] for team_id in losing_team_ids) / len(losing_team_ids)
                 new_elo, _ = update_elo(team_elos[team_id], avg_lose_elo)
-                logging.info(f"updating elo for {team_id}")
+                logging.error(f"updating elo for {team_id}, match {match['id']}")
                 update_team_elo(team_id, new_elo, season)
                 updates[team_id] = new_elo
 
             for team_id in losing_team_ids:
                 avg_win_elo = sum(team_elos[team_id] for team_id in winning_team_ids) / len(winning_team_ids)
                 _, new_elo = update_elo(avg_win_elo, team_elos[team_id])
-                logging.info(f"updating elo for {team_id}")
+                logging.error(f"updating elo for {team_id}, match {match['id']}")
                 update_team_elo(team_id, new_elo, season)
                 updates[team_id] = new_elo
 
@@ -207,12 +216,18 @@ def batch_write_elo_updates(team_elos, season_id):
                 Key={'season-team': partition_key},
                 UpdateExpression="SET elo = :elo",
                 ExpressionAttributeValues={":elo": Decimal(str(elo))},
-                ConditionExpression="attribute_exists(season-team)"
+                ExpressionAttributeNames={
+                    "#seasonTeam": "season-team",  # Placeholder for the attribute name
+                },
+                ConditionExpression="attribute_exists(#seasonTeam)"
             )
         except elo_data_table.meta.client.exceptions.ConditionalCheckFailedException:
             # If the item does not exist, fetch the region for the team and create the item
-            team_data = team_data_table.get_item(Key={'team_id': team_id}).get('Item', {})
-            region = team_data.get('region', 'Unknown')  # Default region if not found
+            team_data = team_data_table.get_item(Key={'id': team_id}).get('Item', {})
+            region = team_data.get('region', 'Unknown')
+            team_number = team_data.get('number', 'Unknown')
+            team_name = team_data.get('team_name', 'Unknown')
+            team_org = team_data.get('organization', 'Unknown')        
             
             # Create the item with elo, region, and any other necessary attributes
             elo_data_table.put_item(
@@ -220,6 +235,9 @@ def batch_write_elo_updates(team_elos, season_id):
                     'season-team': partition_key,
                     'elo': Decimal(str(elo)),
                     'team_id': team_id,
+                    'team_number': team_number,
+                    'team_name': team_name,
+                    'team_org': team_org,
                     'season': season_id,
                     'region': region
                 }
@@ -282,16 +300,30 @@ def extract_teams_from_match(match):
         teams.extend(alliance.get('teams', []))
     return teams
 
-def update_team_elo(team_id, new_elo, season):
+def update_team_elo(team_id, elo, season_id):
+    if season_id not in [181, 182]:
+        logging.error(f"{season_id} not applicable, not updating ELO")
     try:
-        team_data_table.update_item(
+        response = team_data_table.update_item(
             Key={'id': team_id},
-            UpdateExpression="SET elo.#season_id = :new_elo",
-            ExpressionAttributeNames={'#season_id': str(season)},
-            ExpressionAttributeValues={':new_elo': Decimal(new_elo)},
+            UpdateExpression="SET elo.#season_id = :elo",
+            ConditionExpression="attribute_exists(elo)",
+            ExpressionAttributeNames={'#season_id': str(season_id)},
+            ExpressionAttributeValues={':elo': Decimal(str(elo))},
+            ReturnValues="UPDATED_NEW"
         )
+        logging.error(f"Updated elo for team {team_id}")
+    except team_data_table.meta.client.exceptions.ConditionalCheckFailedException:
+        # If elo_rankings does not exist, initialize it and then set the season's ELO rating
+        response = team_data_table.update_item(
+            Key={'id': team_id},
+            UpdateExpression="SET elo = :empty_map",
+            ExpressionAttributeValues={':empty_map': {str(season_id): Decimal(str(elo))}},
+            ReturnValues="UPDATED_NEW"
+        )
+        logging.error(f"Updated elo for team {team_id}, in except block")
     except Exception as e:
-        print(f"Error updating ELO for team {team_id}: {e}")
+        logging.error(f"Error updating team ELO: {e}")
 
 def get_team_elo(team_id, season):
     try:
@@ -451,7 +483,7 @@ def find_match_differences(old_divisions, new_divisions):
                             'division_name': new_division.get('name', 'Unknown Division'),
                             **new_match
                         })
-                        logging.error(f"Updated/new match found: {match_id}")
+                        logging.info(f"Updated/new match found: {match_id}")
 
                 # Check for removed matches
                 for match_id, old_match in old_matches_dict.items():
@@ -461,7 +493,7 @@ def find_match_differences(old_divisions, new_divisions):
                             'division_name': old_division.get('name', 'Unknown Division'),
                             **old_match
                         })
-                        logging.error(f"Removed match found: {match_id}")
+                        logging.info(f"Removed match found: {match_id}")
 
     return updated_matches, removed_matches
 
