@@ -130,7 +130,7 @@ def get_teams(event_id):
                     logging.error(f"New team_data {team['id']} could not set a region. team: {team_data}")
                 if region is None: 
                     region = "None"
-                    logging.info(f"Could not set region for new team_data: {team['id']}")
+                    logging.error(f"Could not set region for new team_data: {team['id']}")
                 converted_team_values = convert_values(team_data)
                 team_data_table.put_item(
                     Item = {
