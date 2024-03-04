@@ -103,6 +103,13 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
 
     try {
         const pageData = await fetchPage(season, page, region);
+        if(pageData.length == 0){
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify("Error: Page does not exist")
+            }
+        }
         return {
             statusCode: 200,
             headers,
