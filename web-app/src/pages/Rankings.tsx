@@ -7,6 +7,7 @@ const Rankings: React.FC = () => {
   const [seasonName, setSeasonName] = useState<string>(getSeasonNameFromId(seasonId));
   const [seasons, setSeasons] = useState<number[]>([]);
   const [eventType, setEventType] = useState<string>('VEX');
+  const [region, setRegion] = useState<string>(''); // Initialize region state
 
   useEffect(() => {
     setSeasonName(getSeasonNameFromId(seasonId));
@@ -31,9 +32,13 @@ const Rankings: React.FC = () => {
     setEventType(event.target.value);
   };
 
+  const handleRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setRegion(event.target.value);
+  };
+
   return (
     <div className="flex flex-col items-center">
-      <h1 className="text-white text-2xl font-bold mb-4 my-8">Rankings</h1>
+      <h1 className="text-black text-3xl mb-4 my-8">Ratings Leaderboard</h1>
       <div className="flex items-center mb-4">
         <label htmlFor="eventType" className="mr-4">Type:</label>
         <select id="eventType" value={eventType} onChange={handleEventTypeChange} className="p-2 rounded-md bg-gray-200 mr-4">
@@ -42,15 +47,22 @@ const Rankings: React.FC = () => {
         </select>
         <label htmlFor="season" className="mr-4">Season:</label>
         <select id="season" value={seasonId} onChange={handleSeasonChange} className="p-2 rounded-md bg-gray-200 mr-4">
-        {seasons
-            .filter(s => eventType === 'VEXU' ? getSeasonNameFromId(s).includes('VEXU') : 
+          {seasons
+            .filter(s => eventType === 'VEXU' ? getSeasonNameFromId(s).includes('VEXU') :
             (!getSeasonNameFromId(s).includes('VEXU') && getSeasonNameFromId(s).includes('VEX')))
             .map(s => (
-            <option key={s} value={s}>{getSeasonNameFromId(s)}</option>
+              <option key={s} value={s}>{getSeasonNameFromId(s)}</option>
             ))}
         </select>
+        {/* Dropdown for Region */}
+        <label htmlFor="region" className="mr-4">Region:</label>
+        <select id="region" value={region} onChange={handleRegionChange} className="p-2 rounded-md bg-gray-200">
+          <option value="">All</option>
+          <option value="Washington">Washington</option>
+          {/* Add more options as needed */}
+        </select>
       </div>
-      <SeasonRankings season={seasonId.toString()}/>
+      <SeasonRankings season={seasonId.toString()} region={region} /> {/* Pass region to SeasonRankings */}
     </div>
   );
 };
