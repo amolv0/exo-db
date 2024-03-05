@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.css';
 import NavBar from './components/NavBar';
-import Teams from './pages/Teams';
 import Events from './pages/Events';
 import Skills from './pages/Skills';
 import TeamInfo from './pages/TeamInfo';
@@ -14,7 +13,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 const Home: React.FC = () => {
   return (
     <div className="flex flex-col items-center">
-      <h1 className="text-white text-2xl font-bold mb-4 my-8">HOME</h1>
+      <h1 className="text-black text-3xl mb-4 my-8">Ongoing Events</h1>
         <OngoingEvents/>
     </div>
   );
@@ -27,7 +26,6 @@ const App: React.FC = () => {
         <NavBar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/teams" element={<Teams />} />\
           <Route path="/teams/:teamId" element={<TeamInfo />} />
           <Route path="/events" element={<Events />} />
           <Route path="/skills" element={<Skills />} />
