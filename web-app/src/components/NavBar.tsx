@@ -4,6 +4,7 @@ import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import logo from '../Assets/ignite.png';
 
 const Navbar: React.FC = () => {
   const [query, setQuery] = useState<string>('');
@@ -74,74 +75,81 @@ const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <nav className="bg-gray-800 p-4 text-xl">
-      <div className="container mx-auto flex justify-between items-center">
-        {/* Navigation Links ... */}
-        <ul className="flex space-x-4">
-          <li>
-            <div className="text-white text-xl font-bold lg:mr-36">
-              <Link to="/">Vex Stats</Link>
-            </div>
-          </li>
-          <li className="text-white">
-            <Link to="/">Home</Link>
-          </li>
-          <li className="text-white">
-            <Link to="/events">Events</Link>
-          </li>
-          <li className="text-white">
-            <Link to="/skills">Skills</Link>
-          </li>
-          <li className="text-white">
-            <Link to="/rankings">Rankings</Link>
-          </li>
-        </ul>
+    <nav className="bg-gradient-to-r from-orange-400 via-orange-500 to-red-700 p-4 text-xl">
+    <div className="container mx-auto flex justify-between items-center">
+      {/* Powered By */}
+      <ul className="flex items-center space-x-4">
+      <Link to="https://www.igniterobotics.org/" target="_blank" rel="noopener noreferrer">
+        <li className="text-white flex items-center transition duration-400 hover:scale-110">
+          <span className="text-xl mr-2">Powered By</span>
+            <img className="h-8" src={logo} alt="Vex Stats" />
+        </li>
+        </Link>
+      </ul>
 
-        <div className="text-white text-xl relative" ref={dropdownRef}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Search"
-            value={query}
-            onChange={handleInputChange}
-            onClick={handleSearchQuery}
-            style={{ backgroundColor: "#f5f5f5" }}
-            // MUI TextField styles...
-          />
+      {/* Navigation Links */}
+      <ul className="flex space-x-4 mr-auto ml-24">
+        <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
+          <Link to="/">Home</Link>
+        </li>
+        <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
+          <Link to="/events">Events</Link>
+        </li>
+        <li className="text-white transition duration-400 hover:text-gray-200 hover:scale-110">
+          <Link to="/skills">Skills</Link>
+        </li>
+        <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
+          <Link to="/rankings">Ratings</Link>
+        </li>
+      </ul>
 
-          {showDropdown && (
-            <List
-              sx={{
-                position: 'absolute',
-                width: '100%',
-                bgcolor: 'background.paper', // This sets the background to the theme's paper color, usually white
-                boxShadow: 1,
-                borderRadius: '4px',
-                zIndex: 1,
-                // If you want to change the dropdown background color, adjust bgcolor value. For example, to a light grey: bgcolor: 'grey.100'
-              }}
-              component="nav"
-              aria-labelledby="nested-list-subheader"
-            >
-              {searchResults.map((result, index) => (
-                <ListItem
-                  key={index}
-                  onClick={() => {
-                    navigate(result.type === 'team' ? `/teams/${result.teamId}` : `/events/${result.eventId}`);
-                    setShowDropdown(false);
-                  }}
-                >
-                  <ListItemText
-                    primary={result.type === 'team' ? `${result.teamNumber}: ${result.teamName} | ${result.program}` : `${result.eventName} | ${result.eventStart.substring(0, 10)}`}
-                    primaryTypographyProps={{ style: { color: 'black' } }} // Adjust the text color here to ensure visibility against the dropdown's background
-                    sx={{ pl: 1 }}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          )}
-        </div>
+
+      {/* Search */}
+      <div className="text-white text-xl relative">
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Search"
+          value={query}
+          onChange={handleInputChange}
+          onClick={handleSearchQuery}
+          style={{ backgroundColor: "#f5f5f5" }}
+          // MUI TextField styles...
+        />
+
+        {showDropdown && (
+          <List
+            sx={{
+              position: 'absolute',
+              width: '100%',
+              bgcolor: 'background.paper', // This sets the background to the theme's paper color, usually white
+              boxShadow: 1,
+              borderRadius: '4px',
+              zIndex: 1,
+              // If you want to change the dropdown background color, adjust bgcolor value. For example, to a light grey: bgcolor: 'grey.100'
+            }}
+            component="nav"
+            aria-labelledby="nested-list-subheader"
+          >
+            {searchResults.map((result, index) => (
+              <ListItem
+                key={index}
+                onClick={() => {
+                  navigate(result.type === 'team' ? `/teams/${result.teamId}` : `/events/${result.eventId}`);
+                  setShowDropdown(false);
+                }}
+              >
+                <ListItemText
+                  primary={result.type === 'team' ? `${result.teamNumber}: ${result.teamName} | ${result.program}` : `${result.eventName} | ${result.eventStart.substring(0, 10)}`}
+                  primaryTypographyProps={{ style: { color: 'black' } }} // Adjust the text color here to ensure visibility against the dropdown's background
+                  sx={{ pl: 1 }}
+                />
+              </ListItem>
+            ))}
+          </List>
+        )}
       </div>
+    </div>
     </nav>
   );
 };
