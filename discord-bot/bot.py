@@ -2,6 +2,7 @@ import discord
 import re
 import boto3
 import json
+import os
 
 # Run this code to start the reveal bot. It checks for updates to the given channel and if they match the criteria adds the URL as a reveal to the relevent team in DynamoDB.
 
@@ -9,11 +10,11 @@ import json
 
 # Initialize SQS client
 sqs = boto3.client('sqs')
-queue_url = 'REDACTED_SQS_URL/TeamRevealsQueue'
+queue_url = os.getenv('SQS_TEAM_REVEALS_QUEUE_URL')
 
-TOKEN = 'MTIxNDYyOTg3NzYwMTQwNjk5Ng.GMRKf9.fmfNal4rkPc2DyQzrzaYoO9T9gDN3xA_xqukTc'
+TOKEN = os.getenv('BOT_TOKEN')
 
-CHANNEL_ID = 1214628203285446777
+CHANNEL_ID = os.getenv('SAMPLE_SERVER_REVEALS_CHANNEL_ID')
 
 intents = discord.Intents.default()
 intents.messages = True
