@@ -14,7 +14,8 @@ queue_url = 'os.getenv('SQS_TEAM_REVEALS_QUEUE_URL')'
 
 TOKEN = 'REDACTED_API_KEY'
 
-CHANNEL_ID = 1214628203285446777
+# CHANNEL_ID = 785754010769817651 # of Exothermic Robotics reveals channel
+CHANNEL_ID = 1214628203285446777 # test server reveals channel
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -44,9 +45,9 @@ async def process_message(message):
         if embed.title:
             team_names.extend(re.findall(r'\b\d+[A-Z]\b', embed.title))
             url_name = embed.title
-            # print(f"Embed title: {embed.title}")
-    # print(f"Urls: {urls}")
-    # print(f"Team names: {team_names}")
+            print(f"Embed title: {embed.title}")
+    print(f"Urls: {urls}")
+    print(f"Team names: {team_names}")
     
     message_date = message.created_at.strftime('%Y-%m-%dT%H:%M:%S')
 
