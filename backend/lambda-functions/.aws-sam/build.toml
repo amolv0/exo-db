@@ -262,4 +262,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["lastPageIdGet"]
 
+[function_build_definitions.03fa7612-eb92-4979-897c-5e1ec5e8d2e5]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/otherFuncs/updateReveals"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "updateReveals.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["updateReveals"]
+
 [layer_build_definitions]
