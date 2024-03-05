@@ -8,6 +8,7 @@ interface EventListDisplayProps {
 
 const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
   const [maps, setMaps] = useState<any[]>([]);
+  const [ascending, setAscending] = useState<boolean>(false); // State to track sorting direction
 
   useEffect(() => {
     const fetchEventData = async () => {
@@ -22,8 +23,11 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         const data = await response.json();
 
         // Sort events by start date
-        //data.sort((a: any, b: any) => new Date(b.start).getTime() - new Date(a.start).getTime());
-        data.sort((a: any, b: any) => new Date(a.start).getTime() - new Date(b.start).getTime());
+        if (ascending) {
+          data.sort((a: any, b: any) => new Date(a.start).getTime() - new Date(b.start).getTime());
+        } else {
+          data.sort((a: any, b: any) => new Date(b.start).getTime() - new Date(a.start).getTime());
+        }
         setMaps(data);
       } catch (error) {
         console.error('Error fetching or parsing JSON:', error);
@@ -33,7 +37,12 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
     if (eventIdsString) {
       fetchEventData();
     }
-  }, [eventIdsString]);
+  }, [eventIdsString, ascending]); // Include ascending in the dependency array
+
+  // Function to toggle sorting direction
+  const toggleSortingDirection = () => {
+    setAscending((prevAscending) => !prevAscending);
+  };
 
   return (
     <Box bgcolor="#333" color="#fff" p={2} borderRadius={4}>
@@ -47,8 +56,8 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         <Typography variant="subtitle1" flex={2}>
           Location
         </Typography>
-        <Typography variant="subtitle1" flex={2}>
-          Date
+        <Typography variant="subtitle1" flex={2} onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
+          Date {ascending ? '▲' : '▼'}
         </Typography>
       </Box>
 

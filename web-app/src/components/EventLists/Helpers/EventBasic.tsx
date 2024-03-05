@@ -28,7 +28,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ name, eventID, prog, loca
       {name && (
         <div style={{ display: 'flex', width: '100%' }}>
           <div className = "text-stone-400 hidden md:block" style={{ flex: 1 }}>{prog}</div>
-          <div className = "text-rose-100" style={{ flex: 3 }}>
+          <div className = "text-orange-100" style={{ flex: 3 }}>
             <Link to={`/events/${eventID}`}>
               {name || 'N/A'}
             </Link>
@@ -37,7 +37,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ name, eventID, prog, loca
             {location?.city && (<div>{location.city}, {location.country}</div>)}
             {!location?.city && location?.country}
           </div>
-          <div className = "text-rose-100" style={{ flex: 2 }}>
+          <div className = "text-orange-100" style={{ flex: 2 }}>
             {start && (start.substring(0, 10) === end?.substring(0, 10) ? start.substring(0, 10) : start.substring(0, 10) + ' - ' + end?.substring(0, 10))}
           </div>
         </div>
