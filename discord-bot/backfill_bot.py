@@ -3,6 +3,7 @@ import re
 import boto3
 import json
 import datetime
+import os
 
 # Run this code to start the backfill bot. 
 
@@ -10,12 +11,11 @@ import datetime
 
 # Initialize SQS client
 sqs = boto3.client('sqs')
-queue_url = 'os.getenv('SQS_TEAM_REVEALS_QUEUE_URL')'
+queue_url = os.getenv('SQS_TEAM_REVEALS_QUEUE_URL')
 
-TOKEN = 'REDACTED_API_KEY'
+TOKEN = os.getenv('BOT_TOKEN')
 
-# CHANNEL_ID = 785754010769817651 # of Exothermic Robotics reveals channel
-CHANNEL_ID = 1214628203285446777 # test server reveals channel
+CHANNEL_ID = os.getenv('SAMPLE_SERVER_REVEALS_CHANNEL_ID')
 
 intents = discord.Intents.default()
 intents.messages = True
