@@ -45,10 +45,12 @@ interface JSONComponentProps {
   } | null;
 }
 
+
+
 const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
   if (!data) return null;
 
-  const { location, robot_name, program, registered, organization, reveals, awards, skills_rankings, skills_regional_ranking, elo_rankings, elo_regional_rankings } = data;
+  const { location, robot_name, program, registered, organization, reveals, awards, skills_rankings, skills_regional_ranking, elo_rankings, elo_regional_rankings, region } = data;
 
   // Function to find the maximum ranking based on robot value
   const findMaxRobotRanking = (rankings: Record<number, { [key: string]: number }>) => {
@@ -99,24 +101,35 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
       <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }}>
         {location && (
           <Box flex={1} mr={{ xs: 0, md: 2 }} p={4} bgcolor="#555" borderRadius={8} boxShadow={3} className="rounded-md shadow-md">
-            <Typography variant="body1" color="orange" className="mb-4">
-              Location
+            <Typography variant="h6" color="orange" className="mb-4">
+              Team Info
             </Typography>
-            <Typography variant="body2" color="white" className="mb-2">
-              {location.city + ',' || ''} {location.region + ',' || ''} {location.country || ''}
-            </Typography>
-            <Typography variant="body1" color="orange" className="mb-4">
-              Info
-            </Typography>
-            <Typography variant="body2" color="white" className="mb-2">
-              Organization: {organization || 'N/A'} <br />
-              Robot Name: {robot_name} <br />
-              Program: {program || 'N/A'} <br />
-              Registered: {registered || 'N/A'} <br />
-            </Typography>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <tbody>
+                <tr>
+                  <td style={{ padding: '1px'}}>Organization</td>
+                  <td style={{ padding: '1px'}}>{organization}</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: '1px' }}>Location</td>
+                  <td style={{ padding: '1px' }}>{location.city + ',' || ''} {region || ''}</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: '1px' }}>Robot Name</td>
+                  <td style={{ padding: '1px' }}>{robot_name}</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: '1px' }}>Program</td>
+                  <td style={{ padding: '1px' }}>{program || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: '1px' }}>Registered</td>
+                  <td style={{ padding: '1px' }}>{registered || 'N/A'}</td>
+                </tr>
+              </tbody>
+            </table>
           </Box>
         )}
-  
         {/* Rankings Section */}
         <Box flex={{ xs: 1, md: 2 }} ml={{ xs: 0, md: 2 }} p={4} bgcolor="#555" borderRadius={8} boxShadow={3} className="rounded-md shadow-md">
           <Typography variant="h6" color="orange" className="mb-4">
