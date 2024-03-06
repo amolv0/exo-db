@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import EventsListQuery from '../components/EventLists/EventsListQuery';
-import { DatePicker } from '@mui/x-date-pickers';
 
 const Events: React.FC = () => {
   // State variables to manage selected values
