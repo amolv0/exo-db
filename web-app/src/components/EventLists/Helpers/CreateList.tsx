@@ -45,7 +45,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   };
 
   return (
-    <Box bgcolor="#333" color="#fff" p={2} borderRadius={4}>
+    <Box bgcolor="#333" color="#FFFFFF" p={2} borderRadius={4}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
         <Typography variant="subtitle1" flex={1}>
           Program
