@@ -67,24 +67,22 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Awards</h2>
       
       {/* Display "No Awards Earned" if there are no awards */}
       {awardData.length === 0 && <div>No Awards Earned</div>}
-      
-      {/* Dropdown to select season */}
-      <select
-        value={selectedSeason ?? ''}
-        onChange={(e) => setSelectedSeason(e.target.value ? parseInt(e.target.value) : null)}
-        className="block appearance-none bg-black border border-gray-300 text-white py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-black focus:border-gray-500"
-      >
-        <option value="">Select Season</option>
-        {Object.keys(seasonMap).map(season => (
-          <option key={season} value={season} className="text-white">{getSeasonNameFromId(parseInt(season))}</option>
-        ))}
-      </select>
-
       <br />
+      {/* Dropdown to select season */}
+      <div className="flex justify-center"> 
+        <select
+          value={selectedSeason ?? ''}
+          onChange={(e) => setSelectedSeason(e.target.value ? parseInt(e.target.value) : null)}
+          className="p-2 rounded-md bg-neutral-700 mr-4"        >
+          <option value="">Select Season</option>
+          {Object.keys(seasonMap).map(season => (
+            <option key={season} value={season} className="text-white">{getSeasonNameFromId(parseInt(season))}</option>
+          ))}
+        </select>
+      </div>
       <br />
 
       {/* Display awards and events for selected season */}

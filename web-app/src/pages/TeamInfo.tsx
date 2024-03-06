@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import TeamLocation from '../components/TeamInfo/TeamLocation';
 import TeamAwards from '../components/TeamInfo/TeamAwards';
-import CreateList from '../components/EventLists/Helpers/CreateList';
+import CreateList from '../components/EventLists/Helpers/CreateDropDownList';
 import { Box, Typography, Button, ButtonGroup, CircularProgress } from '@mui/material';
 
 const TeamInfo: React.FC = () => {
@@ -76,7 +76,9 @@ const TeamInfo: React.FC = () => {
                 data={teamData[0]}
               />
             )}
-            {activeElement === 'Events' && <CreateList eventIdsString={eventIdsString}></CreateList>}
+            {activeElement === 'Events' && 
+              <CreateList eventIdsString={eventIdsString}></CreateList>
+            }
             {activeElement === 'Awards' && <TeamAwards awards={teamData[0].awards}></TeamAwards>}
           </Box>
         ) : (
