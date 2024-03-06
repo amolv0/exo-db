@@ -41,14 +41,14 @@ const TeamInfo: React.FC = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 4, bgcolor: 'darkgrey', width: '100%', color: 'white' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 4, width: '100%', color: 'white' }}>
       {loading ? (
         <CircularProgress color="inherit" />
       ) : (
         teamData ? (
-          <Box sx={{ width: '100%', maxWidth: '800px', bgcolor: 'grey.900', color: 'white', p: 2, borderRadius: 2, boxShadow: 3 }}>
+          <Box sx={{ width: '100%', maxWidth: '1000px', bgcolor: 'grey.900', color: 'white', p: 2, borderRadius: 2, boxShadow: 3 }}>
             <Typography variant="h4" color="white" align="center" my={4}>
-              Team details for {teamData[0].number} {teamData[0].team_name}
+              {teamData[0].number} {teamData[0].team_name}
             </Typography>
             
             <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: 'grey.800', p: 1, borderRadius: '4px' }}>
@@ -73,11 +73,7 @@ const TeamInfo: React.FC = () => {
             </Box>
             {activeElement === 'TeamInfo' && teamData && (
               <TeamLocation
-                location={teamData[0].location} 
-                org={teamData[0].organization} 
-                program={teamData[0].program}
-                registered={teamData[0].registered}
-                robotName={teamData[0].robot_name}
+                data={teamData[0]}
               />
             )}
             {activeElement === 'Events' && <CreateList eventIdsString={eventIdsString}></CreateList>}
