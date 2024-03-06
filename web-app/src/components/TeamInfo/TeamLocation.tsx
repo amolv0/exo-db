@@ -50,7 +50,7 @@ interface JSONComponentProps {
 const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
   if (!data) return null;
 
-  const { location, robot_name, program, registered, organization, reveals, awards, skills_rankings, skills_regional_ranking, elo_rankings, elo_regional_rankings, region } = data;
+  const { location, robot_name, program, registered, organization, reveals, awards, skills_rankings, skills_regional_ranking, elo_rankings, elo_regional_rankings, region, events } = data;
 
   // Function to find the maximum ranking based on robot value
   const findMaxRobotRanking = (rankings: Record<number, { [key: string]: number }>) => {
@@ -138,27 +138,32 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <tbody>
               <tr>
+                <td style={{ padding: '1px'}}>Total Events</td>
+                <td style={{ padding: '1px'}}>{events.length}</td>
+                <td style={{ padding: '1px', textAlign: "right"}}></td>
+              </tr>
+              <tr>
                 <td style={{ padding: '1px'}}>Award Count</td>
                 <td style={{ padding: '1px'}}>{awards.length}</td>
                 <td style={{ padding: '1px', textAlign: "right"}}></td>
               </tr>
               <tr>
-                <td style={{ padding: '1px' }}>Highest Global Skills Rank</td>
+                <td style={{ padding: '1px' }}>Best Global Skills Rank</td>
                 <td style={{ padding: '1px' }}>{maxSkillRanking}</td>
                 <td style={{ padding: '1px', textAlign: "right" }}>{maxSkillSeasonId && getSeasonNameFromId(maxSkillSeasonId)}</td>
               </tr>
               <tr>
-                <td style={{ padding: '1px' }}>Highest Regional Skills Rank</td>
+                <td style={{ padding: '1px' }}>Best Regional Skills Rank</td>
                 <td style={{ padding: '1px' }}>{maxRegionalSkillRanking}</td>
                 <td style={{ padding: '1px', textAlign: "right" }}>{maxRegionalSkillSeasonId && getSeasonNameFromId(maxRegionalSkillSeasonId)}</td>
               </tr>
               <tr>
-                <td style={{ padding: '1px' }}>Highest Global Elo Rank</td>
+                <td style={{ padding: '1px' }}>Best Global Elo Rank</td>
                 <td style={{ padding: '1px' }}>{maxEloRanking}</td>
                 <td style={{ padding: '1px', textAlign: "right" }}>{maxEloSeasonId && getSeasonNameFromId(maxEloSeasonId)}</td>
               </tr>
               <tr>
-                <td style={{ padding: '1px' }}>Highest Regional Elo Rank</td>
+                <td style={{ padding: '1px' }}>Best Regional Elo Rank</td>
                 <td style={{ padding: '1px' }}>{maxEloRegionalRanking}</td>
                 <td style={{ padding: '1px', textAlign: "right"}}>{maxEloRegionalSeasonId && getSeasonNameFromId(maxEloRegionalSeasonId)}</td>
               </tr>
