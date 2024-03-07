@@ -19,7 +19,6 @@ interface LambdaEvent {
         season: number
         region?: string
         page?: number
-        country?: string
     };
 }
 
@@ -105,6 +104,7 @@ const fetchPage = async (season: number, desiredPage: number = 1, regions?: stri
     return results;
 };
 
+// We should consider making this an external function that is importable
 const determineRegions = async (input: string): Promise<string[]> => {
     const regions: { [key: string]: string[] } = {
         // Detailed regions for specific countries
