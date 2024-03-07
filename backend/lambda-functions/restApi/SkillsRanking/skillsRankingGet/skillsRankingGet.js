@@ -79,8 +79,8 @@ const buildEventTeamQuery = async (event_id, team_id, type) => {
     }
     return params;
 };
-const buildSeasonQuery = async (season, type, evaluateKey, fullFetch = false, grade, region, limit = 100) => {
-    // console.log("building season query");
+const buildSeasonQuery = async (season, type, evaluateKey, fullFetch = false, grade, regions, limit = 100) => {
+    // Initialize the basic query parameters
     const params = {
         TableName: 'skills-ranking-data',
         IndexName: 'SeasonScoreIndex',
@@ -105,15 +105,17 @@ const buildSeasonQuery = async (season, type, evaluateKey, fullFetch = false, gr
         params.ExpressionAttributeNames['#team_grade'] = 'team_grade';
         params.ExpressionAttributeValues[':team_grade'] = grade;
     }
-    if (region) {
-        params.FilterExpression += ' AND #region = :region';
-        params.ExpressionAttributeNames['#region'] = 'region';
-        params.ExpressionAttributeValues[':region'] = region;
+    if (regions && regions.length > 0) {
+        const regionFilters = regions.map((_, index) => `#region = :region${index}`).join(' OR ');
+        params.FilterExpression += ` AND (${regionFilters})`;
+        regions.forEach((region, index) => {
+            params.ExpressionAttributeNames[`#region`] = 'region';
+            params.ExpressionAttributeValues[`:region${index}`] = region;
+        });
     }
     if (evaluateKey) {
         params.ExclusiveStartKey = evaluateKey;
     }
-    // console.log("returning query");
     return params;
 };
 const fetchPage = async (season, skills_type, desiredPage, grade, region) => {
@@ -185,6 +187,201 @@ const fetchPage = async (season, skills_type, desiredPage, grade, region) => {
     }
     return items;
 };
+const determineRegions = async (input) => {
+    const regions = {
+        // Detailed regions for specific countries
+        "United States": [
+            "Alabama",
+            "Alaska",
+            "Arizona",
+            "Arkansas",
+            "California",
+            "Colorado",
+            "Connecticut",
+            "Delaware",
+            "District of Columbia",
+            "Florida",
+            "Georgia",
+            "Hawaii",
+            "Idaho",
+            "Illinois",
+            "Indiana",
+            "Iowa",
+            "Kansas",
+            "Kentucky",
+            "Louisiana",
+            "Maine",
+            "Maryland",
+            "Massachusetts",
+            "Michigan",
+            "Minnesota",
+            "Mississippi",
+            "Missouri",
+            "Montana",
+            "Nebraska",
+            "Nevada",
+            "New Hampshire",
+            "New Jersey",
+            "New Mexico",
+            "New York",
+            "North Carolina",
+            "North Dakota",
+            "Ohio",
+            "Oklahoma",
+            "Oregon",
+            "Pennsylvania",
+            "Puerto Rico",
+            "Rhode Island",
+            "South Carolina",
+            "South Dakota",
+            "Tennessee",
+            "Texas",
+            "Utah",
+            "Vermont",
+            "Virginia",
+            "Washington",
+            "West Virginia",
+            "Wisconsin",
+            "Wyoming"
+        ],
+        "Canada": [
+            "Alberta",
+            "British Columbia",
+            "Manitoba",
+            "Ontario",
+            "Quebec",
+            "Saskatchewan",
+        ],
+        "China": [
+            "Beijing",
+            "Fujian",
+            "Gansu",
+            "Guangdong",
+            "Guizhou",
+            "Hainan",
+            "Hebei",
+            "Henan",
+            "Hong Kong", // Don't
+            "Jiangsu",
+            "Jiangxi",
+            "Jilin",
+            "Macau", // Cancel Me!
+            "Shaanxi",
+            "Shandong",
+            "Shanghai",
+            "Sichuan",
+            "Tianjin",
+            "Zhejiang"
+        ],
+        "Germany": [
+            "Baden-Württemberg",
+            "Berlin",
+            "Hamburg",
+            "Niedersachsen",
+            "Nordrhein-Westfalen",
+            "Rheinland-Pfalz"
+        ],
+        "Ireland": [
+            "Cork",
+            "Donegal",
+            "Limerick",
+            "Offaly"
+        ],
+        "Mexico": [
+            "Aguascalientes",
+            "Baja California",
+            "Chiapas",
+            "Chihuahua",
+            "Coahuila",
+            "Guanajuato",
+            "Hidalgo",
+            "Jalisco",
+            "Mexico City",
+            "Mexico State",
+            "Michoacán",
+            "Morelos",
+            "Nuevo León",
+            "Quintana Roo",
+            "San Luis Potosí",
+            "Tamaulipas",
+            "Tabasco",
+            "Tlaxcala",
+            "Veracruz",
+            "Yucatán"
+        ],
+        "Spain": [
+            "Barcelona",
+            "Girona",
+            "Guipuzcoa",
+            "Madrid",
+            "Vizcaya", // p sure
+        ],
+        "Switzerland": [
+            "Aargau",
+            "Basel-Landschaft",
+            "Basel-Stadt",
+            "Rhône" // this is a river? what?
+        ],
+        // Countries as their own regions
+        "Andorra": ["Andorra"],
+        "Australia": ["Australia"],
+        "Azerbaijan": ["Azerbaijan"],
+        "Bahrain": ["Bahrain"],
+        "Belgium": ["Belgium"],
+        "Brazil": ["Brazil"],
+        "Chile": ["Chile"],
+        "Colombia": ["Colombia"],
+        "Egypt": ["Egypt"],
+        "Ethiopia": ["Ethiopia"],
+        "Finland": ["Finland"],
+        "France": ["France"],
+        "Ghana": ["Ghana"],
+        "Indonesia": ["Indonesia"],
+        "Japan": ["Japan"],
+        "Jordan": ["Jordan"],
+        "Kazakhstan": ["Kazakhstan"],
+        "Korea, Republic of": ["Korea, Republic of"],
+        "Kuwait": ["Kuwait"],
+        "Lebanon": ["Lebanon"],
+        "Luxembourg": ["Luxembourg"],
+        "Malaysia": ["Malaysia"],
+        "Morocco": ["Morocco"],
+        "New Zealand": ["New Zealand"],
+        "Oman": ["Oman"],
+        "Panama": ["Panama"],
+        "Paraguay": ["Paraguay"],
+        "Philippines": ["Philippines"],
+        "Qatar": ["Qatar"],
+        "Russia": ["Russia"],
+        "Saudi Arabia": ["Saudi Arabia"],
+        "Singapore": ["Singapore"],
+        "Slovakia": ["Slovakia"],
+        "Taiwan": ["Taiwan"],
+        "Thailand": ["Thailand"],
+        "Tunisia": ["Tunisia"],
+        "Türkiye": ["Türkiye"],
+        "United Arab Emirates": ["United Arab Emirates"],
+        "United Kingdom": ["United Kingdom"],
+        "Vietnam": ["Vietnam"],
+        // Add other countries and their regions if necessary
+    };
+    // Dynamically determine if the country should be treated as its own region or has specific regions
+    if (regions.hasOwnProperty(input)) {
+        return regions[input];
+    }
+    else {
+        // Check if input is a region in any of the countries
+        for (const countryRegions of Object.values(regions)) {
+            if (countryRegions.includes(input)) {
+                // Input is a region
+                return [input];
+            }
+        }
+        // Input is not recognized as a country or a region in the predefined list
+        // Returning input as a potential region or country not explicitly handled
+        return [input];
+    }
+};
 const handler = async (event) => {
     console.log('Received event:', event);
     const event_id = Number(event.queryStringParameters?.eventId);
@@ -194,6 +391,7 @@ const handler = async (event) => {
     const page = Number(event.queryStringParameters?.page) || 1;
     const grade = event.queryStringParameters?.grade;
     const region = event.queryStringParameters?.region;
+    let regions_array;
     // Build query parameters based on event_id, team_id, and skills_type
     let queryParameters;
     if (event_id && team_id) {
@@ -210,7 +408,10 @@ const handler = async (event) => {
     }
     else if (season) {
         // console.log("Season query");
-        const result = await fetchPage(season, skills_type, page, grade, region);
+        if (region) {
+            regions_array = await determineRegions(region);
+        }
+        const result = await fetchPage(season, skills_type, page, grade, regions_array);
         if (result.length == 0) {
             return {
                 statusCode: 500,
