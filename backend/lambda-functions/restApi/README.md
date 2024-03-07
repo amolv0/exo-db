@@ -18,7 +18,7 @@ Operations:
   - `?start_after={'start_date'}` - get n events that started after {'start_date'} (DONE)
   - `?start_before={'start_date'}` - get n events that started before {'start_date'} (DONE)
   - `?status=ongoing` to get all ongoing events: `EXODB_API_GATEWAY_BASE_URL/dev/events?status=ongoing`
-  - `?region={'region'}` to get events from a specific region
+  - `?region={'region'}` to get events from a specific region. The ?region modifier works with any other modifiers. Can also do a country that has multiple regions within it (ie: China, United States) and it will get events for all regions that country contains.
 - POST `/events/ {body: "[{event_id1}, {event_id2}, {event_id3}...]"}` to get details for a set of specific events.
 
 ### Sub-Resource: eventId
@@ -194,7 +194,7 @@ Operations:
   - The three above can be modified with ?type, which will cause them to only return skillsrankings for a specific `type` (robot, programming, driver). ex `/skillsranking?eventId=28201&teamId=5226&type=robot`
 - GET `/skillsranking?season` to get the skillsranking items from a specific season, sorted by score. By default will return the first page of the top 50 items of the given parameters. ?pages allows for page parsing.
   - Can be modified by responses or region:
-  - GET `/skillsranking?season={}&region={}`
+  - GET `/skillsranking?season={}&region={}` The ?region modifier works with any other modifiers. Can also do a country that has multiple regions within it (ie: China, United States) and it will get rankings for all regions that country contains.
   - GET `/skillsranking?season={}&page={}` -- Will default to == 1
   - GET `/skillsranking?season={}&grade={}` Valid options: ["High School", "Middle School", "Elementary School", "College"]
   - GET `/skillsranking?season={}&type={}` Valid options: ["robot", "driver", "programming"] -- Will default to "robot"
@@ -218,7 +218,7 @@ Operations:
 - GET `/eloranking` to get the first page of elorankings for the default season, `181`
 - GET `/eloranking?page={}` to get a specific page of elorankings for the default season `181`
 - GET `/eloranking?season={}&page={}` to get a specific page of elorankings for a specific season (Ideal way to use)
-- GET `/elorankings?region={}` to get the first page of elorankings for the default season, `181` for a specific region. The ?region modifier works with any other modifiers
+- GET `/elorankings?region={}` to get the first page of elorankings for the default season, `181` for a specific region. The ?region modifier works with any other modifiers. Can also do a country that has multiple regions within it (ie: China, United States) and it will get rankings for all regions that country contains.
 
 ## TsRanking
 
@@ -239,7 +239,7 @@ Operations:
 - GET `/tsranking` to get the first page of tsranking for the default season, `181`
 - GET `/tsranking?page={}` to get a specific page of tsranking for the default season `181`
 - GET `/tsranking?season={}&page={}` to get a specific page of tsranking for a specific season (Ideal way to use)
-- GET `/tsranking?region={}` to get the first page of tsranking for the default season, `181` for a specific region. The ?region modifier works with any other modifiers
+- GET `/tsranking?region={}` to get the first page of tsranking for the default season, `181` for a specific region. The ?region modifier works with any other modifiers. Can also do a country that has multiple regions within it (ie: China,   United States) and it will get rankings for all regions that country contains.
   
 ## LastPage
 
