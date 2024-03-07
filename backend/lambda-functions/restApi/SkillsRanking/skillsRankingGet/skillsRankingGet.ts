@@ -24,7 +24,6 @@ interface LambdaEvent {
         page?: number;
         grade?: string;
         region?: string;
-        country?: string
     };
 }
 
