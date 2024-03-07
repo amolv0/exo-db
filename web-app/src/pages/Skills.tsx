@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import SeasonSkills from '../components/SkillsLadderList/SeasonSkills';
 import { getSeasonNameFromId } from '../SeasonEnum';
+import RegionDropdown from '../components/Helper/RegionDropDown';
 
 const Teams: React.FC = () => {
   const [seasonId, setSeasonId] = useState<number>(181);
   const [seasonName, setSeasonName] = useState<string>(getSeasonNameFromId(seasonId));
   const [grade, setGrade] = useState<string>('High School');
-  const [region, setRegion] = useState<string>(''); // State for region
+  const [selectedRegion, setSelectedRegion] = useState<string>('');
+
   const [seasons, setSeasons] = useState<number[]>([]);
 
   useEffect(() => {
@@ -32,10 +34,6 @@ const Teams: React.FC = () => {
     setGrade(event.target.value);
   };
 
-  const handleRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setRegion(event.target.value);
-  };
-
   return (
     <div className="flex flex-col items-center">
       <h1 className="text-black text-3xl mb-4 my-8">Skills</h1>
@@ -55,12 +53,11 @@ const Teams: React.FC = () => {
             ))}
         </select>
         <label htmlFor="region" className="mr-4">Region:</label>
-        <select id="region" value={region} onChange={handleRegionChange} className="p-2 rounded-md bg-gray-200">
-          <option value="">All</option>
-          <option value="Washington">Washington</option>
-        </select>
+        <div>
+          <RegionDropdown onSelect={setSelectedRegion} />
+        </div>
       </div>
-      <SeasonSkills season={seasonId.toString()} grade={grade} region={region}/> {/* Pass region as a prop */}
+      <SeasonSkills season={seasonId.toString()} grade={grade} region={selectedRegion}/> {/* Pass region as a prop */}
     </div>
   );
 };
