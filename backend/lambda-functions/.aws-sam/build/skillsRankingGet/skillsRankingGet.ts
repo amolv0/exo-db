@@ -24,7 +24,6 @@ interface LambdaEvent {
         page?: number;
         grade?: string;
         region?: string;
-        country?: string
     };
 }
 
@@ -230,6 +229,7 @@ const fetchPage = async (season: number, skills_type: string, desiredPage: numbe
     return items;
 };
 
+// We should consider making this an external function that is importable
 const determineRegions = async (input: string): Promise<string[]> => {
     const regions: { [key: string]: string[] } = {
         // Detailed regions for specific countries
