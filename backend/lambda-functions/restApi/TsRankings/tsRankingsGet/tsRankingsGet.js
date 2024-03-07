@@ -75,6 +75,7 @@ const fetchPage = async (season, desiredPage = 1, regions) => {
     console.log("Length:", results.length);
     return results;
 };
+// We should consider making this an external function that is importable
 const determineRegions = async (input) => {
     const regions = {
         // Detailed regions for specific countries
