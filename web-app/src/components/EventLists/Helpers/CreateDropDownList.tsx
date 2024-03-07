@@ -24,6 +24,7 @@ const EventSeasonListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsStrin
           body: eventIdsString
         });
         const data = await response.json();
+        
         // Sort events by start date
         if (ascending) {
           data.sort((a: any, b: any) => new Date(a.start).getTime() - new Date(b.start).getTime());
