@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { getSeasonNameFromId } from '../SeasonEnum';
 import SeasonRankings from '../components/RankingsList/SeasonRankings';
+import RegionDropdown from '../components/Helper/RegionDropDown';
 
 const Rankings: React.FC = () => {
   const [seasonId, setSeasonId] = useState<number>(181);
   const [seasonName, setSeasonName] = useState<string>(getSeasonNameFromId(seasonId));
   const [seasons, setSeasons] = useState<number[]>([]);
   const [eventType, setEventType] = useState<string>('VEX');
-  const [region, setRegion] = useState<string>(''); // Initialize region state
+  const [selectedRegion, setSelectedRegion] = useState<string>('');
 
   useEffect(() => {
     setSeasonName(getSeasonNameFromId(seasonId));
@@ -32,10 +33,6 @@ const Rankings: React.FC = () => {
     setEventType(event.target.value);
   };
 
-  const handleRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setRegion(event.target.value);
-  };
-
   return (
     <div className="flex flex-col items-center">
       <h1 className="text-black text-3xl mb-4 my-8">Ratings Leaderboard</h1>
@@ -56,13 +53,11 @@ const Rankings: React.FC = () => {
         </select>
         {/* Dropdown for Region */}
         <label htmlFor="region" className="mr-4">Region:</label>
-        <select id="region" value={region} onChange={handleRegionChange} className="p-2 rounded-md bg-gray-200">
-          <option value="">All</option>
-          <option value="Washington">Washington</option>
-          {/* Add more options as needed */}
-        </select>
+        <div>
+          <RegionDropdown onSelect={setSelectedRegion} />
+        </div>
       </div>
-      <SeasonRankings season={seasonId.toString()} region={region} /> {/* Pass region to SeasonRankings */}
+      <SeasonRankings season={seasonId.toString()} region={selectedRegion} /> {/* Pass region to SeasonRankings */}
     </div>
   );
 };
