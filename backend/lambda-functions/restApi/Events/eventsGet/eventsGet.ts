@@ -19,7 +19,7 @@ const headers = {
 };
 
 // Function to query ongoing events with optional program filtering and limit
-const getOngoingEvents = async (eventCode?: string, eventLevel?: string): Promise<number[]> => {
+const getOngoingEvents = async (eventCode?: string, eventLevel?: string, eventGrade?: string): Promise<number[]> => {
     let accumulatedItems: number[] = [];
     let lastEvaluatedKey = undefined;
 
@@ -486,7 +486,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     const eventRegion = event.queryStringParameters?.region;
     const eventLevel = event.queryStringParameters?.level;
 
-    const allowedParams = ['numberOfEvents', 'start_before', 'start_after', 'status', 'program', 'region', 'level'];
+    const allowedParams = ['numberOfEvents', 'start_before', 'start_after', 'status', 'program', 'region', 'level', 'grade'];
 
     const queryParams = Object.keys(event.queryStringParameters || {});
     const invalidParams = queryParams.filter(param => !allowedParams.includes(param));
@@ -536,6 +536,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
             body: JSON.stringify({ error: "Invalid 'level' parameter. Must be one of ['Regional', 'National', 'Signature', 'World']" })
         };
     }
+
     try {
         let id_array: number[] = [];
         if (isOngoingQuery) {
