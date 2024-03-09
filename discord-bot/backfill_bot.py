@@ -10,12 +10,15 @@ import os
 # URL to join a server: https://discord.com/oauth2/authorize?client_id=1214629877601406996&permissions=68608&scope=bot
 
 # Initialize SQS client
+
 sqs = boto3.client('sqs')
-queue_url = os.getenv('SQS_TEAM_REVEALS_QUEUE_URL')
 
-TOKEN = os.getenv('BOT_TOKEN')
 
-CHANNEL_ID = os.getenv('SAMPLE_SERVER_REVEALS_CHANNEL_ID')
+queue_url = 'REDACTED_SQS_URL/TeamRevealsQueue' # os.getenv('SQS_TEAM_REVEALS_QUEUE_URL')
+
+TOKEN = 'MTIxNDYyOTg3NzYwMTQwNjk5Ng.GMRKf9.fmfNal4rkPc2DyQzrzaYoO9T9gDN3xA_xqukTc' # os.getenv('BOT_TOKEN')
+
+CHANNEL_ID = 1216114323504758896 # os.getenv('SAMPLE_SERVER_REVEALS_CHANNEL_ID')
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -40,17 +43,25 @@ async def process_message(message):
 
     urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', message.content)
     url_name = ""
-    team_names = []
+    team_names_set = set()
+    
     for embed in message.embeds:
+        print(f"Message embed author: {embed.author.name}")
         if embed.title:
-            team_names.extend(re.findall(r'\b\d+[A-Z]\b', embed.title))
+            team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.title))
             url_name = embed.title
             print(f"Embed title: {embed.title}")
+        if embed.description:
+            team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.description))
+            print(f"Embed description: {embed.description}")
+        if embed.author and embed.author.name:
+            team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.author.name))
+            print(f"Embed author name: {embed.author.name}")
     print(f"Urls: {urls}")
-    print(f"Team names: {team_names}")
+    print(f"Team names: {team_names_set}")
     
     message_date = message.created_at.strftime('%Y-%m-%dT%H:%M:%S')
-
+    team_names = list(team_names_set)
     if urls and team_names:
         for team_name in team_names:
             msg_body = {
@@ -71,6 +82,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    print("Found message")
     await process_message(message)
 
 client.run(TOKEN)
