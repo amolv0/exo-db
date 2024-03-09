@@ -30,13 +30,25 @@ async def process_message(message):
 
     urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', message.content)
     url_name = ""
-    team_names = []
+    team_names_set = set()
+    
     for embed in message.embeds:
+        print(f"Message embed author: {embed.author.name}")
         if embed.title:
-            team_names.extend(re.findall(r'\b\d+[A-Z]\b', embed.title))
+            team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.title))
             url_name = embed.title
-
+            print(f"Embed title: {embed.title}")
+        if embed.description:
+            team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.description))
+            print(f"Embed description: {embed.description}")
+        if embed.author and embed.author.name:
+            team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.author.name))
+            print(f"Embed author name: {embed.author.name}")
+    print(f"Urls: {urls}")
+    print(f"Team names: {team_names_set}")
+    
     message_date = message.created_at.strftime('%Y-%m-%dT%H:%M:%S')
+    team_names = list(team_names_set)
 
     if urls and team_names:
         for team_name in team_names:
