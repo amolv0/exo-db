@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import EventsListQuery from '../components/EventLists/EventsListQuery';
+import { useLocation, useNavigate } from 'react-router-dom';
+import RegionDropdown from '../components/Helper/RegionDropDown';
 
 const Events: React.FC = () => {
   // State variables to manage selected values
-  const [status, setStatus] = useState<string>(''); // for Ongoing
-  const [startAfterDate, setStartAfterDate] = useState<string>(''); // for Start After Date
-  const [region, setRegion] = useState<string>(''); // for Region
-  const [program, setProgram] = useState<string>('VRC'); // for Program Name
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const [status, setStatus] = useState<string>(searchParams.get('status')  || ''); // for Ongoing
+  const [startAfterDate, setStartAfterDate] = useState<string>(searchParams.get('startAfterDate')  || ''); // for Start After Date
+  const [region, setRegion] = useState<string>(searchParams.get('region')  || ''); // for Region
+  const [program, setProgram] = useState<string>(searchParams.get('program')  || ''); // for Program Name
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const state = { status, startAfterDate, region, program};
+    const url = `/events?status=${status}&startAfterDate=${startAfterDate}&region=${region}&program=${program}`;
+    navigate(url, { state, replace: true });
+  }, [status, startAfterDate, region, program, navigate]);
 
   return (
     <div className="flex flex-col items-center">
@@ -41,18 +52,9 @@ const Events: React.FC = () => {
         </div>
 
         {/* Styled Dropdown for Region */}
-        <div className="dropdown">
-          <label htmlFor="region" className="mr-2">Region:</label>
-          <select
-            id="region"
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-            className="p-2 rounded-md bg-gray-200"
-          >
-            <option value="">--Select Region--</option>
-            <option value="Washington">Washington</option>
-            {/* Add options dynamically if needed */}
-          </select>
+        <label htmlFor="region" className="mr-4">Region:</label>
+        <div>
+          <RegionDropdown onSelect={setRegion} value = {region}/>
         </div>
 
         <label htmlFor="startAfterDate" className="mr-2 ml-2">Start After Date:</label>
