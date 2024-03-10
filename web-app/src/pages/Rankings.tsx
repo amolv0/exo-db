@@ -2,18 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { getSeasonNameFromId } from '../SeasonEnum';
 import SeasonRankings from '../components/RankingsList/SeasonRankings';
 import RegionDropdown from '../components/Helper/RegionDropDown';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Rankings: React.FC = () => {
-  const [seasonId, setSeasonId] = useState<number>(181);
-  const [seasonName, setSeasonName] = useState<string>(getSeasonNameFromId(seasonId));
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const [seasonId, setSeasonId] = useState<number>(parseInt(searchParams.get('seasonId') || '181'));
   const [seasons, setSeasons] = useState<number[]>([]);
-  const [eventType, setEventType] = useState<string>('VEX');
-  const [selectedRegion, setSelectedRegion] = useState<string>('');
+  const [eventType, setEventType] = useState<string>(searchParams.get('type')  || '');
+  const [selectedRegion, setSelectedRegion] = useState<string>(searchParams.get('region') || '');
 
-  useEffect(() => {
-    setSeasonName(getSeasonNameFromId(seasonId));
-  }, [seasonId]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const filteredSeasons: number[] = [];
     for (let i = 50; i <= 250; i++) {
@@ -32,6 +31,13 @@ const Rankings: React.FC = () => {
   const handleEventTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setEventType(event.target.value);
   };
+
+
+  useEffect(() => {
+    const state = { eventType, seasonId, region: selectedRegion };
+    const url = `/rankings?grade=${eventType}&seasonId=${seasonId}&region=${selectedRegion}`;
+    navigate(url, { state, replace: true });
+  }, [eventType, seasonId, selectedRegion, navigate]);
 
   return (
     <div className="flex flex-col items-center">
@@ -54,7 +60,7 @@ const Rankings: React.FC = () => {
         {/* Dropdown for Region */}
         <label htmlFor="region" className="mr-4">Region:</label>
         <div>
-          <RegionDropdown onSelect={setSelectedRegion} />
+          <RegionDropdown onSelect={setSelectedRegion} value = {selectedRegion}/>
         </div>
       </div>
       <SeasonRankings season={seasonId.toString()} region={selectedRegion} /> {/* Pass region to SeasonRankings */}

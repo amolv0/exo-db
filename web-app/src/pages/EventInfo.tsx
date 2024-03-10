@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import EventLocation from '../components/EventInfo/EventLocation';
 import TeamsList from '../components/EventInfo/TeamsList';
 import MatchesList from '../components/EventInfo/MatchesList';
@@ -9,6 +9,8 @@ import EventElims from '../components/EventInfo/EventElims';
 import { Box, Typography, Button, ButtonGroup, CircularProgress } from '@mui/material';
 
 const EventInfo: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { eventId } = useParams<{ eventId: string }>();
   const [eventData, setEventData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -16,6 +18,10 @@ const EventInfo: React.FC = () => {
 
   const handleHeaderClick = (element: string) => {
     setActiveElement(element);
+    if (eventId) {
+      const newUrl = `/events/${eventId}?activeElement=${element}`;
+      navigate(newUrl, { replace: true, state: { activeElement: element } }); // Pass the state along with the URL
+    }
   };
 
   useEffect(() => {
@@ -34,6 +40,14 @@ const EventInfo: React.FC = () => {
     fetchEventData();
   }, [eventId]);
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const prevActiveElement = searchParams.get('activeElement');
+    if (prevActiveElement) {
+      setActiveElement(prevActiveElement);
+    }
+  }, [location.search]);
+  
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 4, bgcolor: 'lightgrey', width: '100%' }}>
       {loading ? (
