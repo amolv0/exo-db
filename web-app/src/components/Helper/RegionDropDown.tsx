@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 
 interface RegionDropdownProps {
   onSelect: (region: string) => void;
+  value: string;
 }
 
-const RegionDropdown: React.FC<RegionDropdownProps> = ({ onSelect }) => {
-  const [selectedRegion, setSelectedRegion] = useState<string>('');
+const RegionDropdown: React.FC<RegionDropdownProps> = ({ onSelect, value }) => {
+  const [selectedRegion, setSelectedRegion] = useState<string>(value);
 
   const regions: { [key: string]: string[] } = {
     // United States
@@ -210,7 +211,7 @@ const RegionDropdown: React.FC<RegionDropdownProps> = ({ onSelect }) => {
 
   return (
     <select value={selectedRegion} onChange={handleChange} className="p-2 rounded-md bg-gray-200 mr-4">
-      <option value="">Select a region</option>
+      <option value="">All</option>
       {Object.entries(regions).map(([country, states]) => (
         <optgroup key={country} label={country}>
           {states.map(state => (
