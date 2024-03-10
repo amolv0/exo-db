@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import TeamLocation from '../components/TeamInfo/TeamLocation';
 import TeamAwards from '../components/TeamInfo/TeamAwards';
 import CreateList from '../components/EventLists/Helpers/CreateDropDownList';
@@ -7,35 +7,48 @@ import { Box, Typography, Button, ButtonGroup, CircularProgress } from '@mui/mat
 
 const TeamInfo: React.FC = () => {
   const { teamId } = useParams<{ teamId: string }>();
+  const location = useLocation();
   const [teamData, setTeamData] = useState<any>(null);
   const [eventIdsString, setEventIdsString] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true); // State for loading indicator
+  const [loading, setLoading] = useState<boolean>(true);
   const [activeElement, setActiveElement] = useState<string>('TeamInfo');
+
+  const navigate = useNavigate();
 
   const handleHeaderClick = (element: string) => {
     setActiveElement(element);
+    if (teamData && teamData[0] && teamData[0].id) {
+      const newUrl = `/teams/${teamData[0].id}?activeElement=${element}`;
+      navigate(newUrl, { replace: true, state: { activeElement: element } }); // Pass the state along with the URL
+    }
   };
 
   useEffect(() => {
-    const fetchteamData = async () => {
+    const fetchTeamData = async () => {
       try {
         const response = await fetch(`https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/teams/${teamId}`);
         const data = await response.json();
         setTeamData(data);
-        console.log(data);
         if (data && data.length > 0 && data[0].events) {
           setEventIdsString(JSON.stringify(data[0].events));
         }
-        setLoading(false); // Set loading state to false when data fetching is completed
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching or parsing JSON:', error);
       }
     };
-  
-    fetchteamData();
+
+    fetchTeamData();
   }, [teamId]);
 
-  // Loading indicator while fetching data
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const prevActiveElement = searchParams.get('activeElement');
+    if (prevActiveElement) {
+      setActiveElement(prevActiveElement);
+    }
+  }, [location.search]);
+
   if (loading) {
     return <div className="text-white text-2xl mb-4 mt-8 text-center">Loading...</div>;
   }
@@ -61,7 +74,7 @@ const TeamInfo: React.FC = () => {
                       bgcolor: 'grey.800',
                       '&:hover': { bgcolor: 'grey.700' },
                       color: 'white',
-                      '&:focus': { // Targeting the focus state
+                      '&:focus': {
                         outline: 'none'
                       }
                     }}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Paper, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import TeamReveals from "./TeamReveals";
 import { getSeasonNameFromId } from '../../SeasonEnum';
 
@@ -139,12 +139,16 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
             <tbody>
               <tr>
                 <td style={{ padding: '1px'}}>Total Events</td>
-                <td style={{ padding: '1px'}}>{events.length}</td>
+                <td style={{ padding: '1px'}}>
+                  {events ? events.length : 0}
+                </td>
                 <td style={{ padding: '1px', textAlign: "right"}}></td>
               </tr>
               <tr>
                 <td style={{ padding: '1px'}}>Award Count</td>
-                <td style={{ padding: '1px'}}>{awards.length}</td>
+                <td style={{ padding: '1px'}}>
+                  {awards ? awards.length : 0}
+                </td>
                 <td style={{ padding: '1px', textAlign: "right"}}></td>
               </tr>
               <tr>
