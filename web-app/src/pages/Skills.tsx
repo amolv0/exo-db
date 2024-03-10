@@ -2,18 +2,17 @@ import React, { useState, useEffect } from 'react';
 import SeasonSkills from '../components/SkillsLadderList/SeasonSkills';
 import { getSeasonNameFromId } from '../SeasonEnum';
 import RegionDropdown from '../components/Helper/RegionDropDown';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Teams: React.FC = () => {
-  const [seasonId, setSeasonId] = useState<number>(181);
-  const [seasonName, setSeasonName] = useState<string>(getSeasonNameFromId(seasonId));
-  const [grade, setGrade] = useState<string>('High School');
-  const [selectedRegion, setSelectedRegion] = useState<string>('');
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const [seasonId, setSeasonId] = useState<number>(parseInt(searchParams.get('seasonId') || '181'));
+  const [grade, setGrade] = useState<string>(searchParams.get('grade')  || '');
+  const [selectedRegion, setSelectedRegion] = useState<string>(searchParams.get('region') || '');
 
   const [seasons, setSeasons] = useState<number[]>([]);
-
-  useEffect(() => {
-    setSeasonName(getSeasonNameFromId(seasonId));
-  }, [seasonId]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const filteredSeasons: number[] = [];
@@ -33,6 +32,12 @@ const Teams: React.FC = () => {
   const handleGradeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setGrade(event.target.value);
   };
+
+  useEffect(() => {
+    const state = { grade, seasonId, region: selectedRegion };
+    const url = `/skills?grade=${grade}&seasonId=${seasonId}&region=${selectedRegion}`;
+    navigate(url, { state, replace: true });
+  }, [grade, seasonId, selectedRegion, navigate]);
 
   return (
     <div className="flex flex-col items-center">
@@ -54,7 +59,7 @@ const Teams: React.FC = () => {
         </select>
         <label htmlFor="region" className="mr-4">Region:</label>
         <div>
-          <RegionDropdown onSelect={setSelectedRegion} />
+          <RegionDropdown onSelect={setSelectedRegion} value = {selectedRegion}/>
         </div>
       </div>
       <SeasonSkills season={seasonId.toString()} grade={grade} region={selectedRegion}/> {/* Pass region as a prop */}
