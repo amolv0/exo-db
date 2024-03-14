@@ -47,12 +47,15 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   return (
     <div className="table rounded-lg">
       <div className="header col">
-        <div className = "header-cell">
+        <div className = "header-cell rounded-tl-lg">
           Program
         </div>
-        {maps && Array.isArray(maps) && maps.map((event) => (
-          <div className={`body-cell ${event.program === 'VRC' ? 'vrc' : ''}`}>
-            {event.program}
+        {maps && Array.isArray(maps) && maps.map((event, index) => (
+          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+            <div className = {event.program === 'VRC' ? 'vrc' : ''} >            
+              {event.program}
+            </div>
+
           </div>
         ))}
       </div>
@@ -60,8 +63,8 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         <div className = "header-cell">
           Event
         </div>
-        {maps && Array.isArray(maps) && maps.map((event) => (
-            <div className = "body-cell">
+        {maps && Array.isArray(maps) && maps.map((event, index) => (
+          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
               <Link to={`/events/${event.eventID}`}>
                 {event.name}
               </Link>
@@ -73,19 +76,19 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         <div className = "header-cell">
           Location
         </div>
-        {maps && Array.isArray(maps) && maps.map((event) => (
-            <div className = "body-cell">
+        {maps && Array.isArray(maps) && maps.map((event, index) => (
+          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
               {event.location?.city && (<div>{event.location.city}, {event.location.country}</div>)}
               {!event.location?.city && event.location?.country}
             </div>
           ))}
       </div>
       <div className="header col">
-        <div className = "header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
+        <div className = "rounded-tr-lg header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
           Date {ascending ? '▲' : '▼'}
         </div>
-        {maps && Array.isArray(maps) && maps.map((event) => (
-          <div className = "body-cell">
+        {maps && Array.isArray(maps) && maps.map((event, index) => (
+          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-1' : ''}`}>
             {event.start && (event.start.substring(0, 10) === event.end?.substring(0, 10)
             ? event.start.substring(0, 10) : event.start.substring(0, 10) + ' - ' + event.end?.substring(0, 10))}
           </div>
