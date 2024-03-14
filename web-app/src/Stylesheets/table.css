@@ -1,14 +1,15 @@
 .table {
+/* Table */
+
     box-sizing: border-box;
+
+    /* Auto layout */
     display: flex;
     flex-direction: row;
-    align-items: stretch;
-    justify-content: center; /* Center horizontally */
+    align-items: flex-start;
     padding: 0px;
-    position: flex;
-    width: 90vw;
-    border-bottom: 1px solid #72141D;
-    filter: drop-shadow(0px 0px 20px rgba(114, 20, 29, 0.25));
+    background-color: #E5DCD7;
+    border: 1px solid #84202A;
   }
 
     .col {
@@ -33,16 +34,28 @@
   
   /* Body Cell */
   .body-cell {
+    /* Body Cell */
+
     box-sizing: border-box;
+
+    /* Auto layout */
     display: flex;
     flex-direction: row;
     align-items: center;
     padding: 12px 24px;
-    width: auto; /* Adjusted to fit content */
-    min-width: 132.75px; /* Minimum width */
+    gap: 12px;
+
+    width: 262px;
     height: 64px;
-    background: #E5DCD7;
-    border-bottom: 1px solid #CFA1A4;
+
+    background: #FFFFFF;
+    border: 0px solid #CFA1A4;
+
+    /* Inside auto layout */
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
   }
 
 /* Header */
@@ -105,20 +118,26 @@
 
 /* VRC */
 .vrc {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 5px;
-    gap: 10px;
+  /* Program Tag */
 
-    background: #28191D;
-    border-radius: 1px;
+  /* Auto layout */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  gap: 10px;
 
-    /* Inside auto layout */
-    flex: none;
-    order: 0;
-    flex-grow: 0;
+  width: 33px;
+  height: 25px;
+
+  background: #28191D;
+  border-radius: 1px;
+
+  /* Inside auto layout */
+  flex: none;
+  order: 0;
+  flex-grow: 0;
 }
 
 /* VEXU */
