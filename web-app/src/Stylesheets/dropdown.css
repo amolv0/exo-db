@@ -1,0 +1,85 @@
+/* Filter */
+.filter {
+    /* Auto layout */
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding-inline: 30px;
+    filter: drop-shadow(1px 0px 5px rgba(114, 20, 29, 0.25));
+  }
+  
+  .query {
+    /* Auto layout */
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    gap: 10px;
+    background: #28191D;
+    border-radius: 5px 0px 0px 5px;
+    order: 0;
+    flex-grow: 0;
+    width: 'auto';
+    height: 34px;
+    color:#E5D5D1
+  }
+  
+  /* PROGRAM */
+  .program {
+    width: 46px;
+    height: 14px;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    color: #E5D5D1;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+  }
+  
+  /* Search Filter */
+  .search-filter {
+    /* Auto layout */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 20px;
+    gap: 10px;
+    width: flex;
+    height: 34px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #84202A;
+    border-radius: 0px 5px 5px 0px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+  }
+  
+  /* Select fruit */
+  .select-fruit {
+    width: 21px;
+    height: 14px;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    color: #28191D;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+  }
+  
+  /* Vector 1 */
+  .vector-1 {
+    width: 9px;
+    height: 4.5px;
+    border: 1px solid #28191D;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+  }
+  

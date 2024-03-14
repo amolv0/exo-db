@@ -45,26 +45,30 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   };
 
   return (
-    <div className="table">
+    <table className="table">
       <div className="header col">
-        <div className = "header-cell rounded-tl-lg">
-          Program
-        </div>
-        {maps && Array.isArray(maps) && maps.map((event, index, array) => (
-          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-            <div className={event.program === 'VRC' ? 'vrc' : ''}>
-              {event.program}
-            </div>
+      <div className = "header-cell rounded-tl-lg">
+        PROGRAM
+      </div>
+      {maps && Array.isArray(maps) && maps.map((event, index, array) => (
+        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+          <div className={
+            `${event.program.code || event.program === 'VRC' ? 'vrc' : 
+            event.program.code || event.program === 'VEXU' ? 'vexu' : 
+            event.program.code || event.program === 'VIQRC' ? 'viqrc' : ''}`
+          }>
+            {event.program.code || event.program}
           </div>
-        ))}
+        </div>
+      ))}
       </div>
       <div className="header col">
         <div className = "header-cell">
-          Event
+          EVENT
         </div>
         {maps && Array.isArray(maps) && maps.map((event, index) => (
           <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-              <Link to={`/events/${event.eventID}`}>
+              <Link to={`/events/${event.id}`}>
                 {event.name}
               </Link>
 
@@ -73,10 +77,10 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
       </div>
       <div className="header col">
         <div className = "header-cell">
-          Location
+          LOCATION
         </div>
         {maps && Array.isArray(maps) && maps.map((event, index) => (
-          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+          <div className={`body-cell location ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
               {event.location?.city && (<div>{event.location.city}, {event.location.country}</div>)}
               {!event.location?.city && event.location?.country}
             </div>
@@ -84,16 +88,16 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
       </div>
       <div className="header col">
         <div className = "rounded-tr-lg header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
-          Date {ascending ? '▲' : '▼'}
+          DATE {ascending ? '▲' : '▼'}
         </div>
         {maps && Array.isArray(maps) && maps.map((event, index, array) => (
-          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-1' : ''} ${index === array.length - 1 ? 'rounded-br-lg rounded-b-none' : ''}`}>
+          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-br-lg rounded-b-none' : ''}`}>
             {event.start && (event.start.substring(0, 10) === event.end?.substring(0, 10)
               ? event.start.substring(0, 10) : event.start.substring(0, 10) + ' - ' + event.end?.substring(0, 10))}
           </div>
         ))}
       </div>
-    </div>
+    </table>
   );
 };
 
