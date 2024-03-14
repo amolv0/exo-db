@@ -50,12 +50,11 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         <div className = "header-cell rounded-tl-lg">
           Program
         </div>
-        {maps && Array.isArray(maps) && maps.map((event, index) => (
-          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-            <div className = {event.program === 'VRC' ? 'vrc' : ''} >            
+        {maps && Array.isArray(maps) && maps.map((event, index, array) => (
+          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+            <div className={event.program === 'VRC' ? 'vrc' : ''}>
               {event.program}
             </div>
-
           </div>
         ))}
       </div>
@@ -87,10 +86,10 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         <div className = "rounded-tr-lg header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
           Date {ascending ? '▲' : '▼'}
         </div>
-        {maps && Array.isArray(maps) && maps.map((event, index) => (
-          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-1' : ''}`}>
+        {maps && Array.isArray(maps) && maps.map((event, index, array) => (
+          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-1' : ''} ${index === array.length - 1 ? 'rounded-br-lg rounded-b-none' : ''}`}>
             {event.start && (event.start.substring(0, 10) === event.end?.substring(0, 10)
-            ? event.start.substring(0, 10) : event.start.substring(0, 10) + ' - ' + event.end?.substring(0, 10))}
+              ? event.start.substring(0, 10) : event.start.substring(0, 10) + ' - ' + event.end?.substring(0, 10))}
           </div>
         ))}
       </div>
