@@ -7,9 +7,10 @@
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    padding: 0px;
     background-color: #E5DCD7;
     border: 1px solid #84202A;
+    border-radius: 9px;
+    overflow:hidden;
   }
 
     .col {
@@ -60,8 +61,6 @@
 
 /* Header */
 .header {
-    font-family: 'Roboto';
-    font-style: normal;
     font-weight: 700;
     font-size: 12px;
     line-height: 14px;
@@ -96,8 +95,6 @@
 
 /* Cell */
 .cell {
-    font-family: 'Roboto';
-    font-style: normal;
     font-weight: 500;
     font-size: 12px;
     line-height: 14px;
@@ -144,8 +141,6 @@
 .vexu {
     width: 30px;
     height: 14px;
-    font-family: 'Roboto';
-    font-style: normal;
     font-weight: 400;
     font-size: 12px;
     line-height: 14px;
