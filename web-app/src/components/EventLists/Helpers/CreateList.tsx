@@ -45,7 +45,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   };
 
   return (
-    <div className="table rounded-lg">
+    <div className="table">
       <div className="header col">
         <div className = "header-cell rounded-tl-lg">
           Program
