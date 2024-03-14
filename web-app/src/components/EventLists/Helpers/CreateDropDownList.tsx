@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
-import EventBasic from './EventBasic';
+import '../../../Stylesheets/table.css'
+import { Link } from 'react-router-dom';
 import { getSeasonNameFromId } from '../../../SeasonEnum';
 
 interface EventListDisplayProps {
@@ -59,55 +59,59 @@ const EventSeasonListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsStrin
   };
 
   return (
-    <div>
-        <br />
-        <div className="flex justify-center"> {/* Apply flexbox styles to center */}
-            <select
-                value={selectedSeason ?? ''}
-                onChange={(e) => setSelectedSeason(e.target.value ? parseInt(e.target.value) : null)}
-                className="p-2 rounded-md bg-neutral-700 mr-4"
-            >
-                <option value="">Select Season</option>
-                {Array.from(eventsMap.keys()).map(season => (
-                    <option key={season} value={season} className="text-white">{getSeasonNameFromId(parseInt(season))}</option>
-                ))}
-            </select>
+    <table className="table">
+      <div className="header col">
+        <div className = "header-cell rounded-tl-lg">
+          PROGRAM
         </div>
-
-        <br />
-        
-        <Box bgcolor="#333" color="#FFFFFF" p={2} borderRadius={4}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-            <Typography variant="subtitle1" flex={1}>
-            Program
-            </Typography>
-            <Typography variant="subtitle1" flex={3}>
-            Event
-            </Typography>
-            <Typography variant="subtitle1" flex={2}>
-            Location
-            </Typography>
-            <Typography variant="subtitle1" flex={2} onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
-            Date {ascending ? '▲' : '▼'}
-            </Typography>
-        </Box>
-
-        {maps && Array.isArray(maps) && maps
-            .filter(event => selectedSeason ? eventsMap.get(selectedSeason)?.includes(event.id) : true)
-            .map((event, index) => (
-            <Box key={event.id} borderTop={index === 0 ? '1px solid #555' : 'none'} borderBottom={index !== maps.length - 1 ? '1px solid #555' : 'none'}>
-                <EventBasic 
-                    name={event.name} 
-                    eventID={event.id}
-                    prog={event.program.code || event.program}
-                    location={event.location}
-                    start={event.start}
-                    end={event.end}
-                />
-            </Box>
+        {maps && Array.isArray(maps) && maps.map((event, index, array) => (
+          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+            <div className={
+              `${event.program === 'VRC' ? 'vrc' : 
+              event.program === 'VEXU' ? 'vexu' : 
+              event.program === 'VIQRC' ? 'viqrc' : ''}`
+            }>
+              {event.program}
+            </div>
+          </div>
         ))}
-        </Box>
-    </div>
+      </div>
+      <div className="header col">
+        <div className = "header-cell">
+          EVENT
+        </div>
+        {maps && Array.isArray(maps) && maps.map((event, index) => (
+          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+              <Link to={`/events/${event.id}`}>
+                {event.name}
+              </Link>
+
+            </div>
+          ))}
+      </div>
+      <div className="header col">
+        <div className = "header-cell">
+          LOCATION
+        </div>
+        {maps && Array.isArray(maps) && maps.map((event, index) => (
+          <div className={`body-cell location ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+              {event.location?.city && (<div>{event.location.city}, {event.location.country}</div>)}
+              {!event.location?.city && event.location?.country}
+            </div>
+          ))}
+      </div>
+      <div className="header col">
+        <div className = "rounded-tr-lg header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
+          DATE {ascending ? '▲' : '▼'}
+        </div>
+        {maps && Array.isArray(maps) && maps.map((event, index, array) => (
+          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-br-lg rounded-b-none' : ''}`}>
+            {event.start && (event.start.substring(0, 10) === event.end?.substring(0, 10)
+              ? event.start.substring(0, 10) : event.start.substring(0, 10) + ' - ' + event.end?.substring(0, 10))}
+          </div>
+        ))}
+      </div>
+    </table>
   );
 };
 
