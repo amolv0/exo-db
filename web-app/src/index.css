@@ -3,5 +3,9 @@
 @import 'tailwindcss/utilities';
 
 body {
-    background-color: rgb(150, 150, 150);
+    background-color: #E5DCD7;
+    font-family: Roboto, sans-serif;
+
+    line-height: 28px;
+    letter-spacing: 0em;
 }
