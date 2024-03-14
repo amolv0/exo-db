@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import '../../Stylesheets/dropdown.css'
 interface RegionDropdownProps {
   onSelect: (region: string) => void;
   value: string;
@@ -156,18 +156,18 @@ const RegionDropdown: React.FC<RegionDropdownProps> = ({ onSelect, value }) => {
         "Bahrain",
         "Belgium",
         "Brazil",
-        //"Canada",
+        "Canada",
         "Chile",
-        //"China",
+        "China",
         "Colombia",
         "Egypt",
         "Ethiopia",
         "Finland",
         "France",
-        //"Germany",
+        "Germany",
         "Ghana",
         "Indonesia",
-        //"Ireland",
+        "Ireland",
         "Japan",
         "Jordan",
         "Kazakhstan",
@@ -176,7 +176,7 @@ const RegionDropdown: React.FC<RegionDropdownProps> = ({ onSelect, value }) => {
         "Lebanon",
         "Luxembourg",
         "Malaysia",
-        //"Mexico",
+        "Mexico",
         "Morocco",
         "New Zealand",
         "Oman",
@@ -188,15 +188,15 @@ const RegionDropdown: React.FC<RegionDropdownProps> = ({ onSelect, value }) => {
         "Saudi Arabia",
         "Singapore",
         "Slovakia",
-       // "Spain",
-       // "Switzerland",
+        "Spain",
+        "Switzerland",
         "Taiwan",
         "Thailand",
         "Tunisia",
         "Türkiye",
         "United Arab Emirates",
         "United Kingdom",
-       // "United States",
+        "United States",
         "Vietnam",
       ]
 
@@ -210,7 +210,29 @@ const RegionDropdown: React.FC<RegionDropdownProps> = ({ onSelect, value }) => {
   };
 
   return (
-    <select value={selectedRegion} onChange={handleChange} className="p-2 rounded-md bg-gray-200 mr-4">
+    <div className = "filter">
+      <div className = "query">
+        Region
+      </div>
+      <div className = "search-filter">
+        <select value={selectedRegion} onChange={handleChange} style={{ width: 'auto', height: '30px' }}>
+          <option value="">All</option>
+            {Object.entries(regions).map(([country, states]) => (
+              <optgroup key={country} label={country}>
+                {states.map(state => (
+                  <option key={state} value={state}>{state}</option>
+                ))}
+              </optgroup>
+            ))}
+        </select>
+      </div>
+    </div>
+  );
+};
+
+export default RegionDropdown;
+
+/*    <select value={selectedRegion} onChange={handleChange} className="p-2 rounded-md bg-gray-200 mr-4">
       <option value="">All</option>
       {Object.entries(regions).map(([country, states]) => (
         <optgroup key={country} label={country}>
@@ -219,8 +241,4 @@ const RegionDropdown: React.FC<RegionDropdownProps> = ({ onSelect, value }) => {
           ))}
         </optgroup>
       ))}
-    </select>
-  );
-};
-
-export default RegionDropdown;
+    </select> */
