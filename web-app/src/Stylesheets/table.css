@@ -1,6 +1,4 @@
 .table {
-/* Table */
-
     box-sizing: border-box;
 
     /* Auto layout */
@@ -13,7 +11,7 @@
     overflow:hidden;
   }
 
-    .col {
+  .col {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -45,7 +43,7 @@
     align-items: center;
     padding: 12px 24px;
     gap: 12px;
-
+    margin-top: 5px;
     width: 262px;
     height: 64px;
 
@@ -57,6 +55,7 @@
     order: 1;
     align-self: stretch;
     flex-grow: 0;
+    color: #28191D;
   }
 
 /* Header */
@@ -83,22 +82,34 @@
 
 /* VIQRC */
 .viqrc {
-    width: 35px;
-    height: 14px;
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 14px;
-    color: #E5D5D1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  gap: 10px;
+  background: #84202A;
+  border-radius: 3px;
+
+  /* Font */
+  color: #E5D5D1;
+  font-weight: normal;
 }
 
 /* Cell */
 .cell {
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 14px;
-    color: #28191D;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  gap: 10px;
+  background: #CFA1A4;
+  border-radius: 3px;
+
+  /* Font */
+  color: #E5D5D1;
+  font-weight: normal;
 }
 
 /* WORKSHOP */
@@ -115,34 +126,38 @@
 
 /* VRC */
 .vrc {
-  /* Program Tag */
-
-  /* Auto layout */
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   padding: 5px;
   gap: 10px;
-
-  width: 33px;
-  height: 25px;
-
   background: #28191D;
-  border-radius: 1px;
+  border-radius: 3px;
 
-  /* Inside auto layout */
-  flex: none;
-  order: 0;
-  flex-grow: 0;
+  /* Font */
+  color: #E5D5D1;
+  font-weight: normal;
 }
 
 /* VEXU */
 .vexu {
-    width: 30px;
-    height: 14px;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 14px;
-    color: #84202A;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  gap: 10px;
+  background: #CFA1A4;
+  border-radius: 3px;
+  color: #E5D5D1;
+  font-weight: normal;
+}
+
+.location {
+  color: #CFA1A4;
+}
+
+.bg-opacity-65 {
+  background-color: rgba(255, 255, 255, .5); /* Adjust the opacity value (0.02 in this case) */
 }
