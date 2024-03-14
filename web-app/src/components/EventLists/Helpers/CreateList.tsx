@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
-import EventBasic from './EventBasic';
+import '../../../Stylesheets/table.css'
+import { Link } from 'react-router-dom';
 
 interface EventListDisplayProps {
   eventIdsString: string | null;
@@ -45,36 +45,69 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   };
 
   return (
-    <Box bgcolor="#333" color="#FFFFFF" p={2} borderRadius={4}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-        <Typography variant="subtitle1" flex={1}>
+    <div className="table rounded-lg">
+      <div className="header col">
+        <div className = "header-cell">
           Program
-        </Typography>
-        <Typography variant="subtitle1" flex={3}>
+        </div>
+        {maps && Array.isArray(maps) && maps.map((event) => (
+          <div className={`body-cell ${event.program === 'VRC' ? 'vrc' : ''}`}>
+            {event.program}
+          </div>
+        ))}
+      </div>
+      <div className="header col">
+        <div className = "header-cell">
           Event
-        </Typography>
-        <Typography variant="subtitle1" flex={2}>
-          Location
-        </Typography>
-        <Typography variant="subtitle1" flex={2} onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
-          Date {ascending ? '▲' : '▼'}
-        </Typography>
-      </Box>
+        </div>
+        {maps && Array.isArray(maps) && maps.map((event) => (
+            <div className = "body-cell">
+              <Link to={`/events/${event.eventID}`}>
+                {event.name}
+              </Link>
 
-      {maps && Array.isArray(maps) && maps.map((event, index) => (
-        <Box key={event.id} borderTop={index === 0 ? '1px solid #555' : 'none'} borderBottom={index !== maps.length - 1 ? '1px solid #555' : 'none'}>
-          <EventBasic 
-            name={event.name} 
-            eventID={event.id}
-            prog={event.program.code || event.program}
-            location={event.location}
-            start={event.start}
-            end={event.end}
-          />
-        </Box>
-      ))}
-    </Box>
+            </div>
+          ))}
+      </div>
+      <div className="header col">
+        <div className = "header-cell">
+          Location
+        </div>
+        {maps && Array.isArray(maps) && maps.map((event) => (
+            <div className = "body-cell">
+              {event.location?.city && (<div>{event.location.city}, {event.location.country}</div>)}
+              {!event.location?.city && event.location?.country}
+            </div>
+          ))}
+      </div>
+      <div className="header col">
+        <div className = "header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
+          Date {ascending ? '▲' : '▼'}
+        </div>
+        {maps && Array.isArray(maps) && maps.map((event) => (
+          <div className = "body-cell">
+            {event.start && (event.start.substring(0, 10) === event.end?.substring(0, 10)
+            ? event.start.substring(0, 10) : event.start.substring(0, 10) + ' - ' + event.end?.substring(0, 10))}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
 export default EventListDisplay;
+
+/*        <div className = "column">
+          {maps && Array.isArray(maps) && maps.map((event, index) => (
+            <Box key={event.id} borderTop={index === 0 ? '1px solid #555' : 'none'} borderBottom={index !== maps.length - 1 ? '1px solid #555' : 'none'} className="body-cell">
+              <EventBasic 
+                name={event.name} 
+                eventID={event.id}
+                prog={event.program.code || event.program}
+                location={event.location}
+                start={event.start}
+                end={event.end}
+              />
+            </Box>
+          ))}
+        </div>*/
