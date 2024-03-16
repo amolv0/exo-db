@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import TeamLocation from '../components/TeamInfo/TeamLocation';
+import TeamLocation from '../components/TeamInfo/TeamProfile';
 import TeamAwards from '../components/TeamInfo/TeamAwards';
 import CreateList from '../components/EventLists/Helpers/CreateDropDownList';
 import { Box, Typography, Button, ButtonGroup, CircularProgress } from '@mui/material';
@@ -32,6 +32,7 @@ const TeamInfo: React.FC = () => {
         if (data && data.length > 0 && data[0].events) {
           setEventIdsString(JSON.stringify(data[0].events));
         }
+        console.log(data);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching or parsing JSON:', error);

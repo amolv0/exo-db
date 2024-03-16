@@ -60,16 +60,16 @@ const Search: React.FC = () => {
     }
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
+  const handleClick = (event: MouseEvent) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
       setShowDropdown(false);
     }
   };
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleClick);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mousedown', handleClick);
     };
   }, []);
 
@@ -97,6 +97,7 @@ const Search: React.FC = () => {
                 }}
                 component="nav"
                 aria-labelledby="nested-list-subheader"
+                ref={dropdownRef}
             >
                 {searchResults.map((result, index) => (
                 <ListItem
