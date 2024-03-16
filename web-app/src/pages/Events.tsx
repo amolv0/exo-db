@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import EventsListQuery from '../components/EventLists/EventsListQuery';
 import { useLocation, useNavigate } from 'react-router-dom';
-import RegionDropdown from '../components/Helper/RegionDropDown';
-import ProgramDropdown from '../components/Helper/ProgramDropDown';
-import DateDropdown from '../components/Helper/DateDropDown';
+import RegionDropdown from '../components/Dropdowns/RegionDropDown';
+import ProgramDropdown from '../components/Dropdowns/ProgramDropDown';
+import DateDropdown from '../components/Dropdowns/DateDropDown';
 
 const Events: React.FC = () => {
   // State variables to manage selected values
@@ -37,7 +37,7 @@ const Events: React.FC = () => {
       <div className="flex flex-wrap justify-center items-center">
         {/* Styled Dropdown for Program */}
         <div >
-          <ProgramDropdown program={program} setProgram={setProgram} />
+          <ProgramDropdown program={program} setProgram={setProgram} all = {true} />
         </div>
 
         {/* Styled Dropdown for Region */}

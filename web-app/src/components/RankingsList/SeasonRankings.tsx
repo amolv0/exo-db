@@ -54,26 +54,32 @@ const SeasonRanking: React.FC<{ season: string; region?: string }> = ({ season, 
     fetchSeasonRanking();
   }, [season, region, currentPage]);
 
-  useEffect(() => {
-    const fetchLastPage = async () => {
-      try {
-        const response = await fetch(`https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/lastpage/${generateId()}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch last page');
-        }
-        const data = await response.json();
-        setLastPage(data.lastPage);
-      } catch (error) {
-        console.error('Error fetching last page:', error);
-      }
-    };
-    fetchLastPage();
-  }, [season, region]);
 
   // Generate the query ID based on the provided parameters
-  const generateId = (): string => {
-    return `elo-${season}${region ? `-${region}` : ''}`;
-  };
+  useEffect(() => {
+    // Define generateId function inside the useEffect hook
+    const generateId = (): string => {
+        return `elo-${season}${region ? `-${region}` : ''}`;
+    };
+
+    const fetchLastPage = async () => {
+        try {
+            const response = await fetch(`https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/lastpage/${generateId()}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch last page');
+            }
+            const data = await response.json();
+            setLastPage(data.lastPage);
+        } catch (error) {
+            console.error('Error fetching last page:', error);
+        }
+    };
+
+    fetchLastPage();
+
+      // Remove generateId from the dependency array
+  }, [season, region]);
+
 
   // Calculate the rank based on the current page
   const calculateRank = (index: number) => {

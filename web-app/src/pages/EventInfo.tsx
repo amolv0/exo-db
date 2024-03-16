@@ -96,6 +96,4 @@ const EventInfo: React.FC = () => {
   );
 };
 
-const Element4: React.FC = () => <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.100', borderRadius: 2 }}>Element 5 Content</Box>;
-
 export default EventInfo;

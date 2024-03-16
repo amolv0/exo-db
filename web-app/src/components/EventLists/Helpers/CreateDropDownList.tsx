@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import '../../../Stylesheets/table.css'
+import '../../../Stylesheets/eventTable.css'
 import { Link } from 'react-router-dom';
-import { getSeasonNameFromId } from '../../../SeasonEnum';
 
 interface EventListDisplayProps {
   eventIdsString: string | null;
@@ -10,8 +9,6 @@ interface EventListDisplayProps {
 const EventSeasonListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
   const [maps, setMaps] = useState<any[]>([]);
   const [ascending, setAscending] = useState<boolean>(false); // State to track sorting direction
-  const [eventsMap, setEventsMap] = useState<Map<any, any[]>>(new Map());
-  const [selectedSeason, setSelectedSeason] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchEventData = async () => {
@@ -42,7 +39,6 @@ const EventSeasonListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsStrin
               eventsMapData.set(seasonId, [eventId]);
             }
         });
-        setEventsMap(eventsMapData);
       } catch (error) {
         console.error('Error fetching or parsing JSON:', error);
       }
