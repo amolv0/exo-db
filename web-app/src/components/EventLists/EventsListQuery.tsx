@@ -20,10 +20,12 @@ const App: React.FC<AppProps> = ({
 }) => {
   const [eventIdsString, setEventIdsString] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true); // Introduce loading state
+  const [found, setFound] = useState<boolean>(true); // Introduce loading state
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setFound(true);
         // Construct the API endpoint URL based on query parameters
         let apiUrl = 'https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?';
         const queryParams: string[] = [];
@@ -40,12 +42,18 @@ const App: React.FC<AppProps> = ({
         // Fetch data using constructed URL
         const response = await fetch(apiUrl);
         const result = await response.json();
+        if (result.length === 0 || result.error) {
+          setFound(false);
+          setLoading(false);
+          return;
+        }
         const formattedIds = JSON.stringify(result);
         setEventIdsString(formattedIds);
-        setLoading(false); // Set loading to false after data fetching is complete
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching event IDs:', error);
-        setLoading(false); // Set loading to false even if there's an error
+        setFound(false);
+        setLoading(false);
       }
     };
 
@@ -57,7 +65,11 @@ const App: React.FC<AppProps> = ({
       {loading ? ( // Display loading indicator if loading is true
         <div>Loading...</div>
       ) : (
-        <CreateList eventIdsString={eventIdsString}/>
+        found ? (
+          <CreateList eventIdsString={eventIdsString}/>
+        ) : (
+          <div> No Events Found </div>
+        )
       )}
     </div>
   );
