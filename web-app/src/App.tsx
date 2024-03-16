@@ -5,7 +5,6 @@ import Events from './pages/Events';
 import Skills from './pages/Skills';
 import TeamInfo from './pages/TeamInfo';
 import EventInfo from './pages/EventInfo';
-import Division from './pages/Division';
 import Rankings from './pages/Rankings';
 import OngoingEvents from './components/EventLists/OngoingEvents';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
@@ -31,7 +30,6 @@ const App: React.FC = () => {
           <Route path="/skills" element={<Skills />} />
           <Route path="/rankings" element={<Rankings />} />
           <Route path="/events/:eventId" element={<EventInfo />} />
-          <Route path="/events/:eventId/division" element={<Division />} />
         </Routes>
       </div>
     </Router>
