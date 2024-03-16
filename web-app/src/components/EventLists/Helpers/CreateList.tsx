@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../../../Stylesheets/table.css'
+import '../../../Stylesheets/eventTable.css'
 import { Link } from 'react-router-dom';
 
 interface EventListDisplayProps {
@@ -21,7 +21,6 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
           body: eventIdsString
         });
         const data = await response.json();
-        console.log(data);
         // Sort events by start date
         if (ascending) {
           data.sort((a: any, b: any) => new Date(a.start).getTime() - new Date(b.start).getTime());
@@ -45,7 +44,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   };
 
   return (
-    <table className="table">
+    <div className="table">
       <div className="header col">
       <div className = "header-cell rounded-tl-lg">
         PROGRAM
@@ -81,8 +80,13 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         </div>
         {maps && Array.isArray(maps) && maps.map((event, index) => (
           <div className={`body-cell location ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-              {event.location?.city && (<div>{event.location.city}, {event.location.country}</div>)}
-              {!event.location?.city && event.location?.country}
+              {event.location && (
+                  <div>
+                      {event.location.city && <span>{event.location.city}, </span>}
+                      {event.location.region && <span>{event.location.region}, </span>}
+                      {event.location.country}
+                  </div>
+              )}
             </div>
           ))}
       </div>
@@ -97,7 +101,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
           </div>
         ))}
       </div>
-    </table>
+    </div>
   );
 };
 

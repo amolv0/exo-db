@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, CircularProgress, IconButton, TextField } from '@mui/material';
+import { Paper, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, IconButton} from '@mui/material';
 import { getSeasonNameFromId } from '../../SeasonEnum';
 import { Link } from 'react-router-dom';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
@@ -60,33 +60,37 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
   }, [season, grade, region, currentPage]);
 
   useEffect(() => {
-    const fetchLastPage = async () => {
-      try {
-        const response = await fetch(`https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/lastpage/${generateId()}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch last page');
+    // Define generateId function inside the useEffect hook
+    const generateId = (): string => {
+        let gradeCode = '';
+        if (grade.toLowerCase() === 'high school') {
+            gradeCode = 'hs';
+        } else if (grade.toLowerCase() === 'middle school') {
+            gradeCode = 'ms';
+        } else {
+            gradeCode = 'college';
         }
-        const data = await response.json();
-        setLastPage(data.lastPage);
-      } catch (error) {
-        console.error('Error fetching last page:', error);
-      }
+        return `skills-${season}-robot-${gradeCode}${region ? `-${region}` : ''}`;
     };
+
+    const fetchLastPage = async () => {
+        try {
+            const response = await fetch(`https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/lastpage/${generateId()}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch last page');
+            }
+            const data = await response.json();
+            setLastPage(data.lastPage);
+        } catch (error) {
+            console.error('Error fetching last page:', error);
+        }
+    };
+
     fetchLastPage();
+
+      // Remove generateId from the dependency array
   }, [season, region, grade]);
 
-  // Generate the query ID based on the provided parameters
-  const generateId = (): string => {
-    let gradeCode = '';
-    if (grade.toLowerCase() === 'high school') {
-      gradeCode = 'hs';
-    } else if (grade.toLowerCase() === 'middle school') {
-      gradeCode = 'ms';
-    } else {
-      gradeCode = 'college';
-    }
-    return `skills-${season}-robot-${gradeCode}${region ? `-${region}` : ''}`;
-  };
 
   // Calculate the rank based on the current page
   const calculateRank = (index: number) => {
@@ -121,12 +125,6 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
   const getFirstFiveWords = (name: string): string => {
     const words = name.split(' ');
     return words.slice(0, 5).join(' ');
-  };
-
-  const setValidPage = (pageNumber: number) => {
-    if (pageNumber >= 1 && pageNumber <= lastPage) {
-      setCurrentPage(pageNumber);
-    }
   };
 
   return (

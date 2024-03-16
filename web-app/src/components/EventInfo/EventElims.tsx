@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 interface Team {
   sitting: boolean,
@@ -49,13 +49,14 @@ interface MatchComponentProps {
   match: TransformedMatch;
 }
 
+/*
 interface MatchProps {
   match: Match;
 }
 
 interface BracketProps {
   matches: Match[];
-}
+}*/
 
 interface EventElimsProps {
   division: Division;
@@ -68,11 +69,11 @@ const roundMapping: Record<number, string> = {
   5: "Finals",
 };
 
-
+/*
 const sortRounds = (a: string, b: string) => {
   const roundOrder = ["R16", "Quarterfinals", "Semifinals", "Finals"];
   return roundOrder.indexOf(a) - roundOrder.indexOf(b);
-};
+}; */
 
 const parseMatches = (rawMatches: Match[]): Match[] => {
   // Filter and format matches for elimination rounds
