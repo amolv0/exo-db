@@ -5,9 +5,14 @@ import '../../Stylesheets/dropdown.css'
 interface ProgramDropdownProps {
   program: string;
   setProgram: React.Dispatch<React.SetStateAction<string>>;
+  all: boolean;
 }
 
-const ProgramDropdown: React.FC<ProgramDropdownProps> = ({ program, setProgram }) => {
+const ProgramDropdown: React.FC<ProgramDropdownProps> = ({ setProgram, program, all }) => {
+  const handleProgramChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setProgram(event.target.value);
+  };
+
   return (
     <div className = "filter">
       <div className = "query">
@@ -17,13 +22,13 @@ const ProgramDropdown: React.FC<ProgramDropdownProps> = ({ program, setProgram }
         <select
           id="program"
           value={program}
-          onChange={(e) => setProgram(e.target.value)}
+          onChange={handleProgramChange}
           style={{ width: 'auto', height: '30px' }}
         >
-          <option value="">All</option>
+          {all ? <option value="">All</option> : null}
           <option value="VRC">VRC</option>
           <option value="VEXU">VEXU</option>
-          <option value="VIQRC">VIQRC</option>
+          {all ? <option value="VIQRC">VIQRC</option> : null}
           {/* Add more options dynamically if needed */}
         </select>
       </div>
