@@ -232,14 +232,3 @@ const RegionDropdown: React.FC<RegionDropdownProps> = ({ onSelect, value }) => {
 };
 
 export default RegionDropdown;
-
-/*    <select value={selectedRegion} onChange={handleChange} className="p-2 rounded-md bg-gray-200 mr-4">
-      <option value="">All</option>
-      {Object.entries(regions).map(([country, states]) => (
-        <optgroup key={country} label={country}>
-          {states.map(state => (
-            <option key={state} value={state}>{state}</option>
-          ))}
-        </optgroup>
-      ))}
-    </select> */
