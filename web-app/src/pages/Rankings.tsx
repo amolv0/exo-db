@@ -5,6 +5,7 @@ import RegionDropdown from '../components/Dropdowns/RegionDropDown';
 import SeasonDropdown from '../components/Dropdowns/SeasonDropDown';
 import ProgramDropdown from '../components/Dropdowns/ProgramDropDown';
 import { useLocation, useNavigate } from 'react-router-dom';
+import '../Stylesheets/pageLayout.css';
 
 const Rankings: React.FC = () => {
   const location = useLocation();
@@ -22,9 +23,9 @@ const Rankings: React.FC = () => {
   }, [program, seasonId, selectedRegion, navigate]);
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-black text-3xl mb-4 my-8">Ratings Leaderboard</h1>
-      <div className="flex items-center mb-4">
+    <div>
+      <h1 className="title leftDisplay ml-4">Ratings</h1>
+      <div className="dropdownDisplay" style={{left: "-23px" }}>
         <div >
           <ProgramDropdown setProgram={setProgram} program={program}  all = {false} />
         </div>
@@ -35,7 +36,9 @@ const Rankings: React.FC = () => {
           <RegionDropdown onSelect={setSelectedRegion} value = {selectedRegion}/>
         </div>
       </div>
-      <SeasonRankings season={seasonId.toString()} region={selectedRegion} />
+      <div className = "eventDisplay"> 
+        <SeasonRankings season={seasonId.toString()} region={selectedRegion} />
+      </div>
     </div>
   );
 };
