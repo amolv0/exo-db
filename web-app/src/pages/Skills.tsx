@@ -10,7 +10,7 @@ const Teams: React.FC = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const [seasonId, setSeasonId] = useState<number>(parseInt(searchParams.get('seasonId') || '181'));
-  const [grade, setGrade] = useState<string>(searchParams.get('High School') || '');
+  const [grade, setGrade] = useState<string>(searchParams.get('grade') || 'High School');
   const [selectedRegion, setSelectedRegion] = useState<string>(searchParams.get('region') || '');
 
   const navigate = useNavigate();
