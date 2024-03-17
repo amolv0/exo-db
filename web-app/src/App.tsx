@@ -8,11 +8,12 @@ import EventInfo from './pages/EventInfo';
 import Rankings from './pages/Rankings';
 import OngoingEvents from './components/EventLists/OngoingEvents';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './Stylesheets/pageLayout.css';
 
 const Home: React.FC = () => {
   return (
     <div className="flex flex-col items-center">
-      <h1 className="text-black text-3xl mb-4 my-8">Ongoing Events</h1>
+      <h1 className="title leftDisplay ml-24">Ongoing Events</h1>
         <OngoingEvents/>
     </div>
   );
