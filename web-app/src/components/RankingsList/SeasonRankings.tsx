@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton, CircularProgress } from '@mui/material';
+import { IconButton, CircularProgress } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { getSeasonNameFromId } from '../../SeasonEnum';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
-
+import '../../Stylesheets/rankingsTable.css';
 interface SeasonRankingItem {
     team_name: string;
     season_team: string;
@@ -24,6 +23,7 @@ const SeasonRanking: React.FC<{ season: string; region?: string }> = ({ season, 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [lastPage, setLastPage] = useState<number>(1); // State to track the last page
   const [loading, setLoading] = useState<boolean>(true); // State to track loading
+  const page = 50;
 
   useEffect(() => {
     setCurrentPage(1); // Reset page number when season changes
@@ -42,6 +42,7 @@ const SeasonRanking: React.FC<{ season: string; region?: string }> = ({ season, 
           throw new Error('Failed to fetch season ranking');
         }
         const data = await response.json();
+        console.log(data);
         setSeasonRanking(data.data);
         console.log(data);
       } catch (error) {
@@ -83,7 +84,7 @@ const SeasonRanking: React.FC<{ season: string; region?: string }> = ({ season, 
 
   // Calculate the rank based on the current page
   const calculateRank = (index: number) => {
-    return (currentPage - 1) * 50 + index + 1;
+    return (currentPage - 1) * page + index + 1;
   };
 
   const handleFirstPage = () => {
@@ -107,49 +108,79 @@ const SeasonRanking: React.FC<{ season: string; region?: string }> = ({ season, 
   };
   
   return (
-    <Paper elevation={3} style={{ padding: '20px', backgroundColor: '#333', color: '#eee', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Typography variant="h5" gutterBottom style={{ marginBottom: '10px' }}>{getSeasonNameFromId(parseInt(season))} Rankings</Typography>
-      <div className="flex" style={{ marginBottom: '10px' }}>
-        <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
-        <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
-        <span className="mx-1 px-3 py-1 rounded-md bg-gray-200 text-black">{currentPage}</span>
-        <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
-        <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
-      </div>
-      {loading ? ( // Render loading circle if loading state is true
-        <CircularProgress style={{ margin: '20px' }} />
-      ) : (
-        <TableContainer component={Paper} style={{ width: '100%', backgroundColor: '#666' }}>
-          <Table aria-label="simple table" size="small">
-            <TableHead style={{ backgroundColor: '#999', color: '#eee'}}>
-              <TableRow>
-                <TableCell align="left" style={{ fontWeight: 'bold' }}>Rank</TableCell>
-                <TableCell align="left" style={{ fontWeight: 'bold' }}>Team Name</TableCell>
-                <TableCell align="left" style={{ fontWeight: 'bold' }}>Region</TableCell>
-                <TableCell align="left" style={{ fontWeight: 'bold' }}>Mu</TableCell>
-                <TableCell align="left" style={{ fontWeight: 'bold' }}>Sigma</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {seasonRanking.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell>{calculateRank(index)}</TableCell>
-                  <TableCell align="left">
-                      <Link to={`/teams/${item.team_id}`} className = "hover:text-blue-200">
-                      {item.team_number}: {item.team_name}
-                      </Link>
-                  </TableCell>
-                  <TableCell align="left">{item.region}</TableCell>
-                  <TableCell align="left">{item.mu.toFixed(2)}</TableCell>
-                  <TableCell align="left">{item.sigma.toFixed(2)}</TableCell>
-                </TableRow>
+    <div>
+  
+      {loading ? ( // Render loading indicator if loading state is true
+          <CircularProgress style={{ margin: '20px' }} />
+        ) : (
+        <div>
+          <div className="flex items-center">
+            <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+            <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+            <span className="mx-1 px-3 py-1 rounded-md bg-gray-200 text-black">{currentPage}</span>
+            <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+            <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+          </div>
+          <div className = "table">
+            <div className="header col rank">
+              <div className = "header-cell rounded-tl-lg">
+              Rank
+              </div>
+              {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index, array) => (
+                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                  <div className = "flex justify-center items-center">
+                    {calculateRank(index)}
+                  </div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            </div>   
+            <div className="header col team">
+              <div className = "header-cell">
+                  Team
+              </div>
+              {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
+                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                  <div>
+                    <Link to={`/teams/${rank.team_id}`} className = "hover:text-blue-200 flex gap-2 items-center justify-center">
+                      <div className = "teamBox">
+                      {rank.team_number}
+                      </div>
+                      <div> {rank.team_name} </div>
+                  
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>         
+            <div className="header col stat">
+              <div className = "header-cell">
+                  mu
+              </div>
+              {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
+                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                  <div>
+                    {rank.mu}
+                  </div>
+                </div>
+              ))}
+            </div> 
+            <div className="header col stat">
+              <div className = "header-cell">
+                  Sigma
+              </div>
+              {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
+                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                  <div>
+                    {rank.sigma}
+                  </div>
+                </div>
+              ))}
+            </div>      
+          </div>
+        </div>
       )}
-    </Paper>
-  );
+      </div>
+    );
 };
 
 export default SeasonRanking;

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, IconButton} from '@mui/material';
-import { getSeasonNameFromId } from '../../SeasonEnum';
+import { CircularProgress, IconButton} from '@mui/material';
 import { Link } from 'react-router-dom';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
+import '../../Stylesheets/skillsTable.css';
 
 interface SkillsRankingItem {
   driver_component: number | null;
@@ -117,23 +117,13 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
     }
   };
 
-  const getFirstThreeWords = (name: string): string => {
-    const words = name.split(' ');
-    return words.slice(0, 3).join(' ');
-  };
-  
-  const getFirstFiveWords = (name: string): string => {
-    const words = name.split(' ');
-    return words.slice(0, 5).join(' ');
-  };
-
   return (
-    <Paper elevation={3} style={{ padding: '20px', backgroundColor: '#333', color: '#eee', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Typography variant="body1" style={{ marginBottom: '10px' }}>{getSeasonNameFromId(parseInt(season))}</Typography>
-      {loading ? ( // Render loading indicator if loading state is true
+  <div>
+
+    {loading ? ( // Render loading indicator if loading state is true
         <CircularProgress style={{ margin: '20px' }} />
       ) : (
-        <>
+      <div>
         <div className="flex items-center">
           <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
           <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
@@ -141,53 +131,73 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
           <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
           <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
         </div>
-
-          <TableContainer component={Paper} style={{ width: '100%', backgroundColor: '#666'} }>
-            <Table aria-label="simple table" size="small">
-              <TableHead style={{ backgroundColor: '#999', color: '#eee'}}>
-                <TableRow >
-                  <TableCell align="left" style={{ fontWeight: 'bold' }}>Rank</TableCell>
-                  <TableCell align="left" style={{ fontWeight: 'bold' }}>Score</TableCell>
-                  <TableCell align="left" style={{ fontWeight: 'bold' }}>Team Number</TableCell>
-                  <TableCell align="left" style={{ fontWeight: 'bold' }}>Event</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {skillsRanking.map((rank, index) => (
-                  <TableRow key={rank.team_id}>
-                    <TableCell>{calculateRank(index)}</TableCell>
-                    <TableCell align="left">  
-                      <div>
-                        <span>{rank.score}</span> {/* Displaying the score */}
-                        {rank.driver_component !== null && ( // Displaying driver_component if it exists
-                          <span style={{ fontSize: '0.8em', color: '#888', marginLeft: '0.5em' }}>
-                            (D: {rank.driver_component})
-                          </span>
-                        )}
-                        {rank.programming_component !== null && ( // Displaying programming_component if it exists
-                          <span style={{ fontSize: '0.8em', color: '#888', marginLeft: '0.5em' }}>
-                            (P: {rank.programming_component})
-                          </span>
-                        )}
-                      </div></TableCell>
-                    <TableCell align="left">
-                      <Link to={`/teams/${rank.team_id}`} className = "hover:text-blue-200">
-                        {rank.team_number}: {rank.team_name && getFirstThreeWords(rank.team_name)}                
-                      </Link>
-                    </TableCell>
-                    <TableCell align="left">
-                      <Link to={`/teams/${rank.event_id}`} className = "hover:text-blue-200">
-                        {rank.event_name && getFirstFiveWords(rank.event_name)}
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
-      )}
-    </Paper>
+        <div className = "table">
+          <div className="header col rank">
+            <div className = "header-cell rounded-tl-lg">
+            Rank
+            </div>
+            {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index, array) => (
+              <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                <div className = "flex justify-center items-center">
+                  {calculateRank(index)}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="header col score">
+            <div className = "header-cell">
+            Score
+            </div>
+            {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
+              <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                <div className = "flex gap-2 items-center justify-center">
+                  <div className = "scoreDisplay">
+                    {rank.score}
+                  </div> 
+                  <div>
+                    (D: {rank.driver_component})
+                    (P: {rank.programming_component})
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>      
+          <div className="header col team">
+            <div className = "header-cell">
+                Team
+            </div>
+            {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
+              <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                <div>
+                  <Link to={`/teams/${rank.team_id}`} className = "hover:text-blue-200 flex gap-2 items-center justify-center">
+                    <div className = "teamBox">
+                    {rank.team_number}
+                    </div>
+                    <div> {rank.team_name} </div>
+                
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>         
+          <div className="header col event">
+            <div className = "header-cell">
+                Event
+            </div>
+            {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
+              <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                <div>
+                  <Link to={`/teams/${rank.event_id}`} className = "hover:text-blue-200">
+                            {rank.event_name && rank.event_name}
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>     
+        </div>
+      </div>
+    )}
+    </div>
   );
 };
 
