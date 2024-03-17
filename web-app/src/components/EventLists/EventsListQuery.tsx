@@ -31,10 +31,10 @@ const App: React.FC<AppProps> = ({
         const queryParams: string[] = [];
 
         if (numberOfEvents !== null && numberOfEvents !== undefined) queryParams.push(`numberOfEvents=${numberOfEvents}`);
+        if (status) queryParams.push(`status=${status}`);
         if (programCode) queryParams.push(`program=${programCode}`);
         if (startAfter) queryParams.push(`start_after=${startAfter}`);
         if (startBefore) queryParams.push(`start_before=${startBefore}`);
-        if (status) queryParams.push(`status=${status}`);
         if (region) queryParams.push(`region=${region}`);
 
         apiUrl += queryParams.join('&');
