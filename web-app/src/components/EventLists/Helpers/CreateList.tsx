@@ -42,14 +42,13 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   const toggleSortingDirection = () => {
     setAscending((prevAscending) => !prevAscending);
   };
-
   return (
     <div className="table">
       <div className="header col small">
-        <div className = "header-cell rounded-tl-lg">
+      <div className = "header-cell rounded-tl-lg">
           PROGRAM
-        </div>
-        {maps && Array.isArray(maps) && maps.map((event, index, array) => (
+          </div>
+          {maps && Array.isArray(maps) && maps.map((event, index, array) => (
           <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
             <div className={
               `${event.program.code || event.program === 'VRC' ? 'vrc' : 
@@ -60,7 +59,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
             </div>
           </div>
         ))}
-        </div>
+      </div>
       <div className="header col big">
         <div className = "header-cell">
           EVENT
@@ -68,7 +67,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         {maps && Array.isArray(maps) && maps.map((event, index) => (
           <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
               <Link to={`/events/${event.id}`}>
-                {event.name}
+                {event.name && event.name}
               </Link>
 
             </div>
