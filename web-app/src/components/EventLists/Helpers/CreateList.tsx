@@ -45,23 +45,23 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
 
   return (
     <div className="table">
-      <div className="header col">
-      <div className = "header-cell rounded-tl-lg">
-        PROGRAM
-      </div>
-      {maps && Array.isArray(maps) && maps.map((event, index, array) => (
-        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-          <div className={
-            `${event.program.code || event.program === 'VRC' ? 'vrc' : 
-            event.program.code || event.program === 'VEXU' ? 'vexu' : 
-            event.program.code || event.program === 'VIQRC' ? 'viqrc' : ''}`
-          }>
-            {event.program.code || event.program}
-          </div>
+      <div className="header col small">
+        <div className = "header-cell rounded-tl-lg">
+          PROGRAM
         </div>
-      ))}
-      </div>
-      <div className="header col">
+        {maps && Array.isArray(maps) && maps.map((event, index, array) => (
+          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+            <div className={
+              `${event.program.code || event.program === 'VRC' ? 'vrc' : 
+              event.program.code || event.program === 'VEXU' ? 'vexu' : 
+              event.program.code || event.program === 'VIQRC' ? 'viqrc' : ''}`
+            }>
+              {event.program.code || event.program}
+            </div>
+          </div>
+        ))}
+        </div>
+      <div className="header col big">
         <div className = "header-cell">
           EVENT
         </div>
@@ -74,7 +74,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
             </div>
           ))}
       </div>
-      <div className="header col">
+      <div className="header col normal">
         <div className = "header-cell">
           LOCATION
         </div>
@@ -90,7 +90,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
             </div>
           ))}
       </div>
-      <div className="header col">
+      <div className="header col small">
         <div className = "rounded-tr-lg header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
           DATE {ascending ? '▲' : '▼'}
         </div>
@@ -106,18 +106,3 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
 };
 
 export default EventListDisplay;
-
-/*        <div className = "column">
-          {maps && Array.isArray(maps) && maps.map((event, index) => (
-            <Box key={event.id} borderTop={index === 0 ? '1px solid #555' : 'none'} borderBottom={index !== maps.length - 1 ? '1px solid #555' : 'none'} className="body-cell">
-              <EventBasic 
-                name={event.name} 
-                eventID={event.id}
-                prog={event.program.code || event.program}
-                location={event.location}
-                start={event.start}
-                end={event.end}
-              />
-            </Box>
-          ))}
-        </div>*/
