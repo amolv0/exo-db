@@ -73,3 +73,14 @@
   flex-grow: 0;
 }
   
+
+/* For buttons */
+/* You can put this CSS in your stylesheet */
+.buttonText {
+  /* Ongoing */
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: #84202A;
+
+}

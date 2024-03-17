@@ -4,6 +4,7 @@ import RegionDropdown from '../components/Dropdowns/RegionDropDown';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SeasonDropdown from '../components/Dropdowns/SeasonDropDown';
 import GradeDropdown from '../components/Dropdowns/GradeDropDown';
+import '../Stylesheets/pageLayout.css';
 
 const Teams: React.FC = () => {
   const location = useLocation();
@@ -21,9 +22,9 @@ const Teams: React.FC = () => {
   }, [grade, seasonId, selectedRegion, navigate]);
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-black text-3xl mb-4 my-8">Skills</h1>
-      <div className="flex items-center mb-4">
+    <div>
+      <h1 className="title leftDisplay mr-16">Skills</h1>
+      <div className="dropdownDisplay"  style={{left: "-25px" }}>
         <div>
           <GradeDropdown setGrade={setGrade} grade={grade}/>
         </div>
@@ -34,7 +35,10 @@ const Teams: React.FC = () => {
           <RegionDropdown onSelect={setSelectedRegion} value = {selectedRegion}/>
         </div>
       </div>
-      <SeasonSkills season={seasonId.toString()} grade={grade} region={selectedRegion}/>
+      <div className = "eventDisplay">
+        <SeasonSkills season={seasonId.toString()} grade={grade} region={selectedRegion}/>
+      </div>
+
     </div>
   );
 };

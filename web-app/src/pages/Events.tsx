@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import RegionDropdown from '../components/Dropdowns/RegionDropDown';
 import ProgramDropdown from '../components/Dropdowns/ProgramDropDown';
 import DateDropdown from '../components/Dropdowns/DateDropDown';
+import OngoingDropdown from '../components/Dropdowns/OngoingDropDown';
+import '../Stylesheets/pageLayout.css';
 
 const Events: React.FC = () => {
   // State variables to manage selected values
@@ -22,19 +24,14 @@ const Events: React.FC = () => {
   }, [status, startAfterDate, region, program, navigate]);
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-black text-3xl mb-4 my-8 text-left">Events</h1>
-              {/* Checkbox for Ongoing */}
-      <label>
-        Ongoing:
-        <input
-          className="ml-1"
-          type="checkbox"
-          checked={status === 'ongoing'}
-          onChange={(e) => setStatus(e.target.checked ? 'ongoing' : '')}
-        />
-      </label>
-      <div className="flex flex-wrap justify-center items-center">
+    <div>
+      <h1 className="title leftDisplay mr-12">Events</h1>
+      {/* Checkbox for Ongoing */}
+      <div className="leftDisplay mr-16">
+        <OngoingDropdown ongoing={status} setOngoing={setStatus}></OngoingDropdown>
+      </div>
+
+      <div className="dropdownDisplay" style={{left: "-75px" }}>
         {/* Styled Dropdown for Program */}
         <div >
           <ProgramDropdown program={program} setProgram={setProgram} all = {true} />
@@ -49,15 +46,15 @@ const Events: React.FC = () => {
         <DateDropdown startAfterDate={startAfterDate} setStartAfterDate={setStartAfterDate} />
       </div>
       <br />
-      
-      {/* EventsListQuery */}
-      <EventsListQuery
-        numberOfEvents={25}
-        status={status}
-        startAfter={startAfterDate}
-        region={region}
-        programCode={program}
-      />
+      <div className = "eventDisplay">
+        <EventsListQuery
+          numberOfEvents={25}
+          status={status}
+          startAfter={startAfterDate}
+          region={region}
+          programCode={program}
+        />
+      </div>
     </div>
   );
 };
