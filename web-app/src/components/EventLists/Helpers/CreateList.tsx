@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../../Stylesheets/eventTable.css'
 import { Link } from 'react-router-dom';
+import { IconButton, CircularProgress } from '@mui/material';
 
 interface EventListDisplayProps {
   eventIdsString: string | null;
@@ -9,10 +10,12 @@ interface EventListDisplayProps {
 const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
   const [maps, setMaps] = useState<any[]>([]);
   const [ascending, setAscending] = useState<boolean>(false); // State to track sorting direction
+  const [loading, setLoading] = useState<boolean>(true); // State to track loading
 
   useEffect(() => {
     const fetchEventData = async () => {
       try {
+        setLoading(true); // Set loading to true when fetching data
         const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/events/', {
           method: 'POST',
           headers: {
@@ -30,6 +33,8 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         setMaps(data);
       } catch (error) {
         console.error('Error fetching or parsing JSON:', error);
+      } finally {
+        setLoading(false); 
       }
     };
 
@@ -43,64 +48,71 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
     setAscending((prevAscending) => !prevAscending);
   };
   return (
-    <div className="table">
-      <div className="header col small">
-      <div className = "header-cell rounded-tl-lg">
-          PROGRAM
-          </div>
-          {maps && Array.isArray(maps) && maps.map((event, index, array) => (
-          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-            <div className={
-              `${event.program.code || event.program === 'VRC' ? 'vrc' : 
-              event.program.code || event.program === 'VEXU' ? 'vexu' : 
-              event.program.code || event.program === 'VIQRC' ? 'viqrc' : ''}`
-            }>
-              {event.program.code || event.program}
+    <div>
+      {loading ? ( // Render loading indicator if loading state is true
+          <CircularProgress style={{ margin: '20px' }} />
+        ) : (
+        <div className="table">
+          <div className="header col small">
+            <div className = "header-cell rounded-tl-lg">
+            PROGRAM
             </div>
+            {maps && Array.isArray(maps) && maps.map((event, index, array) => (
+              <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                <div className={
+                  `${event.program.code || event.program === 'VRC' ? 'vrc' : 
+                  event.program.code || event.program === 'VEXU' ? 'vexu' : 
+                  event.program.code || event.program === 'VIQRC' ? 'viqrc' : ''}`
+                }>
+                  {event.program.code || event.program}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div className="header col big">
-        <div className = "header-cell">
-          EVENT
-        </div>
-        {maps && Array.isArray(maps) && maps.map((event, index) => (
-          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-              <Link to={`/events/${event.id}`}>
-                {event.name && event.name}
-              </Link>
+          <div className="header col big">
+            <div className = "header-cell">
+              EVENT
+            </div>
+            {maps && Array.isArray(maps) && maps.map((event, index) => (
+              <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                  <Link to={`/events/${event.id}`}>
+                    {event.name && event.name}
+                  </Link>
 
-            </div>
-          ))}
-      </div>
-      <div className="header col normal">
-        <div className = "header-cell">
-          LOCATION
-        </div>
-        {maps && Array.isArray(maps) && maps.map((event, index) => (
-          <div className={`body-cell location ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-              {event.location && (
-                  <div>
-                      {event.location.city && <span>{event.location.city}, </span>}
-                      {event.location.region && <span>{event.location.region}, </span>}
-                      {event.location.country}
-                  </div>
-              )}
-            </div>
-          ))}
-      </div>
-      <div className="header col small">
-        <div className = "rounded-tr-lg header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
-          DATE {ascending ? '▲' : '▼'}
-        </div>
-        {maps && Array.isArray(maps) && maps.map((event, index, array) => (
-          <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-br-lg rounded-b-none' : ''}`}>
-            {event.start && (event.start.substring(0, 10) === event.end?.substring(0, 10)
-              ? event.start.substring(0, 10) : event.start.substring(0, 10) + ' - ' + event.end?.substring(0, 10))}
+                </div>
+              ))}
           </div>
-        ))}
-      </div>
+          <div className="header col normal">
+            <div className = "header-cell">
+              LOCATION
+            </div>
+            {maps && Array.isArray(maps) && maps.map((event, index) => (
+              <div className={`body-cell location ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                  {event.location && (
+                      <div>
+                          {event.location.city && <span>{event.location.city}, </span>}
+                          {event.location.region && <span>{event.location.region}, </span>}
+                          {event.location.country}
+                      </div>
+                  )}
+                </div>
+              ))}
+          </div>
+          <div className="header col small">
+            <div className = "rounded-tr-lg header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
+              DATE {ascending ? '▲' : '▼'}
+            </div>
+            {maps && Array.isArray(maps) && maps.map((event, index, array) => (
+              <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-br-lg rounded-b-none' : ''}`}>
+                {event.start && (event.start.substring(0, 10) === event.end?.substring(0, 10)
+                  ? event.start.substring(0, 10) : event.start.substring(0, 10) + ' - ' + event.end?.substring(0, 10))}
+              </div>
+            ))}
+          </div>
+        </div>
+    )}
     </div>
+
   );
 };
 
