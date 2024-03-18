@@ -6,6 +6,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import '../../Stylesheets/skillsTable.css';
+import { getSeasonNameFromId } from '../../SeasonEnum';
 
 interface SkillsRankingItem {
   driver_component: number | null;
@@ -30,6 +31,7 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [lastPage, setLastPage] = useState<number>(1); // State to track the last page
   const [loading, setLoading] = useState<boolean>(true); // State to track loading
+  const page = 50;
 
   useEffect(() => {
     setCurrentPage(1); // Reset page number when season changes
@@ -49,6 +51,7 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
           throw new Error('Failed to fetch skills ranking');
         }
         const data = await response.json();
+        console.log(apiUrl);
         setSkillsRanking(data);
       } catch (error) {
         console.error('Error fetching skills ranking:', error);
@@ -94,7 +97,7 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
 
   // Calculate the rank based on the current page
   const calculateRank = (index: number) => {
-    return (currentPage - 1) * 50 + index + 1;
+    return (currentPage - 1) * page + index + 1;
   };
 
   const handleFirstPage = () => {
@@ -124,13 +127,18 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
         <CircularProgress style={{ margin: '20px' }} />
       ) : (
       <div>
-        <div className="flex items-center">
-          <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
-          <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
-          <span className="mx-1 px-3 py-1 rounded-md bg-gray-200 text-black">{currentPage}</span>
-          <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
-          <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+        <div className="flex justify-between items-center mt-4">
+          <div className = "tableTitle">{region} {getSeasonNameFromId(parseInt(season))} {grade} Skills</div>
+          <div>
+            {(currentPage * page) - 49} - {Math.min(currentPage * page, skillsRanking.length + 
+              (currentPage * page) - 50)} of {Math.min(lastPage * page, skillsRanking.length + (lastPage * page) - 50)}
+            <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+            <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+            <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+            <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+          </div>
         </div>
+
         <div className = "table">
           <div className="header col rank">
             <div className = "header-cell rounded-tl-lg">
