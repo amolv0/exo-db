@@ -48,7 +48,7 @@ const Events: React.FC = () => {
       <br />
       <div className = "eventDisplay">
         <EventsListQuery
-          numberOfEvents={25}
+          numberOfEvents={100000000}
           status={status}
           startAfter={startAfterDate}
           region={region}
