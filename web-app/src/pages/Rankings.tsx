@@ -13,7 +13,7 @@ const Rankings: React.FC = () => {
   const [seasonId, setSeasonId] = useState<number>(parseInt(searchParams.get('seasonId') || '181'));
   const [program, setProgram] = useState<string>(searchParams.get('program')  || 'VRC'); 
   const [selectedRegion, setSelectedRegion] = useState<string>(searchParams.get('region') || '');
-
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,6 +21,15 @@ const Rankings: React.FC = () => {
     const url = `/rankings?program=${program}&seasonId=${seasonId}&region=${selectedRegion}`;
     navigate(url, { state, replace: true });
   }, [program, seasonId, selectedRegion, navigate]);
+
+  useEffect(() => {
+    if (program === 'VEXU') {
+      setSeasonId(182);
+    }
+    if (program === 'VRC') {
+      setSeasonId(181);
+    }
+  }, [program]);
 
   return (
     <div>
@@ -37,7 +46,7 @@ const Rankings: React.FC = () => {
         </div>
       </div>
       <div className = "eventDisplay"> 
-        <SeasonRankings season={seasonId.toString()} region={selectedRegion} />
+        <SeasonRankings program={program} season={seasonId.toString()} region={selectedRegion} />
       </div>
     </div>
   );
