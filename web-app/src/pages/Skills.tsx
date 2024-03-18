@@ -21,6 +21,15 @@ const Teams: React.FC = () => {
     navigate(url, { state, replace: true });
   }, [grade, seasonId, selectedRegion, navigate]);
 
+  useEffect(() => {
+    if (grade === 'College') {
+      setSeasonId(182);
+    }
+    if ((grade === 'High School' || grade == 'Middle School')) {
+      setSeasonId(181);
+    }
+  }, [grade]);
+
   return (
     <div>
       <h1 className="title leftDisplay mr-16">Skills</h1>
