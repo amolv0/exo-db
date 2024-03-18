@@ -29,7 +29,7 @@ const EventInfo: React.FC = () => {
       try {
         const response = await fetch(`EXODB_API_GATEWAY_BASE_URL/dev/events/${eventId}`);
         const data = await response.json();
-        //console.log(data);
+        console.log(data);
         setEventData(data);
       } catch (error) {
         console.error('Error fetching or parsing JSON:', error);
