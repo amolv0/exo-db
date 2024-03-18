@@ -6,7 +6,7 @@ import Skills from './pages/Skills';
 import TeamInfo from './pages/TeamInfo';
 import EventInfo from './pages/EventInfo';
 import Rankings from './pages/Rankings';
-import OngoingEvents from './components/EventLists/OngoingEvents';
+import EventsListQuery from './components/EventLists/EventsListQuery';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './Stylesheets/pageLayout.css';
 
@@ -14,7 +14,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col items-center">
       <h1 className="title leftDisplay ml-24">Ongoing Events</h1>
-        <OngoingEvents/>
+        <EventsListQuery status = 'ongoing'/>
     </div>
   );
 };
