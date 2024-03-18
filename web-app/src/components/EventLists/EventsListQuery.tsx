@@ -66,7 +66,10 @@ const App: React.FC<AppProps> = ({
         <div>Loading...</div>
       ) : (
         found ? (
-          <CreateList eventIdsString={eventIdsString}/>
+          <div>
+            <div className = "tableTitleEvent">{region} {programCode} Events</div>
+            <CreateList eventIdsString={eventIdsString}/>
+          </div>
         ) : (
           <div> No Events Found </div>
         )
