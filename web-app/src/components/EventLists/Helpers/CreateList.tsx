@@ -18,9 +18,11 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [groupsOf25, setGroupsOf25] = useState<number[][]>([]);
   const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
+  const [size, setSize] = useState<number> (1);
 
   const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
     const groups: number[][] = [];
+    setSize(arr.length);
     for (let i = 0; i < arr.length; i += groupSize) {
       groups.push(arr.slice(i, i + groupSize));
     }
@@ -110,18 +112,15 @@ return (
     {loading ? ( // Render loading indicator if loading state is true
         <CircularProgress style={{ margin: '20px' }} />
       ) : (
-        <div>
-        <div>
-        {/* Your existing content */}
-        {/* Add page selector */}
-        <div className="flex items-center">
-        <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
-        <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
-        <span className="mx-1 px-3 py-1 rounded-md bg-gray-200 text-black">{currentPage}</span>
-        <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
-        <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
-      </div>
-      </div>
+      <div>
+
+          <div style={{ textAlign: 'right' }}>
+          {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
+          <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+          <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+          <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+          <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+          </div>
         <div className="table">
         <div className="header col small">
           <div className = "header-cell rounded-tl-lg">
