@@ -187,7 +187,7 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
             {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
               <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
                 <div>
-                  <Link to={`/teams/${rank.event_id}`} className = "hover:text-blue-200">
+                  <Link to={`/events/${rank.event_id}`} className = "hover:text-blue-200">
                             {rank.event_name && rank.event_name}
                   </Link>
                 </div>
