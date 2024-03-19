@@ -26,6 +26,7 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [lastPage, setLastPage] = useState<number>(1); // State to track the last page
   const [loading, setLoading] = useState<boolean>(true); // State to track loading
+  const [error, setError] = useState<string | null>(null); // State to track error message
   const page = 50;
 
   useEffect(() => {
@@ -33,6 +34,17 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
   }, [season]);
 
   useEffect(() => {
+    if (getSeasonNameFromId(parseInt(season)).includes("VEXU")) {
+      if (program !== 'VEXU') {
+        console.log("hi");
+        return;
+      }
+    } else {
+      if (program === 'VEXU') {
+        console.log("bye");
+        return ;
+      }
+    }
     const fetchSeasonRanking = async () => {
       try {
         setLoading(true); // Set loading to true when fetching data
@@ -42,13 +54,15 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
         }
         const response = await fetch(apiUrl);
         if (!response.ok) {
+          setError("Failed to find valid rankings leaderboard");
           throw new Error('Failed to fetch season ranking');
         }
         const data = await response.json();
-        console.log(data);
         setSeasonRanking(data.data);
         console.log(data);
+        setError(null);
       } catch (error) {
+        setError("Failed to find valid rankings leaderboard");
         console.error('Error fetching season ranking:', error);
       } finally {
         setLoading(false); // Set loading to false after fetching data
@@ -109,12 +123,14 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
       setCurrentPage(currentPage + 1);
     }
   };
-  
+
   return (
     <div>
   
       {loading ? ( // Render loading indicator if loading state is true
           <CircularProgress style={{ margin: '20px' }} />
+        ) : error ? ( 
+          <div>Error: {error}</div>
         ) : (
         <div>
           <div className="flex justify-between items-center mt-4">
