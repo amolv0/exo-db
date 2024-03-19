@@ -19,6 +19,7 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
   const [groupsOf25, setGroupsOf25] = useState<number[][]>([]);
   const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
   const [size, setSize] = useState<number> (1);
+  const [error, setError] = useState<string | null>(null); // State to track error message
 
   const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
     const groups: number[][] = [];
@@ -40,7 +41,10 @@ useEffect(() => {
 }, [eventIdsString]);
 
 useEffect(() => {
-  if (!isFirstUseEffectDone || !eventIdsString) return;
+  if (!isFirstUseEffectDone || !eventIdsString) {
+    setError ("Failed to find valid events");
+    return;
+  }
 
   const fetchData = async () => {
     try {
@@ -60,8 +64,9 @@ useEffect(() => {
         data.sort((a: any, b: any) => new Date(b.start).getTime() - new Date(a.start).getTime());
       }
       setMaps(data);
+      setError(null);
     } catch (error) {
-      console.error('Error fetching or parsing JSON:', error);
+      setError ("Failed to find valid events");
     } finally {
       setLoading(false);
     }
@@ -69,7 +74,7 @@ useEffect(() => {
 
   fetchData();
 
-}, [eventIdsString, currentPage, groupsOf25, isFirstUseEffectDone]);
+}, [currentPage, groupsOf25, isFirstUseEffectDone]);
 
 useEffect(() => {
   const sortedMaps = [...maps].sort((a, b) => {
@@ -106,12 +111,13 @@ const handleNextPage = () => {
   }
 };
 
-
 return (
   <div>
     {loading ? ( // Render loading indicator if loading state is true
         <CircularProgress style={{ margin: '20px' }} />
-      ) : (
+      ) : error ? ( 
+        <div>Error: {error}</div>
+      ) :  (
       <div>
 
           <div style={{ textAlign: 'right' }}>
