@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import SeasonRankings from '../components/RankingsList/SeasonRankings';
 import RegionDropdown from '../components/Dropdowns/RegionDropDown';
@@ -13,24 +13,31 @@ const Rankings: React.FC = () => {
   const [seasonId, setSeasonId] = useState<number>(parseInt(searchParams.get('seasonId') || '181'));
   const [program, setProgram] = useState<string>(searchParams.get('program')  || 'VRC'); 
   const [selectedRegion, setSelectedRegion] = useState<string>(searchParams.get('region') || '');
+  const [loading, setLoading] = useState<boolean>(true);
   
-  const navigate = useNavigate();
+  const initialRender = useRef(true);
+
+  console.log(program + " " + seasonId + " " + loading);
 
   useEffect(() => {
-    const state = { program, seasonId, region: selectedRegion };
-    const url = `/rankings?program=${program}&seasonId=${seasonId}&region=${selectedRegion}`;
-    navigate(url, { state, replace: true });
-  }, [program, seasonId, selectedRegion, navigate]);
-
-  useEffect(() => {
-    if (program === 'VEXU') {
-      setSeasonId(182);
+    // Skip the effect on the initial render
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
     }
+
     if (program === 'VRC') {
       setSeasonId(181);
+    } else {
+      setSeasonId(182);
     }
   }, [program]);
 
+  useEffect(() => {
+    const url = `/rankings?program=${program}&seasonId=${seasonId}&region=${selectedRegion}`;
+    window.history.replaceState(null, '', url);
+  }, [seasonId, selectedRegion]);
+  
   return (
     <div>
       <h1 className="title leftDisplay ml-4">Ratings</h1>

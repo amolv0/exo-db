@@ -7,13 +7,13 @@ export function getSeasonNameFromId(id: number): string {
         case 180:
         return 'VIQRC Full Volume';
 
-        case 174: //AAAHHH ITS SLAPSHOT
+        case 175: //AAAHHH ITS SLAPSHOT
         return 'VEXU Spin Up';
 
         case 173:
         return 'VEX Spin Up';
 
-        case 155:
+        case 156:
         return 'VEXU Tipping Point';
         
         case 154:
