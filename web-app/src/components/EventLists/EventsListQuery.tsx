@@ -1,31 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import CreateList from './Helpers/CreateList';
+  import React, { useState, useEffect } from 'react';
+  import CreateList from './Helpers/CreateList';
 
-interface AppProps {
-  numberOfEvents?: number | null;
-  programCode?: string | null;
-  startAfter?: string | null;
-  startBefore?: string | null;
-  status?: string | null;
-  region?: string | null;
-}
+  interface AppProps {
+    numberOfEvents?: number | null;
+    programCode?: string | null;
+    startAfter?: string | null;
+    startBefore?: string | null;
+    status?: string | null;
+    region?: string | null;
+  }
 
-const App: React.FC<AppProps> = ({
-  numberOfEvents,
-  programCode,
-  startAfter,
-  startBefore,
-  status = 'ongoing',
-  region
-}) => {
-  const [eventIdsString, setEventIdsString] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true); // Introduce loading state
-  const [found, setFound] = useState<boolean>(true); // Introduce loading state
+  const App: React.FC<AppProps> = ({
+    numberOfEvents,
+    programCode,
+    startAfter,
+    startBefore,
+    status = 'ongoing',
+    region
+  }) => {
+    const [eventIdsString, setEventIdsString] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(true); // Introduce loading state
+    const [error, setError] = useState<string | null>(null); // State to track error message
 
-  useEffect(() => {
     const fetchData = async () => {
       try {
-        setFound(true);
         // Construct the API endpoint URL based on query parameters
         let apiUrl = 'EXODB_API_GATEWAY_BASE_URL/dev/events?';
         const queryParams: string[] = [];
@@ -37,45 +35,41 @@ const App: React.FC<AppProps> = ({
         if (startBefore) queryParams.push(`start_before=${startBefore}`);
         if (region) queryParams.push(`region=${region}`);
 
-        apiUrl += queryParams.join('&');
-
+        apiUrl += queryParams.join('&')
         // Fetch data using constructed URL
         const response = await fetch(apiUrl);
         const result = await response.json();
         if (result.length === 0 || result.error) {
-          setFound(false);
           setLoading(false);
+          setError("Failed to find valid events");
           return;
         }
         const formattedIds = JSON.stringify(result);
         setEventIdsString(formattedIds);
         setLoading(false);
+        setError(null);
       } catch (error) {
-        console.error('Error fetching event IDs:', error);
-        setFound(false);
+        setError("Failed to find valid events");
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [numberOfEvents, programCode, startAfter, startBefore, status, region]);
 
-  return (
-    <div>
-      {loading ? ( // Display loading indicator if loading is true
-        <div>Loading...</div>
-      ) : (
-        found ? (
-          <div>
-            <div className = "tableTitleEvent">{region} {programCode} Events</div>
-            <CreateList eventIdsString={eventIdsString}/>
-          </div>
-        ) : (
-          <div> No Events Found </div>
-        )
-      )}
-    </div>
-  );
-};
+    return (
+      <div>
+        {loading ? ( // Display loading indicator if loading is true
+          <div>Loading...</div>
+        ) : error ? ( 
+          <div>Error: {error}</div>
+        ) :  (
+            <div>
+              <div className = "tableTitleEvent">{region} {programCode} Events</div>
+              <CreateList eventIdsString={eventIdsString}/>
+            </div>
+        )}
+      </div>
+    );
+  };
 
-export default App;
+  export default App;
