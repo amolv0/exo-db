@@ -13,13 +13,10 @@ const Teams: React.FC = () => {
   const [grade, setGrade] = useState<string>(searchParams.get('grade') || 'High School');
   const [selectedRegion, setSelectedRegion] = useState<string>(searchParams.get('region') || '');
 
-  const navigate = useNavigate();
-
   useEffect(() => {
-    const state = { grade, seasonId, region: selectedRegion };
     const url = `/skills?grade=${grade}&seasonId=${seasonId}&region=${selectedRegion}`;
-    navigate(url, { state, replace: true });
-  }, [grade, seasonId, selectedRegion, navigate]);
+    window.history.replaceState(null, '', url);
+  }, [grade, seasonId, selectedRegion]);
 
   useEffect(() => {
     if (grade === 'College') {
