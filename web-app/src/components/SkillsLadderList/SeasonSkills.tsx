@@ -31,6 +31,8 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [lastPage, setLastPage] = useState<number>(1); // State to track the last page
   const [loading, setLoading] = useState<boolean>(true); // State to track loading
+  const [error, setError] = useState<string | null>(null); // State to track error message
+
   const page = 50;
 
   useEffect(() => {
@@ -39,6 +41,15 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
   
   // Fetch skills ranking when currentPage changes
   useEffect(() => {
+    if (getSeasonNameFromId(parseInt(season)).includes("VEXU")) {
+      if (grade !== 'College') {
+        return;
+      }
+    } else {
+      if (grade === 'College') {
+        return ;
+      }
+    }
     const fetchSkillsRanking = async () => {
       try {
         setLoading(true);
@@ -48,13 +59,15 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
         }
         const response = await fetch(apiUrl);
         if (!response.ok) {
+          setError("Failed to find valid skills leaderboard");
           throw new Error('Failed to fetch skills ranking');
         }
         const data = await response.json();
         console.log(apiUrl);
         setSkillsRanking(data);
+        setError(null);
       } catch (error) {
-        console.error('Error fetching skills ranking:', error);
+        setError("Failed to find valid skills leaderboard");
       } finally {
         setLoading(false);
       }
@@ -125,6 +138,8 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
 
     {loading ? ( // Render loading indicator if loading state is true
         <CircularProgress style={{ margin: '20px' }} />
+      ) : error ? ( 
+        <div>Error: {error}</div>
       ) : (
       <div>
         <div className="flex justify-between items-center mt-4">
