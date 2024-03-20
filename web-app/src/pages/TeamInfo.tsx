@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import TeamLocation from '../components/TeamInfo/TeamProfile';
+import TeamProfile from '../components/TeamInfo/TeamProfile';
 import TeamAwards from '../components/TeamInfo/TeamAwards';
 import CreateList from '../components/EventLists/Helpers/CreateList';
 import { Box, Typography, Button, ButtonGroup, CircularProgress } from '@mui/material';
+import '../Stylesheets/pageLayout.css';
 
 const TeamInfo: React.FC = () => {
   const { teamId } = useParams<{ teamId: string }>();
@@ -32,6 +33,7 @@ const TeamInfo: React.FC = () => {
         if (data && data.length > 0 && data[0].events) {
           setEventIdsString(JSON.stringify(data[0].events));
         }
+        console.log(data);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching or parsing JSON:', error);
@@ -59,19 +61,19 @@ const TeamInfo: React.FC = () => {
         <CircularProgress color="inherit" />
       ) : (
         teamData ? (
-          <Box sx={{ width: '100%', maxWidth: '1000px', bgcolor: 'grey.900', color: 'white', p: 2, borderRadius: 2, boxShadow: 3 }}>
-            <Typography variant="h4" color="white" align="center" my={4}>
+          <Box sx={{ width: '100%', maxWidth: '1000px', color: 'white', p: 2}}>
+            <Typography mb="20px" variant="h4" color="black" align="center">
               {teamData[0].number} {teamData[0].team_name}
             </Typography>
             
-            <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: 'grey.800', p: 1, borderRadius: '4px' }}>
-              <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                {['Team Info', 'Events', 'Awards'].map((element, index) => (
+            <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: '#84202A', p: 1, borderRadius: '4px' }}>
+              <ButtonGroup>
+                {['Team Info', 'Events', 'Skills', 'Ratings', 'Awards'].map((element, index) => (
                   <Button
                     key={index}
                     onClick={() => handleHeaderClick(element.replace(/\s+/g, ''))}
                     sx={{
-                      bgcolor: 'grey.800',
+                      bgcolor: '#28191D',
                       '&:hover': { bgcolor: 'grey.700' },
                       color: 'white',
                       '&:focus': {
@@ -85,7 +87,7 @@ const TeamInfo: React.FC = () => {
               </ButtonGroup>
             </Box>
             {activeElement === 'TeamInfo' && teamData && (
-              <TeamLocation
+              <TeamProfile
                 data={teamData[0]}
               />
             )}
