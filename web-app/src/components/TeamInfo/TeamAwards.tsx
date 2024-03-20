@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { CircularProgress } from '@mui/material';
 import { getSeasonNameFromId } from '../../SeasonEnum';
+import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 
 interface TeamAwardsProps {
   awards: number[];
@@ -15,12 +17,15 @@ interface AwardData {
 const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
   const [awardData, setAwardData] = useState<AwardData[]>([]);
   const [seasonMap, setSeasonMap] = useState<{ [season: number]: AwardData[] }>({});
-  const [selectedSeason, setSelectedSeason] = useState<number | null>(null);
+  const [selectedSeason, setSelectedSeason] = useState<number>(181);
+  const [posts, setPosts] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchAwardDetails = async () => {
       if (awards && awards.length > 0) {
         try {
+          setLoading(true);
           const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/awards/', {
             method: 'POST',
             headers: {
@@ -28,6 +33,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
             },
             body: JSON.stringify(awards)
           });
+          
           if (response.ok) {
             const data: AwardData[] = await response.json();
             setAwardData(data);
@@ -36,6 +42,8 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
           }
         } catch (error) {
           console.error('Error fetching award details:', error);
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -44,6 +52,17 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
   }, [awards]);
 
   useEffect(() => {
+    if (awardData.length === 0) {
+      return;
+    }
+    if (awardData.length > 0) {
+      const highestIdAward = awardData.reduce((prev, current) => (prev.event.id > current.event.id ? prev : current));
+      if (highestIdAward.season !== null) {
+        setSelectedSeason(highestIdAward.season);
+      } else {
+        setSelectedSeason(181);
+      }
+    }
     const seasonMap: { [season: number]: AwardData[] } = {};
     awardData.forEach(award => {
       if (!seasonMap[award.season]) {
@@ -54,53 +73,47 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
         seasonMap[award.season].push(award);
       }
     });
-    setSeasonMap(seasonMap);
+    setSeasonMap(seasonMap)
+    setPosts(false);
   }, [awardData]);
-
-  // Find the award with the highest ID
-  useEffect(() => {
-    if (awardData.length > 0) {
-      const highestIdAward = awardData.reduce((prev, current) => (prev.event.id > current.event.id ? prev : current));
-      setSelectedSeason(highestIdAward.season);
-    }
-  }, [awardData]);
-
   return (
     <div>
-      
-      {/* Display "No Awards Earned" if there are no awards */}
-      {awardData.length === 0 && <div>No Awards Earned</div>}
-      <br />
-      {/* Dropdown to select season */}
-      <div className="flex justify-center"> 
-        <select
-          value={selectedSeason ?? ''}
-          onChange={(e) => setSelectedSeason(e.target.value ? parseInt(e.target.value) : null)}
-          className="p-2 rounded-md bg-neutral-700 mr-4"        >
-          <option value="">Select Season</option>
-          {Object.keys(seasonMap).map(season => (
-            <option key={season} value={season} className="text-white">{getSeasonNameFromId(parseInt(season))}</option>
-          ))}
-        </select>
-      </div>
-      <br />
-
-      {/* Display awards and events for selected season */}
-      {selectedSeason && seasonMap[selectedSeason] && (
-        <div className="border border-gray-300 rounded-md p-4 mb-4">
-          <h3 className="text-lg font-semibold mb-2">Season {selectedSeason}</h3>
-          {seasonMap[selectedSeason].map((award, index) => (
-            <div key={index} className="border border-gray-300 rounded-md p-4 mb-4">
-              <h4 className="text-md font-semibold mb-2">{award.title}</h4>
-              <ul>
-                {awardData.filter(a => a.title === award.title && a.season === selectedSeason).map((a, i) => (
-                  <Link to={`/events/${a.event.id}`}>
-                    <li key={i}>{a.event.name}</li>
-                  </Link>
-                ))}
-              </ul>
+      {loading ? ( // Render loading indicator if loading state is true
+        <CircularProgress style={{ margin: '20px' }} />
+      ) : posts ? ( 
+        <div>No awards found</div>
+      ) : (
+        <div className="text-black">
+          <br />
+          <div className="flex justify-center"> 
+            <SeasonDropdown
+              seasonId={selectedSeason}
+              setSeasonId={setSelectedSeason}
+              type=''
+              grade=''
+              restrict={Object.keys(seasonMap)}
+            />      
+          </div>
+          <br />
+    
+          {/* Display awards and events for selected season */}
+          {selectedSeason && seasonMap[selectedSeason] && (
+            <div className="border border-gray-300 rounded-md p-4 mb-4">
+              <h3 className="text-lg font-semibold mb-2">Season {selectedSeason}</h3>
+              {seasonMap[selectedSeason].map((award, index) => (
+                <div key={index} className="border border-gray-300 rounded-md p-4 mb-4">
+                  <h4 className="text-md font-semibold mb-2">{award.title}</h4>
+                  <ul>
+                    {awardData.filter(a => a.title === award.title && a.season === selectedSeason).map((a, i) => (
+                      <Link to={`/events/${a.event.id}`} key={i}>
+                        <li>{a.event.name}</li>
+                      </Link>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>
