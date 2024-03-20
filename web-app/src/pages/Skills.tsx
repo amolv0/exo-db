@@ -22,7 +22,7 @@ const Teams: React.FC = () => {
     if (grade === 'College') {
       setSeasonId(182);
     }
-    if ((grade === 'High School' || grade == 'Middle School')) {
+    if ((grade === 'High School' || grade === 'Middle School')) {
       setSeasonId(181);
     }
   }, [grade]);
@@ -35,7 +35,7 @@ const Teams: React.FC = () => {
           <GradeDropdown setGrade={setGrade} grade={grade}/>
         </div>
         <div>
-          <SeasonDropdown setSeasonId={setSeasonId} seasonId={seasonId} type='' grade={grade} />
+          <SeasonDropdown setSeasonId={setSeasonId} seasonId={seasonId} type='' grade={grade} restrict={null}/>
         </div>
         <div>
           <RegionDropdown onSelect={setSelectedRegion} value = {selectedRegion}/>
