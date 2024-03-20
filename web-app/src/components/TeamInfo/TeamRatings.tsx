@@ -23,8 +23,8 @@ interface JSONComponentProps {
   data: {
     awards: number[];
     elo: Record<number, number>;
-    teamskill_rankings: Record<number, number>;
-    teamskill_regional_rankings: Record<number, number>;
+    elo_rankings: Record<number, number>;
+    elo_regional_rankings: Record<number, number>;
     events: number[];
     grade: string;
     id: number;
@@ -50,73 +50,58 @@ interface JSONComponentProps {
 const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
   if (!data) return null;
 
-  const { location, robot_name, program, registered, organization, reveals, awards, skills_rankings, skills_regional_ranking, teamskill_rankings, teamskill_regional_rankings, region, events } = data;
+  const { location, robot_name, program, registered, organization, reveals, awards, skills_rankings, skills_regional_ranking, elo_rankings, elo_regional_rankings, region, events } = data;
 
   // Function to find the maximum ranking based on robot value
-  const findRecentRobotRanking = (rankings: Record<number, { [key: string]: number }>) => {
+  const findMaxRobotRanking = (rankings: Record<number, { [key: string]: number }>) => {
     let maxRanking = Number.MAX_SAFE_INTEGER;
     let maxSeasonId = -1;
 
     for (const seasonId in rankings) {
       const robotValue = rankings[seasonId]['robot'];
-      if (registered === 'true') {
-        if (Number(seasonId) > maxSeasonId) {
-          maxRanking = robotValue;
-          maxSeasonId = Number(seasonId);
-        }
-      } else {
-        if (robotValue < maxRanking) {
-          maxRanking = robotValue;
-          maxSeasonId = Number(seasonId);
-        }
+      if (robotValue < maxRanking) {
+        maxRanking = robotValue;
+        maxSeasonId = Number(seasonId);
       }
     }
     return { maxRanking, maxSeasonId };
   };
 
   // Function to find the maximum elo ranking
-  const findRecentEloRanking = (rankings: Record<number, number>) => {
+  const findMaxEloRanking = (rankings: Record<number, number>) => {
     let maxRanking = Number.MAX_SAFE_INTEGER;
     let maxSeasonId = -1;
 
     for (const seasonId in rankings) {
       const eloValue = rankings[seasonId];
-      if (registered === 'true') { 
-        if (Number(seasonId) > maxSeasonId) {
-          maxRanking = eloValue;
-          maxSeasonId = Number(seasonId);
-        }
-      } else {
-        if (eloValue < maxRanking) {
-          maxRanking = eloValue;
-          maxSeasonId = Number(seasonId);
-        }
+      if (eloValue < maxRanking) {
+        maxRanking = eloValue;
+        maxSeasonId = Number(seasonId);
       }
-
     }
 
     return { maxRanking, maxSeasonId };
   };
 
-  // Extracting recent or max skill ranking based on robot value
-  const { maxRanking: maxSkillRanking, maxSeasonId: maxSkillSeasonId } = findRecentRobotRanking(skills_rankings);
+  // Extracting max skill ranking based on robot value
+  const { maxRanking: maxSkillRanking, maxSeasonId: maxSkillSeasonId } = findMaxRobotRanking(skills_rankings);
 
-  // Extracting recent or max regional skills
-  const { maxRanking: maxRegionalSkillRanking, maxSeasonId: maxRegionalSkillSeasonId } = findRecentRobotRanking(skills_regional_ranking);
+  // Extracting max regional skill ranking based on robot value
+  const { maxRanking: maxRegionalSkillRanking, maxSeasonId: maxRegionalSkillSeasonId } = findMaxRobotRanking(skills_regional_ranking);
 
-  // Extracting recent or max elo ranking
-  const { maxRanking: maxEloRanking, maxSeasonId: maxEloSeasonId } = findRecentEloRanking(teamskill_rankings);
+  // Extracting max elo ranking
+  const { maxRanking: maxEloRanking, maxSeasonId: maxEloSeasonId } = findMaxEloRanking(elo_rankings);
 
-  // Extracting recent or max elo regional ranking
-  const { maxRanking: maxEloRegionalRanking, maxSeasonId: maxEloRegionalSeasonId } = findRecentEloRanking(teamskill_regional_rankings);
+  // Extracting max elo regional ranking
+  const { maxRanking: maxEloRegionalRanking, maxSeasonId: maxEloRegionalSeasonId } = findMaxEloRanking(elo_regional_rankings);
 
   return (
-    <Box mx="auto" bgcolor="white" color="black" p={4} borderRadius={2} boxShadow={3} display="flex" flexDirection="column">
+    <Box mx="auto" bgcolor="#333" color="#fff" p={4} borderRadius={2} boxShadow={3} display="flex" flexDirection="column">
       {/* Location and Info Section */}
       <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }}>
         {location && (
-          <Box flex={1} mr={{ xs: 0, md: 2 }} p={4} bgcolor="#E5D5D1" borderRadius={8} boxShadow={3} className="rounded-md shadow-md">
-            <Typography variant="h6" color="#84202A" className="mb-4">
+          <Box flex={1} mr={{ xs: 0, md: 2 }} p={4} bgcolor="#555" borderRadius={8} boxShadow={3} className="rounded-md shadow-md">
+            <Typography variant="h6" color="orange" className="mb-4">
               Team Info
             </Typography>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -146,8 +131,8 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
           </Box>
         )}
         {/* Rankings Section */}
-        <Box flex={{ xs: 1, md: 2 }} ml={{ xs: 0, md: 2 }} p={4} bgcolor="#E5D5D1" borderRadius={8} boxShadow={3} className="rounded-md shadow-md">
-          <Typography variant="h6" color="#84202A" className="mb-4">
+        <Box flex={{ xs: 1, md: 2 }} ml={{ xs: 0, md: 2 }} p={4} bgcolor="#555" borderRadius={8} boxShadow={3} className="rounded-md shadow-md">
+          <Typography variant="h6" color="orange" className="mb-4">
             Stats
           </Typography>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -167,22 +152,22 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
                 <td style={{ padding: '1px', textAlign: "right"}}></td>
               </tr>
               <tr>
-                <td style={{ padding: '1px' }}>{registered === 'true' ? 'Current' : 'Best'} Skills Rank</td>
+                <td style={{ padding: '1px' }}>Current Skills Rank</td>
                 <td style={{ padding: '1px' }}>{maxSkillRanking}</td>
                 <td style={{ padding: '1px', textAlign: "right" }}>{maxSkillSeasonId && getSeasonNameFromId(maxSkillSeasonId)}</td>
               </tr>
               <tr>
-                <td style={{ padding: '1px' }}>{registered === 'true' ? 'Current' : 'Best'} Regional Skills Rank</td>
+                <td style={{ padding: '1px' }}>Best Regional Skills Rank</td>
                 <td style={{ padding: '1px' }}>{maxRegionalSkillRanking}</td>
                 <td style={{ padding: '1px', textAlign: "right" }}>{maxRegionalSkillSeasonId && getSeasonNameFromId(maxRegionalSkillSeasonId)}</td>
               </tr>
               <tr>
-                <td style={{ padding: '1px' }}>{registered === 'true' ? 'Current' : 'Best'} Elo Rank</td>
+                <td style={{ padding: '1px' }}>Best Global Elo Rank</td>
                 <td style={{ padding: '1px' }}>{maxEloRanking}</td>
                 <td style={{ padding: '1px', textAlign: "right" }}>{maxEloSeasonId && getSeasonNameFromId(maxEloSeasonId)}</td>
               </tr>
               <tr>
-                <td style={{ padding: '1px' }}>{registered === 'true' ? 'Current' : 'Best'} Regional Elo Rank</td>
+                <td style={{ padding: '1px' }}>Best Regional Elo Rank</td>
                 <td style={{ padding: '1px' }}>{maxEloRegionalRanking}</td>
                 <td style={{ padding: '1px', textAlign: "right"}}>{maxEloRegionalSeasonId && getSeasonNameFromId(maxEloRegionalSeasonId)}</td>
               </tr>
