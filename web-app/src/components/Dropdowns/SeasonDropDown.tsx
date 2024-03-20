@@ -9,18 +9,23 @@ interface SeasonDropdownProps {
     seasonId: number;
     type : string;
     grade : string;
+    restrict : string[] | null;
 }
 
-const SeasonDropdown: React.FC<SeasonDropdownProps> = ({ setSeasonId, seasonId, type, grade}) => {
+const SeasonDropdown: React.FC<SeasonDropdownProps> = ({ setSeasonId, seasonId, type, grade, restrict}) => {
     const [seasons, setSeasons] = useState<number[]>([]);
 
     useEffect(() => {
-        const filteredSeasons: number[] = [];
-        for (let i = 50; i <= 250; i++) {
-            const seasonName = getSeasonNameFromId(i);
-            if (seasonName !== i.toString()) {
-                filteredSeasons.push(i);
+        let filteredSeasons: number[] = [];
+        if (!restrict) {
+            for (let i = 50; i <= 250; i++) {
+                const seasonName = getSeasonNameFromId(i);
+                if (seasonName !== i.toString()) {
+                    filteredSeasons.push(i);
+                }
             }
+        } else {
+            filteredSeasons = restrict.map(s => parseInt(s));
         }
         setSeasons(filteredSeasons);
     }, []);
