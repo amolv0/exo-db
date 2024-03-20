@@ -7,12 +7,20 @@ import DateDropdown from '../components/Dropdowns/DateDropDown';
 import OngoingDropdown from '../components/Dropdowns/OngoingDropDown';
 import '../Stylesheets/pageLayout.css';
 
+const formatDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const Events: React.FC = () => {
   // State variables to manage selected values
+  const defaultDate = formatDate(new Date());
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const [status, setStatus] = useState<string>(searchParams.get('status') || ''); // for Ongoing
-  const [startAfterDate, setStartAfterDate] = useState<string>(searchParams.get('startAfterDate') || ''); // for Start After Date
+  const [startAfterDate, setStartAfterDate] = useState<string>(searchParams.get('startAfterDate') || defaultDate); // for Start After Date
   const [region, setRegion] = useState<string>(searchParams.get('region') || ''); // for Region
   const [program, setProgram] = useState<string>(searchParams.get('program') || ''); // for Program Name
 

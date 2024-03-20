@@ -13,7 +13,7 @@ interface EventListDisplayProps {
 
 const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
   const [maps, setMaps] = useState<any[]>([]);
-  const [ascending, setAscending] = useState<boolean>(false);
+  const [ascending, setAscending] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [groupsOf25, setGroupsOf25] = useState<number[][]>([]);
