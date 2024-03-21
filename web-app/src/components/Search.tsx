@@ -103,7 +103,7 @@ const Search: React.FC = () => {
                 <ListItem
                     key={index}
                     onClick={() => {
-                    navigate(result.type === 'team' ? `/teams/${result.teamId}` : `/events/${result.eventId}`);
+                    navigate(result.type === 'team' ? `/teams/${result.teamId}?activeElement=TeamInfo` : `/events/${result.eventId}`);
                     setShowDropdown(false);
                     }}
                 >
