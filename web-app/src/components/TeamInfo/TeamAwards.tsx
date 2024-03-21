@@ -20,6 +20,9 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
   const [selectedSeason, setSelectedSeason] = useState<number>(181);
   const [posts, setPosts] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
+  const [champ, setChamps] = useState<number>(0);
+  const [skills, setSkills] = useState<number>(0);
+  const [exc, setExcs] = useState<number>(0);
 
   useEffect(() => {
     const fetchAwardDetails = async () => {
@@ -64,18 +67,37 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
       }
     }
     const seasonMap: { [season: number]: AwardData[] } = {};
+
+    let excellence = 0;
+    let champ = 0;
+    let skills = 0;
+
     awardData.forEach(award => {
+      if (award.title.includes("Tournament Champions")) {
+        console.log("hi");
+        champ+=1;
+      } else if (award.title.includes("Robot Skills Champion")) {
+        skills+=1;
+      } else if (award.title.includes("Excellence Award")) {
+        excellence+=1;
+      }
+
       if (!seasonMap[award.season]) {
         seasonMap[award.season] = [];
       }
-      // Check if the award title already exists for this season
-      if (!seasonMap[award.season].some(existingAward => existingAward.title === award.title)) {
+
+      if (!seasonMap[award.season].some(existingAward => existingAward.event.id === award.event.id)) {
         seasonMap[award.season].push(award);
       }
     });
+
+    setChamps(champ);
+    setExcs(excellence);
+    setSkills(skills);
     setSeasonMap(seasonMap)
     setPosts(false);
   }, [awardData]);
+
   return (
     <div>
       {loading ? ( // Render loading indicator if loading state is true
@@ -84,6 +106,14 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
         <div>No awards found</div>
       ) : (
         <div className="text-black">
+          <div className = "flex gap-10 mt-5">
+            <div>Total Awards: {awardData.length}</div>
+            <div>Total Tournaments Won: {champ}</div>
+            <div>Total Skills Won: {skills}</div>
+            <div>Total Excellences Won: {exc}</div>
+          </div>
+
+
           <br />
           <div className="flex justify-center"> 
             <SeasonDropdown
@@ -99,15 +129,15 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
           {/* Display awards and events for selected season */}
           {selectedSeason && seasonMap[selectedSeason] && (
             <div className="border border-gray-300 rounded-md p-4 mb-4">
-              <h3 className="text-lg font-semibold mb-2">Season {selectedSeason}</h3>
+              <h3 className="text-lg font-semibold mb-2">{getSeasonNameFromId(selectedSeason)}</h3>
               {seasonMap[selectedSeason].map((award, index) => (
                 <div key={index} className="border border-gray-300 rounded-md p-4 mb-4">
-                  <h4 className="text-md font-semibold mb-2">{award.title}</h4>
+                  <Link to={`/events/${award.event.id}`}>
+                  <h4 className="text-md font-semibold mb-2">{award.event.name}</h4>
+                  </Link>
                   <ul>
-                    {awardData.filter(a => a.title === award.title && a.season === selectedSeason).map((a, i) => (
-                      <Link to={`/events/${a.event.id}`} key={i}>
-                        <li>{a.event.name}</li>
-                      </Link>
+                    {awardData.filter(a => a.event.id === award.event.id && a.season === selectedSeason).map((a, i) => (
+                        <li>{a.title}</li>
                     ))}
                   </ul>
                 </div>
