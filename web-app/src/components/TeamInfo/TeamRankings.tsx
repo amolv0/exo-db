@@ -4,18 +4,18 @@ import { CircularProgress } from '@mui/material';
 import { getSeasonNameFromId } from '../../SeasonEnum';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 
-interface TeamSkillsProps {
-  skills: number[];
+interface TeamrankingsProps {
+  rankings: number[];
 }
 
-const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
+const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
   const [seasonMap, setSeasonMap] = useState<{ [key: number]: any[] }>({});
   const [selectedSeason, setSelectedSeason] = useState<number>(181);
   const [posts, setPosts] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
   const [groupsOf50, setGroupsOf50] = useState<number[][]>([]);
   const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
-  
+
   const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
     const groups: number[][] = [];
     for (let i = 0; i < arr.length; i += groupSize) {
@@ -25,44 +25,48 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
   };
 
   useEffect(() => {
-      if (skills) {
-          const groupedIds: number[][] = divideIntoGroups(skills, 50);
-          setGroupsOf50(groupedIds); 
-          setIsFirstUseEffectDone(true);
-      }
-  }, [skills]);
+      if (rankings) {
+        const uniqueRankings = rankings.filter((value, index, self) => {
+            return self.indexOf(value) === index;
+        });
+        // Divide uniqueRankings into groups of 50
+        const groupedIds: number[][] = divideIntoGroups(uniqueRankings, 50);
+        setGroupsOf50(groupedIds); 
+        setIsFirstUseEffectDone(true);
+    }
+  }, [rankings]);
 
   useEffect(() => {
-    const fetchSkillsDetails = async () => {
-      if (skills && skills.length > 0) {
+    const fetchrankingsDetails = async () => {
+      if (rankings && rankings.length > 0) {
         try {
           setLoading(true);
           const allEvents: any[] = [];
+          console.log(groupsOf50);
           for (let i = 0; i < groupsOf50.length; i++) {
-              const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/skills/', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(groupsOf50[i])
+                const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/rankings/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(groupsOf50[i])
               });
               const data = await response.json();
               allEvents.push(...data);
-              console.log(groupsOf50[i]);
           }
           console.log(allEvents);
-
           const tempSeasonMap: { [season: number]: any[] } = {};
+          
+          // THIS IS TEMPORARY UNTIL SEASON SUPPORT
           allEvents.forEach(event => {
-              if (!tempSeasonMap[event.season.id]) {
-                  tempSeasonMap[event.season.id] = [];
+              if (!tempSeasonMap[181]) {
+                  tempSeasonMap[181] = [];
               }
-              tempSeasonMap[event.season.id].push(event);
+              tempSeasonMap[181].push(event);
           });
 
           setSeasonMap(tempSeasonMap);
           setSelectedSeason(Math.max(...Object.keys(tempSeasonMap).map(Number)));
-          console.log(seasonMap);
         } catch (error) {
           console.error('Error fetching award details:', error);
         } finally {
@@ -72,15 +76,15 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
       }
     };
 
-    fetchSkillsDetails();
-  }, [skills, isFirstUseEffectDone]);
+    fetchrankingsDetails();
+  }, [rankings, isFirstUseEffectDone]);
 
   return (
     <div>
       {loading ? ( // Render loading indicator if loading state is true
         <CircularProgress style={{ margin: '20px' }} />
-      ) : posts ? (  // no skills :)
-        <div>No skills found</div>
+      ) : posts ? (  // no rankings :)
+        <div>No rankings found</div>
       ) : (
         <div className="text-black">
           <br />
@@ -95,19 +99,19 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
           </div>
           <br />
           <div>
-          {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((skills, index) => (
+          {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((rankings, index) => (
                 <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                    <Link to={`/events/${skills.event_id}`}>
-                      {skills.event_name}
+                    <Link to={`/events/${rankings.event_id}`}>
+                      {rankings.event_name}
                     </Link>
                     <div> 
-                      Skills Score: {skills.score}
+                      Event Average: {rankings.average_points}
                     </div>
                     <div>
-                      Skills Rank: {skills.rank}
+                      Total Points: {rankings.total_points}
                     </div>
                     <div>
-                      Attempts: {skills.attempts}
+                      Dpr: {rankings.dpr}
                     </div>
                 </div>
                 ))}
@@ -118,4 +122,4 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
   );
 };
 
-export default TeamSkills;
+export default Teamrankings;
