@@ -14,7 +14,7 @@ const Teammatches: React.FC<TeammatchesProps> = ({ matches }) => {
   const [selectedSeason, setSelectedSeason] = useState<number>(181);
   const [posts, setPosts] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
-  const [groupsOf50, setGroupsOf50] = useState<number[][]>([]);
+  const [groupsOf100, setGroupsOf100] = useState<number[][]>([]);
   const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
   console.log(matches);
   const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
@@ -24,11 +24,11 @@ const Teammatches: React.FC<TeammatchesProps> = ({ matches }) => {
     }
     return groups;
   };
-  /*
+  
   useEffect(() => {
       if (matches) {
           const groupedIds: number[][] = divideIntoGroups(matches, 100);
-          setGroupsOf50(groupedIds); 
+          setGroupsOf100(groupedIds); 
           setIsFirstUseEffectDone(true);
       }
   }, [matches]);
@@ -39,13 +39,13 @@ const Teammatches: React.FC<TeammatchesProps> = ({ matches }) => {
         try {
           setLoading(true);
           const allEvents: any[] = [];
-          for (let i = 0; i < groupsOf50.length; i++) {
+          for (let i = 0; i < groupsOf100.length; i++) {
               const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/matches/', {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
               },
-              body: JSON.stringify(groupsOf50[i])
+              body: JSON.stringify(groupsOf100[i])
               });
               const data = await response.json();
               allEvents.push(...data);
@@ -54,13 +54,15 @@ const Teammatches: React.FC<TeammatchesProps> = ({ matches }) => {
 
           const tempSeasonMap: { [season: number]: any[] } = {};
           allEvents.forEach(event => {
-              if (!tempSeasonMap[event.season.id]) {
-                  tempSeasonMap[event.season.id] = [];
+              if(event.season != undefined) {
+                if (!tempSeasonMap[event.season]) {
+                  tempSeasonMap[event.season] = [];
+                }
+              tempSeasonMap[event.season].push(event);
               }
-              tempSeasonMap[event.season.id].push(event);
           });
-
           setSeasonMap(tempSeasonMap);
+          console.log(tempSeasonMap);
           setSelectedSeason(Math.max(...Object.keys(tempSeasonMap).map(Number)));
           console.log(seasonMap);
         } catch (error) {
@@ -73,7 +75,7 @@ const Teammatches: React.FC<TeammatchesProps> = ({ matches }) => {
     };
 
     fetchmatchesDetails();
-  }, [matches, isFirstUseEffectDone]); */
+  }, [matches, isFirstUseEffectDone]); 
 
   return (
     <div>
@@ -101,13 +103,8 @@ const Teammatches: React.FC<TeammatchesProps> = ({ matches }) => {
                       {matches.event_name}
                     </Link>
                     <div> 
-                      matches Score: {matches.score}
-                    </div>
-                    <div>
-                      matches Rank: {matches.rank}
-                    </div>
-                    <div>
-                      Attempts: {matches.attempts}
+                      matches Score: {matches.round}
+                      NEED TO REWORK MATCH DISPLAY XDXDXD
                     </div>
                 </div>
                 ))}
