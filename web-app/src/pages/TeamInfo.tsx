@@ -3,6 +3,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import TeamProfile from '../components/TeamInfo/TeamProfile';
 import TeamAwards from '../components/TeamInfo/TeamAwards';
 import TeamEvents from '../components/TeamInfo/TeamEvents';
+import TeamSkills from '../components/TeamInfo/TeamSkills';
+import TeamMatches from '../components/TeamInfo/TeamMatches';
 import { Box, Typography, Button, ButtonGroup, CircularProgress } from '@mui/material';
 import '../Stylesheets/pageLayout.css';
 
@@ -67,7 +69,7 @@ const TeamInfo: React.FC = () => {
             
             <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: '#84202A', p: 1, borderRadius: '4px' }}>
               <ButtonGroup>
-                {['Team Info', 'Events', 'Skills', 'Ratings', 'Awards'].map((element, index) => (
+                {['Team Info', 'Events', 'Matches', 'Skills', 'Ratings', 'Awards'].map((element, index) => (
                   <Button
                     key={index}
                     onClick={() => handleHeaderClick(element.replace(/\s+/g, ''))}
@@ -92,6 +94,12 @@ const TeamInfo: React.FC = () => {
             )}
             {activeElement === 'Events' && 
               <TeamEvents eventIdsString={eventIdsString}></TeamEvents>
+            }
+            {activeElement === 'Matches' && 
+              <TeamMatches matches={teamData[0].matches}></TeamMatches>
+            }
+            {activeElement === 'Skills' && 
+              <TeamSkills skills={teamData[0].skills}></TeamSkills>
             }
             {activeElement === 'Awards' && <TeamAwards awards={teamData[0].awards}></TeamAwards>}
           </Box>
