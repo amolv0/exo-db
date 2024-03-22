@@ -5,6 +5,7 @@ import TeamAwards from '../components/TeamInfo/TeamAwards';
 import TeamEvents from '../components/TeamInfo/TeamEvents';
 import TeamSkills from '../components/TeamInfo/TeamSkills';
 import TeamMatches from '../components/TeamInfo/TeamMatches';
+import TeamRankings from '../components/TeamInfo/TeamRankings';
 import { Box, Typography, Button, ButtonGroup, CircularProgress } from '@mui/material';
 import '../Stylesheets/pageLayout.css';
 
@@ -35,6 +36,7 @@ const TeamInfo: React.FC = () => {
         if (data && data.length > 0 && data[0].events) {
           setEventIdsString(JSON.stringify(data[0].events));
         }
+        console.log(data);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching or parsing JSON:', error);
@@ -69,7 +71,7 @@ const TeamInfo: React.FC = () => {
             
             <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: '#84202A', p: 1, borderRadius: '4px' }}>
               <ButtonGroup>
-                {['Team Info', 'Events', 'Matches', 'Skills', 'Ratings', 'Awards'].map((element, index) => (
+                {['Team Info', 'Events', 'Matches', 'Skills', 'Rankings', 'Awards'].map((element, index) => (
                   <Button
                     key={index}
                     onClick={() => handleHeaderClick(element.replace(/\s+/g, ''))}
@@ -101,7 +103,12 @@ const TeamInfo: React.FC = () => {
             {activeElement === 'Skills' && 
               <TeamSkills skills={teamData[0].skills}></TeamSkills>
             }
-            {activeElement === 'Awards' && <TeamAwards awards={teamData[0].awards}></TeamAwards>}
+            {activeElement === 'Rankings' && 
+              <TeamRankings rankings={teamData[0].rankings}></TeamRankings>
+            }
+            {activeElement === 'Awards' && 
+              <TeamAwards awards={teamData[0].awards}></TeamAwards>
+            }
           </Box>
         ) : (
           <Typography variant="h6" color="textSecondary" align="center">
