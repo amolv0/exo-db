@@ -4,18 +4,19 @@ import { CircularProgress } from '@mui/material';
 import { getSeasonNameFromId } from '../../SeasonEnum';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 
-interface TeamSkillsProps {
-  skills: number[];
+interface TeammatchesProps {
+  matches: number[];
 }
 
-const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
+const Teammatches: React.FC<TeammatchesProps> = ({ matches }) => {
+
   const [seasonMap, setSeasonMap] = useState<{ [key: number]: any[] }>({});
   const [selectedSeason, setSelectedSeason] = useState<number>(181);
   const [posts, setPosts] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
   const [groupsOf50, setGroupsOf50] = useState<number[][]>([]);
   const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
-  
+  console.log(matches);
   const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
     const groups: number[][] = [];
     for (let i = 0; i < arr.length; i += groupSize) {
@@ -23,23 +24,23 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
     }
     return groups;
   };
-
+  /*
   useEffect(() => {
-      if (skills) {
-          const groupedIds: number[][] = divideIntoGroups(skills, 50);
+      if (matches) {
+          const groupedIds: number[][] = divideIntoGroups(matches, 100);
           setGroupsOf50(groupedIds); 
           setIsFirstUseEffectDone(true);
       }
-  }, [skills]);
+  }, [matches]);
 
   useEffect(() => {
-    const fetchSkillsDetails = async () => {
-      if (skills && skills.length > 0) {
+    const fetchmatchesDetails = async () => {
+      if (matches && matches.length > 0) {
         try {
           setLoading(true);
           const allEvents: any[] = [];
           for (let i = 0; i < groupsOf50.length; i++) {
-              const response = await fetch('https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/skills/', {
+              const response = await fetch('https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/matches/', {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
@@ -71,15 +72,15 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
       }
     };
 
-    fetchSkillsDetails();
-  }, [skills, isFirstUseEffectDone]);
+    fetchmatchesDetails();
+  }, [matches, isFirstUseEffectDone]); */
 
   return (
     <div>
       {loading ? ( // Render loading indicator if loading state is true
         <CircularProgress style={{ margin: '20px' }} />
-      ) : posts ? (  // no skills :)
-        <div>No skills found</div>
+      ) : posts ? (  // no matches :)
+        <div>No matches found</div>
       ) : (
         <div className="text-black">
           <br />
@@ -94,19 +95,19 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
           </div>
           <br />
           <div>
-          {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((skills, index) => (
+          {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((matches, index) => (
                 <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                    <Link to={`/events/${skills.event_id}`}>
-                      {skills.event_name}
+                    <Link to={`/events/${matches.event_id}`}>
+                      {matches.event_name}
                     </Link>
                     <div> 
-                      Skills Score: {skills.score}
+                      matches Score: {matches.score}
                     </div>
                     <div>
-                      Skills Rank: {skills.rank}
+                      matches Rank: {matches.rank}
                     </div>
                     <div>
-                      Attempts: {skills.attempts}
+                      Attempts: {matches.attempts}
                     </div>
                 </div>
                 ))}
@@ -117,4 +118,4 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
   );
 };
 
-export default TeamSkills;
+export default Teammatches;
