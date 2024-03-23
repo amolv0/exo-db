@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -29,28 +29,49 @@ interface Rank {
     average_points: number;
 }
 
-interface Props {
+interface Division {
+    name: string;
     rankings: Rank[];
 }
 
-class RankingsComponent extends Component<Props> {
-    render() {
-        const { rankings } = this.props;
-        if (!rankings) {
-            return <div>Ranks not available</div>
-        }
-        const sortedRankings = [...rankings].sort((a, b) => a.rank - b.rank);
+interface Props {
+    divisions: Division[];
+}
 
-        const headerStyle = {
-            backgroundColor: '#595959', // Custom color for the header background
-            color: 'white', // Text color for the header
-        };
+const RankingsComponent: React.FC<Props> = ({ divisions }) => {
+    const [selectedDivisionIndex, setSelectedDivisionIndex] = useState(0);
+    const selectedDivision = divisions[selectedDivisionIndex];
 
-        const rowStyle = {
-            height: '36px', // Making rows thinner
-        };
+    const handleDivisionChange = (index: number) => {
+        setSelectedDivisionIndex(index);
+    };
 
-        return (
+    if (!selectedDivision) {
+        return <div>No division selected</div>;
+    }
+
+    const { rankings } = selectedDivision;
+    const sortedRankings = [...rankings].sort((a, b) => a.rank - b.rank);
+
+    const headerStyle = {
+        backgroundColor: '#595959',
+        color: 'white',
+    };
+
+    const rowStyle = {
+        height: '36px',
+    };
+
+    return (
+        <div>
+            <select value={selectedDivisionIndex} onChange={(e) => handleDivisionChange(Number(e.target.value))}>
+                {divisions.map((division, index) => (
+                    <option key={index} value={index}>
+                        {division.name}
+                    </option>
+                ))}
+            </select>
+
             <TableContainer component={Paper}>
                 <Table aria-label="simple table" size="small">
                     <TableHead style={headerStyle}>
@@ -89,8 +110,8 @@ class RankingsComponent extends Component<Props> {
                     </TableBody>
                 </Table>
             </TableContainer>
-        );
-    }
-}
+        </div>
+    );
+};
 
 export default RankingsComponent;
