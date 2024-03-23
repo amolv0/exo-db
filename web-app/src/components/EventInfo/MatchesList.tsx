@@ -1,9 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MatchBasic from '../EventLists/Helpers/MatchBasic';
-
-interface Division {
-  matches: Match[];
-}
 
 interface Match {
   scheduled: string;
@@ -30,12 +26,28 @@ interface TeamInfo {
   id: number;
 }
 
-const MatchesDisplay: React.FC<{ division: Division }> = ({ division }) => {
-  if (!division.matches || division.matches.length === 0) {
-    console.log("hi");
+interface Division {
+  name: string;
+  matches: Match[];
+}
+
+interface Props {
+  divisions: Division[];
+}
+
+const MatchesDisplay: React.FC<Props> = ({ divisions }) => {
+  console.log(divisions);
+  const [selectedDivisionIndex, setSelectedDivisionIndex] = useState(0);
+
+  const handleDivisionChange = (index: number) => {
+    setSelectedDivisionIndex(index);
+  };
+
+  if (!divisions[selectedDivisionIndex] || !divisions[selectedDivisionIndex].matches || divisions[selectedDivisionIndex].matches.length === 0) {
     return <p>No matches</p>;
   }
 
+  const division = divisions[selectedDivisionIndex];
   const customOrder = [1, 2, 6, 3, 4, 5];
 
   // Sort the matches according to the custom order
@@ -51,6 +63,14 @@ const MatchesDisplay: React.FC<{ division: Division }> = ({ division }) => {
 
   return (
     <div>
+      <select value={selectedDivisionIndex} onChange={(e) => handleDivisionChange(Number(e.target.value))}>
+        {divisions.map((division, index) => (
+          <option key={index} value={index}>
+            {division.name}
+          </option>
+        ))}
+      </select>
+
       {sortedMatches.map((match, index) => (
         <MatchBasic key={index} match={match} />
       ))}
