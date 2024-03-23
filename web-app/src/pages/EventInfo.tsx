@@ -82,8 +82,8 @@ const EventInfo: React.FC = () => {
             </Box>
             {activeElement === 'EventInfo' && <EventLocation location={eventData[0].location} season={eventData[0].season} program={eventData[0].program.code} awards={eventData[0].awards} />}
             {activeElement === 'TeamsList' && <TeamsList teams={eventData[0].teams} />}
-            {activeElement === 'Matches' && <MatchesList division={eventData[0].divisions[0]} />}
-            {activeElement === 'Rankings' && <EventRankings rankings={eventData[0].divisions[0].rankings} />}
+            {activeElement === 'Matches' && <MatchesList divisions={eventData[0].divisions} />}
+            {activeElement === 'Rankings' && <EventRankings divisions={eventData[0].divisions} />}
             {activeElement === 'Elims' && <EventElims division={eventData[0].divisions[0]} />}
             {activeElement === 'Skills' && <EventSkills skills={eventData[0].skills} />}
           </Box>
