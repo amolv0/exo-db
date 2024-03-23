@@ -23,26 +23,46 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
   const [champ, setChamps] = useState<number>(0);
   const [skills, setSkills] = useState<number>(0);
   const [exc, setExcs] = useState<number>(0);
+  const [groupsOf100, setGroupsOf100] = useState<number[][]>([]);
+  const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
+
+  const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
+    const groups: number[][] = [];
+    for (let i = 0; i < arr.length; i += groupSize) {
+        groups.push(arr.slice(i, i + groupSize));
+    }
+    return groups;
+};
+
+  useEffect(() => {
+      if (awards) {
+          const groupedIds: number[][] = divideIntoGroups(awards, 100);
+          setGroupsOf100(groupedIds); 
+          setIsFirstUseEffectDone(true);
+      }
+  }, [awards]);
 
   useEffect(() => {
     const fetchAwardDetails = async () => {
-      if (awards && awards.length > 0) {
+      if (awards && awards.length > 0 && isFirstUseEffectDone) {
         try {
           setLoading(true);
-          const response = await fetch('https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/awards/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(awards)
-          });
-          
-          if (response.ok) {
-            const data: AwardData[] = await response.json();
-            setAwardData(data);
-          } else {
-            console.error('Failed to fetch award details:', response.statusText);
+            for (let i = 0; i < groupsOf100.length; i++) {
+              const response = await fetch('https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/awards/', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(groupsOf100[i])
+              });
+              if (response.ok) {
+                const data: AwardData[] = await response.json();
+                awardData.push(...data);
+              } else {
+                console.error('Failed to fetch award details:', response.statusText);
+              }
           }
+
         } catch (error) {
           console.error('Error fetching award details:', error);
         } finally {
@@ -52,10 +72,10 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
     };
 
     fetchAwardDetails();
-  }, [awards]);
+  }, [awards,  isFirstUseEffectDone]);
 
   useEffect(() => {
-    if (awardData.length === 0) {
+    if (awardData.length === 0 || loading) {
       return;
     }
     if (awardData.length > 0) {
@@ -74,7 +94,6 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
 
     awardData.forEach(award => {
       if (award.title.includes("Tournament Champions")) {
-        console.log("hi");
         champ+=1;
       } else if (award.title.includes("Robot Skills Champion")) {
         skills+=1;
@@ -96,7 +115,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
     setSkills(skills);
     setSeasonMap(seasonMap)
     setPosts(false);
-  }, [awardData]);
+  }, [awardData, loading]);
 
   return (
     <div>
