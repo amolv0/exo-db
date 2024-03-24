@@ -6,12 +6,11 @@ import time
 dynamodb = boto3.resource('dynamodb')
 
 # Specify your table name
-table_name = 'team-data'
+table_name = 'event-data'
 table = dynamodb.Table(table_name)
 
 # Function to update items in batches
 def update_items():
-    # Start the scan operation
     scan_kwargs = {
         'ProjectionExpression': 'id, program',
         'FilterExpression': Attr('program').exists()
@@ -26,10 +25,12 @@ def update_items():
         items = response.get('Items', [])
 
         for item in items:
-            update_item(item)
-            print(f"Item ID {item['id']} updated successfully. {count} items updated")
-            count += 1
-            time.sleep(0.05)
+            if isinstance(item.get('program'), dict) and 'code' in item['program']:
+                # Proceed with update only if 'program' is a dictionary containing 'code'
+                updated = update_item(item)
+                if updated:
+                    print(f"Item ID {item['id']} updated successfully. Total updated: {count}")
+                    count += 1
 
         start_key = response.get('LastEvaluatedKey', None)
         done = start_key is None
@@ -53,7 +54,7 @@ def update_item(item):
 
     
 
-# item = table.get_item(Key={'id': 5226}).get('Item', None)
+# item = table.get_item(Key={'id': 51522}).get('Item', None)
 # update_item(item)
 
 # Update all items in the table
