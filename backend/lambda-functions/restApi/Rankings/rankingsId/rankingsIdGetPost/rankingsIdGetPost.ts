@@ -16,7 +16,7 @@ const headers = {
 interface LambdaEvent {
     httpMethod: string;
     pathParameters?: {
-        rankingId?: string; // It will come as a string through the path param, we convert to a number later
+        rankingsId?: string; // It will come as a string through the path param, we convert to a number later
     };
     body?: string;
 }
@@ -75,7 +75,7 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
 
     try {
         if(httpMethod === 'GET'){
-            const pathParam = event.pathParameters?.rankingId;
+            const pathParam = event.pathParameters?.rankingsId;
             if (pathParam) {
                 const rankingDetails = await getrankingDetails(pathParam);
                 return {
