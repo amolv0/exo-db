@@ -8,7 +8,7 @@ Resources:
       FunctionName: exodb-eventsGetFunc
       Handler: eventsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/f0621f6f59355073390117d7278aa73f
+      CodeUri: s3://exodblambdafunctions/827c49e8d4b2e2cffb559f85b5d27fdd
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventsGet
@@ -78,7 +78,7 @@ Resources:
       FunctionName: exodb-rankingsIdGetPostFunc
       Handler: rankingsIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/b8df9e34c4fb377ee2623cb7cfa820ad
+      CodeUri: s3://exodblambdafunctions/65a0768cb112e2a4d069b1fe47d756ac
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: rankingsIdGetPost
@@ -128,7 +128,7 @@ Resources:
       FunctionName: exodb-eloRankingsGet
       Handler: eloRankingsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/c7baef706339e896562cb24c9b935a31
+      CodeUri: s3://exodblambdafunctions/6e4cb0f4a5fc33130d381abcf8fd520c
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eloRankingsGet
@@ -138,7 +138,7 @@ Resources:
       FunctionName: exodb-tsRankingsGet
       Handler: tsRankingsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/46600f05561a8d0a6f9de2f369693f24
+      CodeUri: s3://exodblambdafunctions/5cd4b6e592ac495d7d6891fae667d82c
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: tsRankingsGet
@@ -168,7 +168,7 @@ Resources:
       FunctionName: exodb-updateTeamFromStream
       Handler: updateTeamFromStream.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/f1d9fd3e73638e3bd26d5568d89f820e
+      CodeUri: s3://exodblambdafunctions/37c62f22e68403aa117aa8dc4e7205a7
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateTeamFromStream
