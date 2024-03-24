@@ -43,7 +43,6 @@ def calculate_and_update_rankings(event_id):
     season = event_item['season']['id']
     divisions = event_item.get('divisions', [])
     for division in divisions:
-        
         if 'rankings' not in division or len(division['rankings']) < 1:
             return
         division_id = division['id']
@@ -60,6 +59,7 @@ def calculate_and_update_rankings(event_id):
                     teams.add(team_id)
                     team_numbers[team_id] = team['team']['name']
         n = len(teams)
+        print(teams)
         if n < 1:
             print(f"Found no matches with round==2 for event {event_id}")
             return
@@ -135,8 +135,8 @@ def calculate_and_update_rankings(event_id):
         # print(f"Updated event {event_id}, division {division_id}")
 
 
-# calculate_and_update_rankings(33912)
+calculate_and_update_rankings(53361)
     
 print("Starting process")
-process_rankings_for_all_events()
+# process_rankings_for_all_events()
 print("Process complete")
