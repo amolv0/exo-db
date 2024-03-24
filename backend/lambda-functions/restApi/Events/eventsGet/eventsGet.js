@@ -13,7 +13,7 @@ const headers = {
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 // Function to query ongoing events with optional program filtering and limit
-const getOngoingEvents = async (eventCode, eventLevel) => {
+const getOngoingEvents = async (eventCode, eventLevel, eventRegion) => {
     let accumulatedItems = [];
     let lastEvaluatedKey = undefined;
     do {
@@ -50,6 +50,14 @@ const getOngoingEvents = async (eventCode, eventLevel) => {
                 params.ExpressionAttributeValues[':level_value'] = eventLevel;
                 filterExpressions.push('#level = :level_value');
             }
+        }
+        if (eventRegion) {
+            params.ExpressionAttributeNames['#region'] = 'region';
+            params.ExpressionAttributeValues[':region_value'] = eventRegion;
+            filterExpressions.push('#region = :region_value');
+        }
+        if (filterExpressions.length > 0) {
+            params.FilterExpression = filterExpressions.join(' AND ');
         }
         const command = new lib_dynamodb_1.QueryCommand(params);
         const response = await docClient.send(command);
@@ -155,7 +163,6 @@ const getEventsByRegion = async (region, startDate, numberOfEvents = 10, eventCo
                 filterExpressions.push('#level = :level_value');
             }
         }
-        // Combine all filter expressions
         if (filterExpressions.length > 0) {
             params.FilterExpression = filterExpressions.join(' AND ');
         }
@@ -198,7 +205,6 @@ const getEventsByCountry = async (regions, startDate, numberOfEvents = 10, event
             params.ExpressionAttributeValues[':program_value'] = eventCode;
             filterExpressions.push('#program = :program_value');
         }
-        // Constructing FilterExpression for eventLevel
         if (eventLevel) {
             params.ExpressionAttributeNames['#level'] = 'level';
             if (eventLevel === 'Regional') {
@@ -220,16 +226,12 @@ const getEventsByCountry = async (regions, startDate, numberOfEvents = 10, event
         if (!params.FilterExpression) {
             params.FilterExpression = '';
         }
-        // Construct the filter expression for regions
         if (regions && regions.length > 0) {
             const regionFilters = regions.map((region, index) => `#region${index} = :regionVal${index}`).join(' OR ');
-            // Check if there's already a condition in FilterExpression and append properly
             if (params.FilterExpression.length > 0) {
-                // Add an 'AND' if there's already something in FilterExpression
                 params.FilterExpression += ' AND ';
             }
             params.FilterExpression += `(${regionFilters})`;
-            // Add each region to the expression attributes
             regions.forEach((region, index) => {
                 params.ExpressionAttributeNames[`#region${index}`] = 'region';
                 params.ExpressionAttributeValues[`:regionVal${index}`] = region;
@@ -449,7 +451,7 @@ const handler = async (event) => {
     const eventCode = event.queryStringParameters?.program;
     const eventRegion = event.queryStringParameters?.region;
     const eventLevel = event.queryStringParameters?.level;
-    const allowedParams = ['numberOfEvents', 'start_before', 'start_after', 'status', 'program', 'region', 'level'];
+    const allowedParams = ['numberOfEvents', 'start_before', 'start_after', 'status', 'program', 'region', 'level', 'grade'];
     const queryParams = Object.keys(event.queryStringParameters || {});
     const invalidParams = queryParams.filter(param => !allowedParams.includes(param));
     if (invalidParams.length > 0) {
@@ -497,7 +499,7 @@ const handler = async (event) => {
     try {
         let id_array = [];
         if (isOngoingQuery) {
-            id_array = await getOngoingEvents(eventCode, eventLevel);
+            id_array = await getOngoingEvents(eventCode, eventLevel, eventRegion);
         }
         else if (eventRegion) {
             const regions = await determineRegions(eventRegion);
