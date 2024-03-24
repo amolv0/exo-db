@@ -6,7 +6,7 @@ dynamodb = boto3.resource('dynamodb')
 elo_table = dynamodb.Table('elo-rankings')
 team_table = dynamodb.Table('team-data')
 
-SEASON = 181
+SEASON = 93
 
 def update_team_rankings(season):
     rank_counter = 1
