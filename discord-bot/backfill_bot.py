@@ -58,10 +58,10 @@ async def process_message(message):
             team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.author.name))
             print(f"Embed author name: {embed.author.name}")
     print(f"Urls: {urls}")
-    print(f"Team names: {team_names_set}")
     
     message_date = message.created_at.strftime('%Y-%m-%dT%H:%M:%S')
     team_names = list(team_names_set)
+    print(f"Team names: {team_names_set}")
     if urls and team_names:
         for team_name in team_names:
             msg_body = {
