@@ -1,10 +1,11 @@
+import decimal
 import boto3
 from decimal import Decimal
 from boto3.dynamodb.conditions import Key, Attr
 
 # Constants
 DEFAULT_ELO = 1000
-SEASON_ID = 181
+SEASON_ID = 180
 
 dynamodb = boto3.resource('dynamodb')
 events_table = dynamodb.Table('event-data')
@@ -37,10 +38,10 @@ def fetch_events():
     print("Scanning events")
 
     # Correct the date range for the query
-    # KeyConditionExpression=Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').gte('2023-06-01T00:00:00-05:00'),
-    start_date = '2023-04-05T09:30:00-04:00'  # Start of the range
-    end_date = '2024-04-05T09:30:00-04:00'    # End of the range
 
+    start_date = '2023-04-05T09:30:00-04:00'
+    end_date = '2024-04-05T09:30:00-04:00'
+    
     while True:
         page += 1
         print(f"Scanned page {page}")
@@ -48,7 +49,7 @@ def fetch_events():
         query_kwargs = {
             'IndexName': 'EventsByStartDateGSI',
             'KeyConditionExpression': Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').between(start_date, end_date),
-            'FilterExpression': Attr('program').is_in(['VRC'])
+            'FilterExpression': Attr('program').is_in(['VIQRC'])
         }
 
         if last_evaluated_key:
@@ -100,7 +101,16 @@ def update_team_elo_and_metrics(team_metrics, team_id, winning_team_ids, losing_
         updated_elo = update_elo_for_draw(team_metrics[team_id]['elo'], opponent_avg_elo, k_factor)
         team_metrics[team_id]['elo'] = updated_elo
 
-            
+def safe_decimal_conversion(value, default=Decimal(0)):
+    """
+    Attempts to convert a given value to Decimal.
+    Returns a default if the conversion is not possible.
+    """
+    try:
+        return Decimal(str(value))
+    except decimal.InvalidOperation:
+        return default
+           
 def process_events():
     event_ids = fetch_events()
     team_metrics = {}  # Stores wins, losses, ties, avg_ccwm, high_score, and elo
@@ -122,8 +132,8 @@ def process_events():
             # Initialize or update team metrics based on division rankings
             for ranking in division['rankings']:
                 team_id = int(ranking['team']['id'])
-                ccwm = ranking.get('ccwm', 0)
-                high_score = ranking.get('high_score', 0)
+                ccwm = safe_decimal_conversion(ranking.get('ccwm'), Decimal(0))
+                high_score = safe_decimal_conversion(ranking.get('high_score'), Decimal(0))
                 
                 if team_id not in team_metrics:
                     team_metrics[team_id] = {
@@ -134,8 +144,9 @@ def process_events():
                     }
                 else:
                     team_metrics[team_id]['ccwms'].append(ccwm)
-                    team_metrics[team_id]['high_score'] = max(team_metrics[team_id]['high_score'], high_score)
                     team_metrics[team_id]['events'] += 1
+                    # Safely handle 'high_score' updates, ensuring no None values are compared
+                    team_metrics[team_id]['high_score'] = max(team_metrics[team_id].get('high_score', Decimal(0)), high_score)
             
             # Process match outcomes for ELO calculations and win/loss/tie records
             for match in division['matches']:
