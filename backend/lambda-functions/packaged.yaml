@@ -118,7 +118,7 @@ Resources:
       FunctionName: exodb-skillsRankingGetFunc
       Handler: skillsRankingGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/6c601365ec11da1cfd014d8b72384000
+      CodeUri: s3://exodblambdafunctions/eb6b3e3514d96955dae6a9bb1c6f4ff1
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: skillsRankingGet
@@ -128,7 +128,7 @@ Resources:
       FunctionName: exodb-eloRankingsGet
       Handler: eloRankingsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/6e4cb0f4a5fc33130d381abcf8fd520c
+      CodeUri: s3://exodblambdafunctions/435f2054fc54e1c7c80f6b037c928125
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eloRankingsGet
@@ -138,7 +138,7 @@ Resources:
       FunctionName: exodb-tsRankingsGet
       Handler: tsRankingsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/5cd4b6e592ac495d7d6891fae667d82c
+      CodeUri: s3://exodblambdafunctions/6f5a506b0976f223e2251df1486fb2e8
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: tsRankingsGet
