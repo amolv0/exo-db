@@ -1,3 +1,4 @@
+import decimal
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 from decimal import Decimal
@@ -5,7 +6,7 @@ import trueskill
 from collections import defaultdict
 
 # Constants
-SEASON_ID = 181
+SEASON_ID = 180
 
 # Initialize TrueSkill environment
 env = trueskill.TrueSkill(draw_probability=0.01)  # Adjust draw_probability as needed
@@ -22,9 +23,8 @@ def fetch_events():
     last_evaluated_key = None
     page = 0
     print("Scanning events")
-
     start_date = '2023-04-05T09:30:00-04:00'
-    end_date = '2024-04-01T23:59:00-05:00'
+    end_date = '2024-04-05T09:30:00-04:00'
     
     while True:
         page += 1
@@ -33,7 +33,7 @@ def fetch_events():
         query_kwargs = {
             'IndexName': 'EventsByStartDateGSI',
             'KeyConditionExpression': Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').between(start_date, end_date),
-            'FilterExpression': Attr('program').is_in(['VRC'])
+            'FilterExpression': Attr('program').is_in(['VIQRC'])
         }
 
         if last_evaluated_key:
@@ -70,6 +70,16 @@ def process_events():
         for match in division['matches']:
             winning_team_ids, losing_team_ids, draw_team_ids = determine_match_outcome(match)
             update_trueskill_ratings(winning_team_ids, losing_team_ids, draw_team_ids)
+
+def safe_decimal_conversion(value, default=Decimal(0)):
+    """
+    Attempts to convert a given value to Decimal.
+    Returns a default if the conversion is not possible.
+    """
+    try:
+        return Decimal(str(value))
+    except decimal.InvalidOperation:
+        return default
             
 def process_event(event_id):
     event_details = fetch_event_details(event_id)
@@ -83,11 +93,14 @@ def process_event(event_id):
         for match in division['matches']:
             winning_team_ids, losing_team_ids, draw_team_ids = determine_match_outcome(match)
             update_trueskill_ratings(winning_team_ids, losing_team_ids, draw_team_ids)
+        if 'rankings' not in division: 
+            continue
         for ranking in division['rankings']:
             team_id = int(ranking['team']['id'])
-            ccwm = ranking.get('ccwm', 0)
-            high_score = ranking.get('high_score', 0)
-            events = ranking.get('events', 0)
+            # Use the safe conversion function to handle problematic values
+            ccwm = safe_decimal_conversion(ranking.get('ccwm'), Decimal(0))
+            high_score = safe_decimal_conversion(ranking.get('high_score'), Decimal(0))
+            events = ranking.get('events', 0)  # Assuming events is always an integer or has a default integer value
             
             if team_id not in team_metrics:
                 team_metrics[team_id] = {
@@ -97,16 +110,13 @@ def process_event(event_id):
                     'events': events,
                     'ccwms': [ccwm], 
                     'high_score': high_score,
-                    'events': 1,
-                    'rating': env.create_rating(),  # Initialize TrueSkill rating if using TrueSkill
+                    'rating': env.create_rating(),
                 }
             else:
                 team_metrics[team_id]['ccwms'].append(ccwm)
                 team_metrics[team_id]['events'] += 1
-                if 'high_score' in team_metrics[team_id]:
-                    team_metrics[team_id]['high_score'] = max(team_metrics[team_id]['high_score'], high_score)
-                else:
-                    team_metrics[team_id]['high_score'] = high_score
+                # Safely handle 'high_score' updates, ensuring no None values are compared
+                team_metrics[team_id]['high_score'] = max(team_metrics[team_id].get('high_score', Decimal(0)), high_score)
 
 def fetch_event_details(event_id):
     try:
