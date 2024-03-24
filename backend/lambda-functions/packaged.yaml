@@ -8,7 +8,7 @@ Resources:
       FunctionName: exodb-eventsGetFunc
       Handler: eventsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/827c49e8d4b2e2cffb559f85b5d27fdd
+      CodeUri: s3://exodblambdafunctions/7a74ab85b861861c4e758ecacf45fcba
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventsGet
@@ -98,7 +98,7 @@ Resources:
       FunctionName: exodb-searchGetFunc
       Handler: searchGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/d98fe9f5533dd9a68f24bfb2fa20a4e6
+      CodeUri: s3://exodblambdafunctions/ddb3f55838ad08abbdcd3905d80cecb6
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: searchGet
