@@ -55,12 +55,50 @@ def remove_match(match, event_id):
             match_id = match['id']
             remove_match_from_team_data(team_id, match_id)
             
+            
+def update_ts_elo_with_ranking(season, ranking):
+    team_id = ranking['team']['id']
+    new_ccwm = ranking['ccwm']  # Assuming 'ccwm' is directly accessible within 'ranking'
+    partition_key = f"{season}-{team_id}"
+    
+    # Define the tables to update
+    tables = [elo_data_table, trueskill_data_table]
+    
+    for table in tables:
+        # First, retrieve the current 'ccwms' and 'events' for the given team and season
+        response = table.get_item(Key={'season-team': partition_key})
+        if 'Item' in response:
+            item = response['Item']
+            ccwms = item.get('ccwms', [])
+            events = item.get('events', 1)  # Default to 1 to avoid division by zero
+            
+            if ccwms:
+                # Replace the last 'ccwm' with the new one
+                ccwms[-1] = new_ccwm
+                # Recalculate 'avg_ccwm'
+                avg_ccwm = sum(ccwms) / events
+                
+                # Update the item
+                update_response = table.update_item(
+                    Key={'season-team': partition_key},
+                    UpdateExpression='SET ccwms = :ccwms, avg_ccwm = :avg_ccwm',
+                    ExpressionAttributeValues={
+                        ':ccwms': ccwms,
+                        ':avg_ccwm': avg_ccwm,
+                    },
+                    ReturnValues='UPDATED_NEW'
+                )
+                print(f"Updated {table.name} for team ID {team_id} and season {season}.")
+            else:
+                print(f"No 'ccwms' found for team ID {team_id} and season {season} in table {table.name}.")
+        else:
+            print(f"No item found for team ID {team_id} and season {season} in table {table.name}.")    
+    
 def update_ts_data_with_match(match, season):
     if season is not None:
         teams = extract_teams_from_match(match)
         team_ids = [team['team']['id'] for team in teams]
         team_ratings = {team_id: get_team_trueskill(team_id, season) for team_id in team_ids}
-        
         winning_team_ids, losing_team_ids, draw_team_ids, skip_match = determine_match_outcome_ts(match)
         
         if skip_match:
@@ -94,32 +132,38 @@ def update_ts_data_with_match(match, season):
         
         for team_id, mu, sigma in updates:
             partition_key = f"{season}-{team_id}"
+            
+            result_type = ""
+            if team_id in winning_team_ids:
+                result_type = "wins"
+            elif team_id in losing_team_ids:
+                result_type = "losses"
+            elif team_id in draw_team_ids:
+                result_type = "ties"
+                
             try:
-                # Step 1: Attempt to update the item
+                # Attempt to update the item with mu, sigma, and the specific win/loss/tie increment
+                update_expression = "SET mu = :mu, sigma = :sigma, #resultType = if_not_exists(#resultType, :start) + :inc"
+                expression_attribute_values = {":mu": Decimal(str(mu)), ":sigma": Decimal(str(sigma)), ":start": 0, ":inc": 1}
+                expression_attribute_names = {"#seasonTeam": "season-team", "#resultType": result_type}
+                
                 trueskill_data_table.update_item(
                     Key={'season-team': partition_key},
-                    UpdateExpression="SET mu = :mu, sigma = :sigma",
-                    ExpressionAttributeValues={
-                        ":mu": Decimal(str(mu)),
-                        ":sigma": Decimal(str(sigma))
-                    },
-                    ExpressionAttributeNames={
-                        "#seasonTeam": "season-team", 
-                    },
-                    ConditionExpression="attribute_exists(#seasonTeam)" 
+                    UpdateExpression=update_expression,
+                    ExpressionAttributeValues=expression_attribute_values,
+                    ExpressionAttributeNames=expression_attribute_names,
+                    ConditionExpression="attribute_exists(#seasonTeam)"
                 )
             except trueskill_data_table.meta.client.exceptions.ConditionalCheckFailedException:
-                # Step 2: Item does not exist, so fetch region and create the item
-                team_data = team_data_table.get_item(
-                    Key={'id': team_id}
-                ).get('Item', {})
+                # If the item does not exist, fetch region and other team data to create the item
+                team_data = team_data_table.get_item(Key={'id': team_id}).get('Item', {})
                 
                 region = team_data.get('region', 'Unknown')
                 team_number = team_data.get('number', 'Unknown')
                 team_name = team_data.get('team_name', 'Unknown')
                 team_org = team_data.get('organization', 'Unknown')
                 
-                # Step 3: Create the item with necessary attributes including region
+                # Create the item with all necessary attributes including region, and initial win/loss/tie count
                 trueskill_data_table.put_item(
                     Item={
                         'season-team': partition_key,
@@ -130,7 +174,8 @@ def update_ts_data_with_match(match, season):
                         'team_name': team_name,
                         'team_org': team_org,
                         'season': season,
-                        'region': region
+                        'region': region,
+                        result_type: Decimal(1)  # Initialize the specific result type to 1
                     }
                 )
             
@@ -161,88 +206,85 @@ def update_team_trueskill(team_id, mu, sigma, season):
             logging.error(f"Error initializing teamskill for team {team_id}: {e}")
             
 def get_team_trueskill(team_id, season):
+    # Initialize default values
+    default_rating = env.create_rating()
+    default_metrics = {'wins': 0, 'losses': 0, 'ties': 0, 'events': 0, 'avg_ccwm': 0.0}
+
     try:
-        response = team_data_table.get_item(
-            Key={'id': team_id},
-            ProjectionExpression=f"teamskill.#season",
-            ExpressionAttributeNames={'#season': str(season)}
+        response = trueskill_data_table.get_item(
+            Key={'season-team': f"{season}-{team_id}"}
         )
-        if 'Item' in response and str(season) in response['Item'].get('teamskill', {}):
-            ts_data = response['Item']['teamskill'][str(season)]
-            return env.create_rating(mu=float(ts_data['mu']), sigma=float(ts_data['sigma']))
+        if 'Item' in response:
+            item = response['Item']
+            mu = float(item.get('mu', default_rating.mu))
+            sigma = float(item.get('sigma', default_rating.sigma))
+            wins = int(item.get('wins', default_metrics['wins']))
+            losses = int(item.get('losses', default_metrics['losses']))
+            ties = int(item.get('ties', default_metrics['ties']))
+            events = int(item.get('events', default_metrics['events']))
+            avg_ccwm = float(item.get('avg_ccwm', default_metrics['avg_ccwm']))
+
+            rating = env.create_rating(mu=mu, sigma=sigma)
+            return rating, wins, losses, ties, events, avg_ccwm
         else:
-            return env.create_rating()
+            return default_rating, default_metrics['wins'], default_metrics['losses'], default_metrics['ties'], default_metrics['events'], default_metrics['avg_ccwm']
     except Exception as e:
-        print(f"Error fetching TrueSkill for team {team_id}: {e}")
-        return env.create_rating()
+        print(f"Error fetching TrueSkill and metrics for team {team_id}: {e}")
+        return default_rating, default_metrics['wins'], default_metrics['losses'], default_metrics['ties'], default_metrics['events'], default_metrics['avg_ccwm']
     
         
 def update_elo_data_with_match(match, season):
-    if season is not None:
-        winning_team_ids, losing_team_ids, skip_match = determine_match_outcome_elo(match)
+    if season is None:
+        logging.info("No season specified, skipping ELO update.")
+        return
+
+    # Determine match outcome
+    winning_team_ids, losing_team_ids, skip_match = determine_match_outcome_elo(match)
+
+    if skip_match:
+        logging.info(f"Match {match['id']} not yet scored, not adjusting ELO.")
+        return
+
+    # No further processing if no teams have won or lost (e.g., match not played)
+    if len(winning_team_ids) == 0 or len(losing_team_ids) == 0:
+        return
+
+    # Fetch current ELO ratings for all teams involved in the match
+    team_elos = {team_id: get_team_elo(team_id, season) for team_id in winning_team_ids + losing_team_ids}
+    
+    # Calculate new ELO ratings based on match outcome
+    updates = {}
+    for team_id in winning_team_ids + losing_team_ids:
+        if team_id in winning_team_ids:
+            result_type = "wins"
+        elif team_id in losing_team_ids:
+            result_type = "losses"
+        else:
+            continue  # Skip if team ID is neither in winning nor losing team IDs
         
-        if skip_match:
-            logging.info(f"match {match['id']} not yet scored, not adjusting elo")
-            return
-        if not (len(winning_team_ids) == 0 or len(losing_team_ids) == 0):
-            # Fetch current ELO ratings for all teams involved in the match
-            team_elos = {team_id: get_team_elo(team_id, season) for team_id in winning_team_ids + losing_team_ids}
-            
-            updates = {}
-            
-            # Calculate and update new ELO ratings individually for each team based on match outcome
-            for team_id in winning_team_ids:
-                avg_lose_elo = sum(team_elos[team_id] for team_id in losing_team_ids) / len(losing_team_ids)
-                new_elo, _ = update_elo(team_elos[team_id], avg_lose_elo)
-                logging.error(f"updating elo for {team_id}, match {match['id']}")
-                update_team_elo(team_id, new_elo, season)
-                updates[team_id] = new_elo
+        current_elo = team_elos[team_id]
+        opponent_team_ids = losing_team_ids if team_id in winning_team_ids else winning_team_ids
+        avg_opponent_elo = sum(team_elos[op_id] for op_id in opponent_team_ids) / len(opponent_team_ids)
+        new_elo, _ = update_elo(current_elo, avg_opponent_elo) if team_id in winning_team_ids else update_elo(avg_opponent_elo, current_elo)
+        updates[team_id] = (new_elo, result_type)
 
-            for team_id in losing_team_ids:
-                avg_win_elo = sum(team_elos[team_id] for team_id in winning_team_ids) / len(winning_team_ids)
-                _, new_elo = update_elo(avg_win_elo, team_elos[team_id])
-                logging.error(f"updating elo for {team_id}, match {match['id']}")
-                update_team_elo(team_id, new_elo, season)
-                updates[team_id] = new_elo
+    # Update team ELO and win/loss/tie records in DynamoDB
+    for team_id, (elo, result_type) in updates.items():
+        partition_key = f"{season}-{team_id}"
+        update_expression = f"SET elo = :elo, {result_type} = if_not_exists({result_type}, :start) + :inc"
+        expression_attribute_values = {":elo": Decimal(str(elo)), ":start": 0, ":inc": 1}
 
-            batch_write_elo_updates(updates, season)
-            
-def batch_write_elo_updates(team_elos, season_id):
-    for team_id, elo in team_elos.items():
-        partition_key = f"{season_id}-{team_id}"
         try:
-            # Attempt to update the item with a conditional expression to ensure it exists
             elo_data_table.update_item(
                 Key={'season-team': partition_key},
-                UpdateExpression="SET elo = :elo",
-                ExpressionAttributeValues={":elo": Decimal(str(elo))},
-                ExpressionAttributeNames={
-                    "#seasonTeam": "season-team",  # Placeholder for the attribute name
-                },
-                ConditionExpression="attribute_exists(#seasonTeam)"
+                UpdateExpression=update_expression,
+                ExpressionAttributeValues=expression_attribute_values
             )
-        except elo_data_table.meta.client.exceptions.ConditionalCheckFailedException:
-            # If the item does not exist, fetch the region for the team and create the item
-            team_data = team_data_table.get_item(Key={'id': team_id}).get('Item', {})
-            region = team_data.get('region', 'Unknown')
-            team_number = team_data.get('number', 'Unknown')
-            team_name = team_data.get('team_name', 'Unknown')
-            team_org = team_data.get('organization', 'Unknown')        
-            
-            # Create the item with elo, region, and any other necessary attributes
-            elo_data_table.put_item(
-                Item={
-                    'season-team': partition_key,
-                    'elo': Decimal(str(elo)),
-                    'team_id': team_id,
-                    'team_number': team_number,
-                    'team_name': team_name,
-                    'team_org': team_org,
-                    'season': season_id,
-                    'region': region
-                }
-            )
-    logging.info(f"Individually processed ELO updates for {len(team_elos)} teams for season {season_id}.")
+            logging.info(f"Updated ELO for team {team_id} ({result_type}): {elo}")
+        except Exception as e:
+            logging.error(f"Error updating ELO for team {team_id}: {e}")
+
+    logging.info("ELO ratings and match outcomes updated.")
    
 def expected_score(rating_a, rating_b):
     return 1 / (1 + 10 ** ((rating_b - rating_a) / 400))
@@ -563,9 +605,10 @@ def find_updated_skills(old_skills, new_skills):
     logging.error(f"Found updated/new Skills")
     return updated_skills
 
-def update_team_events(team_id, event_data):
+def update_team_events(team_id, event_data, season_id):
     event_id = event_data['id']  # Assuming event_id is a number
 
+    # Update team data table
     response = team_data_table.update_item(
         Key={'id': int(team_id)},
         UpdateExpression='SET events = list_append(if_not_exists(events, :empty_list), :event_id)',
@@ -575,7 +618,42 @@ def update_team_events(team_id, event_data):
         },
         ReturnValues='UPDATED_NEW'
     )
+    partition_key = f"{season_id}-{team_id}"
+    
+    # Define the update expression for appending -1 to the 'ccwms' list
+    ccwms_update_expression = 'SET events = if_not_exists(events, :start) + :inc, ' \
+                              'ccwms = list_append(if_not_exists(ccwms, :empty_list), :ccwms_value)'
+
+    # Define the common expression attribute values for ELO and TS updates, including the new 'ccwms' update
+    common_expression_attribute_values = {
+        ':start': 0,
+        ':inc': 1,
+        ':empty_list': [],
+        ':ccwms_value': [-1],  # Appending -1 to the 'ccwms' list
+    }
+    
+    try:
+        elo_response = elo_data_table.update_item(
+            Key={'season-team': partition_key},
+            UpdateExpression=ccwms_update_expression,
+            ExpressionAttributeValues=common_expression_attribute_values,
+            ReturnValues='UPDATED_NEW'
+        )
+    except Exception as e:
+        logging.error(f"Error updating elo-data for team ID {team_id} for season {season_id}: {e}")
+        
+    try:
+        ts_response = trueskill_data_table.update_item(
+            Key={'season-team': partition_key},
+            UpdateExpression=ccwms_update_expression,
+            ExpressionAttributeValues=common_expression_attribute_values,
+            ReturnValues='UPDATED_NEW'
+        )
+    except Exception as e:
+        logging.error(f"Error updating trueskill-data for team ID {team_id} for season {season_id}: {e}")
+        
     logging.info(f"Updated team-data for team ID {team_id} with event ID {event_id}.")
+
 
 def remove_event_for_team(team_id, event_id):
     # Fetch the current team item
@@ -761,24 +839,25 @@ def handler(aws_event, context):
                 updated_rankings = find_updated_rankings(old_divisions, new_divisions)
                 updated_matches, removed_matches = find_match_differences(old_divisions, new_divisions)
                 logging.info(updated_matches)
+                # Process new/removed rankings within divisions
+                for updated_ranking in updated_rankings:
+                    division_id = updated_ranking['division_id']
+                    division_name = updated_ranking['division_name']
+                    update_ts_elo_with_ranking(season, updated_ranking)
+                    update_rankings_data(division_name, division_id, event_name, event_id, event_start, program, season, updated_ranking)
+                    update_team_data_with_ranking(updated_ranking['team']['id'], updated_ranking['id'])
 
                 # Process new/removed matches within divisions
                 for match in updated_matches:
                     division_id = match['division_id']
                     division_name = match['division_name']
-                    process_match(match, division_name, division_id, event_name, event_id, event_start, season)
+                    process_match(match, division_name, division_id, event_name, event_id, event_start, season, new_divisions[division_id])
                     
                 for match in removed_matches:
                     logging.info(f"Found removed matches: {removed_matches}")
                     remove_match(match, event_id)
                 
 
-                # Process new/removed rankings within divisions
-                for updated_ranking in updated_rankings:
-                    division_id = updated_ranking['division_id']
-                    division_name = updated_ranking['division_name']
-                    update_rankings_data(division_name, division_id, event_name, event_id, event_start, program, season, updated_ranking)
-                    update_team_data_with_ranking(updated_ranking['team']['id'], updated_ranking['id'])
 
             if 'awards' in new_image and 'awards' in old_image:
                 updated_awards = find_updated_awards(old_image['awards'], new_image['awards'])
@@ -794,7 +873,7 @@ def handler(aws_event, context):
                 new_teams = find_new_teams(old_image['teams'], new_image['teams'])
                 event_data = new_image  # Using the entire new_image as event data for simplicity
                 for team_id in new_teams:
-                    update_team_events(team_id, event_data)
+                    update_team_events(team_id, event_data, season)
                 # Process removed teams
                 removed_teams = find_removed_teams(old_image['teams'], new_image['teams'])
                 event_id = new_image.get('id')

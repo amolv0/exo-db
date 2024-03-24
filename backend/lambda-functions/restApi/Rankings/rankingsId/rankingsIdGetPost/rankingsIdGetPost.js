@@ -58,7 +58,7 @@ const handler = async (event) => {
     const httpMethod = event.httpMethod;
     try {
         if (httpMethod === 'GET') {
-            const pathParam = event.pathParameters?.rankingId;
+            const pathParam = event.pathParameters?.rankingsId;
             if (pathParam) {
                 const rankingDetails = await getrankingDetails(pathParam);
                 return {
