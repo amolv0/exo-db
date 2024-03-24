@@ -30,7 +30,7 @@ interface LambdaResponse {
 }
 
 const fetchPage = async (season: number, desiredPage: number = 1, regions?: string[]) => {
-    const pageSize = 50;
+    const pageSize = 25;
     // Increase the fetch limit if a region filter is applied to account for filtered items
     const fetchLimit = regions ? pageSize * 5 : pageSize;
     let ExclusiveStartKey: any = undefined;
