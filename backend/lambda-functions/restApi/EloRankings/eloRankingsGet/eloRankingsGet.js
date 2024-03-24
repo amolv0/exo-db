@@ -13,7 +13,7 @@ const headers = {
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 const fetchPage = async (season, desiredPage = 1, regions) => {
-    const pageSize = 50;
+    const pageSize = 25;
     // Increase the fetch limit if a region filter is applied to account for filtered items
     const fetchLimit = regions ? pageSize * 5 : pageSize;
     let ExclusiveStartKey = undefined;
@@ -33,9 +33,7 @@ const fetchPage = async (season, desiredPage = 1, regions) => {
         // Construct the filter expression for regions
         const regionFilters = regions.map((_, index) => `#region${index} = :region${index}`).join(' OR ');
         baseParams.FilterExpression = `(${regionFilters})`;
-        // Ensure ExpressionAttributeNames is initialized
         baseParams.ExpressionAttributeNames = {};
-        // Add each region to the expression attributes
         regions.forEach((region, index) => {
             baseParams.ExpressionAttributeNames[`#region${index}`] = 'region';
             baseParams.ExpressionAttributeValues[`:region${index}`] = region;
@@ -75,6 +73,7 @@ const fetchPage = async (season, desiredPage = 1, regions) => {
     console.log("Length:", results.length);
     return results;
 };
+// We should consider making this an external function that is importable
 const determineRegions = async (input) => {
     const regions = {
         // Detailed regions for specific countries
