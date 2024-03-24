@@ -10,29 +10,29 @@ table = dynamodb.Table('last-page-data')
 
 seasons = [181, 182, 173, 175, 154, 156, 139, 140, 130, 131, 125, 126, 119, 120, 115, 116, 110, 111, 102, 103]
 
-# regions = [
-#     "Maine", "Washington", "Zhejiang", "Bahrain", "Kentucky", "San Luis Potosí", "Fujian", "Donegal", "Virginia", "Nevada",
-#     "Panama", "Connecticut", "Türkiye", "Vietnam", "Idaho", "Macau", "Louisiana", "Ghana", "Montana", "Baden-Württemberg",
-#     "Jalisco", "Chile", "Japan", "Egypt", "Quebec", "Ethiopia", "Hebei", "Taiwan", "Russia", "Michigan", "Tamaulipas",
-#     "Indonesia", "Alaska", "Tunisia", "Georgia", "Hidalgo", "Basel-Stadt", "Illinois", "North Carolina", "Saudi Arabia",
-#     "Guanajuato", "Michoacán", "Berlin", "Durango", "Azerbaijan", "Shandong", "Oregon", "Jiangsu", "Jiangxi", "Delaware",
-#     "Tabasco", "North Dakota", "Australia", "South Dakota", "Henan", "Brazil", "Maryland", "Arkansas", "Veracruz",
-#     "Chihuahua", "Andorra", "District of Columbia", "Mexico City", "Hamburg", "New York", "Gansu", "Kuwait", "Tennessee",
-#     "South Carolina", "Iowa", "New Jersey", "United States", "Hawaii", "Philippines", "Alberta", "Tianjin", "West Virginia",
-#     "Barcelona", "British Columbia", "France", "Basel-Landschaft", "Coahuila", "Korea, Republic of", "Nebraska", "United Arab Emirates",
-#     "Wisconsin", "Aargau", "Aguascalientes", "United Kingdom", "Rhode Island", "California", "Pennsylvania", "Mississippi",
-#     "Luxembourg", "Florida", "Rhône", "Beijing", "Nuevo León", "Guangdong", "Alabama", "Massachusetts", "Kazakhstan", "Vermont",
-#     "Morelos", "Colorado", "Finland", "Nordrhein-Westfalen", "Oman", "Jilin", "Saskatchewan", "Ohio", "Indiana", "Switzerland",
-#     "Limerick", "Utah", "Canada", "Minnesota", "Sichuan", "Kansas", "Girona", "Paraguay", "Ontario", "Shaanxi", "Manitoba",
-#     "Oklahoma", "Singapore", "Shanghai", "Thailand", "Ireland", "Madrid", "Cork", "Quintana Roo", "Spain", "Niedersachsen",
-#     "China", "Lebanon", "Slovakia", "Yucatán", "New Mexico", "New Hampshire", "New Zealand", "Guizhou", "Morocco", "Malaysia",
-#     "Tlaxcala", "Guipuzcoa", "Mexico State", "Chiapas", "Jordan", "Hong Kong", "Texas", "Baja California", "Vizcaya", "Offaly",
-#     "Rheinland-Pfalz", "Belgium", "Arizona", "Puerto Rico", "Colombia", "Wyoming", "Qatar", "Germany", "Hainan", "Missouri", "Mexico", ""
-# ]
-
 regions = [
-    "China", "United States", "Spain", "Germany", "Ireland", "Switzerland", "Canada", "Mexico"
+    "Maine", "Washington", "Zhejiang", "Bahrain", "Kentucky", "San Luis Potosí", "Fujian", "Donegal", "Virginia", "Nevada",
+    "Panama", "Connecticut", "Türkiye", "Vietnam", "Idaho", "Macau", "Louisiana", "Ghana", "Montana", "Baden-Württemberg",
+    "Jalisco", "Chile", "Japan", "Egypt", "Quebec", "Ethiopia", "Hebei", "Taiwan", "Russia", "Michigan", "Tamaulipas",
+    "Indonesia", "Alaska", "Tunisia", "Georgia", "Hidalgo", "Basel-Stadt", "Illinois", "North Carolina", "Saudi Arabia",
+    "Guanajuato", "Michoacán", "Berlin", "Durango", "Azerbaijan", "Shandong", "Oregon", "Jiangsu", "Jiangxi", "Delaware",
+    "Tabasco", "North Dakota", "Australia", "South Dakota", "Henan", "Brazil", "Maryland", "Arkansas", "Veracruz",
+    "Chihuahua", "Andorra", "District of Columbia", "Mexico City", "Hamburg", "New York", "Gansu", "Kuwait", "Tennessee",
+    "South Carolina", "Iowa", "New Jersey", "United States", "Hawaii", "Philippines", "Alberta", "Tianjin", "West Virginia",
+    "Barcelona", "British Columbia", "France", "Basel-Landschaft", "Coahuila", "Korea, Republic of", "Nebraska", "United Arab Emirates",
+    "Wisconsin", "Aargau", "Aguascalientes", "United Kingdom", "Rhode Island", "California", "Pennsylvania", "Mississippi",
+    "Luxembourg", "Florida", "Rhône", "Beijing", "Nuevo León", "Guangdong", "Alabama", "Massachusetts", "Kazakhstan", "Vermont",
+    "Morelos", "Colorado", "Finland", "Nordrhein-Westfalen", "Oman", "Jilin", "Saskatchewan", "Ohio", "Indiana", "Switzerland",
+    "Limerick", "Utah", "Canada", "Minnesota", "Sichuan", "Kansas", "Girona", "Paraguay", "Ontario", "Shaanxi", "Manitoba",
+    "Oklahoma", "Singapore", "Shanghai", "Thailand", "Ireland", "Madrid", "Cork", "Quintana Roo", "Spain", "Niedersachsen",
+    "China", "Lebanon", "Slovakia", "Yucatán", "New Mexico", "New Hampshire", "New Zealand", "Guizhou", "Morocco", "Malaysia",
+    "Tlaxcala", "Guipuzcoa", "Mexico State", "Chiapas", "Jordan", "Hong Kong", "Texas", "Baja California", "Vizcaya", "Offaly",
+    "Rheinland-Pfalz", "Belgium", "Arizona", "Puerto Rico", "Colombia", "Wyoming", "Qatar", "Germany", "Hainan", "Missouri", "Mexico", ""
 ]
+
+# regions = [
+#     "China", "United States", "Spain", "Germany", "Ireland", "Switzerland", "Canada", "Mexico"
+# ]
 def find_last_valid_page(season, region):
     page = 1
     while True:
