@@ -159,7 +159,7 @@ const buildSeasonQuery = async (season: number, type: string, evaluateKey?: any,
 };
 
 const fetchPage = async (season: number, skills_type: string, desiredPage: number, grade?: string, region?: string[]) => {
-    const pageSize = 50;
+    const pageSize = 25;
     let items = [];
     let uniqueTeamIds = new Set();
     let lastEvaluatedKey = null;
