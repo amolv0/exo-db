@@ -19,7 +19,7 @@ const headers = {
 };
 
 // Function to query ongoing events with optional program filtering and limit
-const getOngoingEvents = async (eventCode?: string, eventLevel?: string): Promise<number[]> => {
+const getOngoingEvents = async (eventCode?: string, eventLevel?: string, eventGrade?: string): Promise<number[]> => {
     let accumulatedItems: number[] = [];
     let lastEvaluatedKey = undefined;
 
@@ -175,8 +175,6 @@ const getEventsByRegion = async (region: string, startDate?: string, numberOfEve
                 filterExpressions.push('#level = :level_value');
             }
         }
-
-        // Combine all filter expressions
         if (filterExpressions.length > 0) {
             params.FilterExpression = filterExpressions.join(' AND ');
         }
@@ -227,7 +225,6 @@ const getEventsByCountry = async (regions: string[], startDate?: string, numberO
             filterExpressions.push('#program = :program_value');
         }
 
-        // Constructing FilterExpression for eventLevel
         if (eventLevel) {
             params.ExpressionAttributeNames['#level'] = 'level';
             if (eventLevel === 'Regional') {
@@ -251,17 +248,13 @@ const getEventsByCountry = async (regions: string[], startDate?: string, numberO
             params.FilterExpression = '';
         }
         
-        // Construct the filter expression for regions
+
         if (regions && regions.length > 0) {
             const regionFilters = regions.map((region, index) => `#region${index} = :regionVal${index}`).join(' OR ');
-            // Check if there's already a condition in FilterExpression and append properly
             if (params.FilterExpression.length > 0) {
-                // Add an 'AND' if there's already something in FilterExpression
                 params.FilterExpression += ' AND ';
             }
             params.FilterExpression += `(${regionFilters})`;
-        
-            // Add each region to the expression attributes
             regions.forEach((region, index) => {
                 params.ExpressionAttributeNames[`#region${index}`] = 'region';
                 params.ExpressionAttributeValues[`:regionVal${index}`] = region;
@@ -493,7 +486,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     const eventRegion = event.queryStringParameters?.region;
     const eventLevel = event.queryStringParameters?.level;
 
-    const allowedParams = ['numberOfEvents', 'start_before', 'start_after', 'status', 'program', 'region', 'level'];
+    const allowedParams = ['numberOfEvents', 'start_before', 'start_after', 'status', 'program', 'region', 'level', 'grade'];
 
     const queryParams = Object.keys(event.queryStringParameters || {});
     const invalidParams = queryParams.filter(param => !allowedParams.includes(param));
@@ -543,6 +536,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
             body: JSON.stringify({ error: "Invalid 'level' parameter. Must be one of ['Regional', 'National', 'Signature', 'World']" })
         };
     }
+
     try {
         let id_array: number[] = [];
         if (isOngoingQuery) {
