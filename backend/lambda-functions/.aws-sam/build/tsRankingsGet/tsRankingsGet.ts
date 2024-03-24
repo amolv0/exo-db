@@ -52,11 +52,7 @@ const fetchPage = async (season: number, desiredPage: number = 1, regions?: stri
         // Construct the filter expression for regions
         const regionFilters = regions.map((_, index) => `#region${index} = :region${index}`).join(' OR ');
         baseParams.FilterExpression = `(${regionFilters})`;
-
-        // Ensure ExpressionAttributeNames is initialized
         baseParams.ExpressionAttributeNames = {};
-
-        // Add each region to the expression attributes
         regions.forEach((region, index) => {
             baseParams.ExpressionAttributeNames[`#region${index}`] = 'region';
             baseParams.ExpressionAttributeValues[`:region${index}`] = region;
