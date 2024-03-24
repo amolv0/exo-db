@@ -19,7 +19,7 @@ const headers = {
 };
 
 // Function to query ongoing events with optional program filtering and limit
-const getOngoingEvents = async (eventCode?: string, eventLevel?: string, eventGrade?: string): Promise<number[]> => {
+const getOngoingEvents = async (eventCode?: string, eventLevel?: string, eventRegion?: string): Promise<number[]> => {
     let accumulatedItems: number[] = [];
     let lastEvaluatedKey = undefined;
 
@@ -58,6 +58,16 @@ const getOngoingEvents = async (eventCode?: string, eventLevel?: string, eventGr
                 params.ExpressionAttributeValues[':level_value'] = eventLevel;
                 filterExpressions.push('#level = :level_value');
             }
+        }
+
+        if (eventRegion) {
+            params.ExpressionAttributeNames['#region'] = 'region';
+            params.ExpressionAttributeValues[':region_value'] = eventRegion;
+            filterExpressions.push('#region = :region_value');
+        }
+
+        if (filterExpressions.length > 0) {
+            params.FilterExpression = filterExpressions.join(' AND ');
         }
 
         const command = new QueryCommand(params);
@@ -540,7 +550,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     try {
         let id_array: number[] = [];
         if (isOngoingQuery) {
-            id_array = await getOngoingEvents(eventCode, eventLevel);
+            id_array = await getOngoingEvents(eventCode, eventLevel, eventRegion);
         } else if (eventRegion) {
             const regions = await determineRegions(eventRegion);
             if(regions.length > 1){
