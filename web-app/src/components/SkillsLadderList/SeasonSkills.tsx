@@ -32,15 +32,20 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
   const [lastPage, setLastPage] = useState<number>(1); // State to track the last page
   const [loading, setLoading] = useState<boolean>(true); // State to track loading
   const [error, setError] = useState<string | null>(null); // State to track error message
+  const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
 
-  const page = 50;
+  const page = 25;
 
   useEffect(() => {
     setCurrentPage(1); // Reset page number when season changes
-  }, [season]);
+    setIsFirstUseEffectDone(true);
+  }, [season, region, grade]);
   
   // Fetch skills ranking when currentPage changes
   useEffect(() => {
+    if(!isFirstUseEffectDone) {
+      return;
+    }
     if (getSeasonNameFromId(parseInt(season)).includes("VEXU")) {
       if (grade !== 'College') {
         return;
@@ -73,7 +78,7 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
       }
     };
     fetchSkillsRanking();
-  }, [season, grade, region, currentPage]);
+  }, [season, grade, region, currentPage, isFirstUseEffectDone]);
 
   useEffect(() => {
     // Define generateId function inside the useEffect hook
@@ -132,7 +137,7 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
       setCurrentPage(currentPage + 1);
     }
   };
-
+  console.log(currentPage);
   return (
   <div>
 
@@ -145,8 +150,8 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
         <div className="flex justify-between items-center mt-4">
           <div className = "tableTitle">{region} {getSeasonNameFromId(parseInt(season))} {grade} Skills</div>
           <div>
-            {(currentPage * page) - 49} - {Math.min(currentPage * page, skillsRanking.length + 
-              (currentPage * page) - 50)} of {Math.min(lastPage * page, skillsRanking.length + (lastPage * page) - 50)}
+            {(currentPage * page) - (page - 1)} - {Math.min(currentPage * page, skillsRanking.length + 
+              (currentPage * page) - (page))} of {Math.min(lastPage * page, skillsRanking.length + (lastPage * page) - (page))}
             <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
             <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
             <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
