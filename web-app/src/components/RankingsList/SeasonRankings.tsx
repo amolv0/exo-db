@@ -7,6 +7,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import '../../Stylesheets/rankingsTable.css';
 import { getSeasonNameFromId } from '../../SeasonEnum';
+import { Grade } from '@mui/icons-material';
 
 interface SeasonRankingItem {
     team_name: string;
@@ -27,11 +28,11 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
   const [lastPage, setLastPage] = useState<number>(1); // State to track the last page
   const [loading, setLoading] = useState<boolean>(true); // State to track loading
   const [error, setError] = useState<string | null>(null); // State to track error message
-  const page = 50;
+  const page = 25;
 
   useEffect(() => {
     setCurrentPage(1); // Reset page number when season changes
-  }, [season]);
+  }, [program, season, region]);
 
   useEffect(() => {
     if (getSeasonNameFromId(parseInt(season)).includes("VEXU")) {
@@ -138,8 +139,8 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
             {region} {getSeasonNameFromId(parseInt(season))} Skills
             </div>
             <div className = "page">
-              {(currentPage * page) - 49} - {Math.min(currentPage * page, seasonRanking.length + 
-                (currentPage * page) - 50)} of {Math.min(lastPage * page, seasonRanking.length + (lastPage * page) - 50)}
+              {(currentPage * page) - (page -1)} - {Math.min(currentPage * page, seasonRanking.length + 
+                (currentPage * page) - page)} of {Math.min(lastPage * page, seasonRanking.length + (lastPage * page) - (page))}
               <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
               <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
               <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
