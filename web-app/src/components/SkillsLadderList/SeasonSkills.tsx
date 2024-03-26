@@ -32,18 +32,49 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
   const [lastPage, setLastPage] = useState<number>(1); // State to track the last page
   const [loading, setLoading] = useState<boolean>(true); // State to track loading
   const [error, setError] = useState<string | null>(null); // State to track error message
-  const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
-
+  const [post, setPost] = useState<boolean>(true);
   const page = 25;
 
   useEffect(() => {
-    setCurrentPage(1); // Reset page number when season changes
-    setIsFirstUseEffectDone(true);
+    setCurrentPage(1);
+    setPost(false);
+    if (getSeasonNameFromId(parseInt(season)).includes("VEXU")) {
+      if (grade !== 'College') {
+        return;
+      }
+    } else {
+      if (grade === 'College') {
+        return ;
+      }
+    }
+    const fetchSkillsRanking = async () => {
+      try {
+        setLoading(true);
+        let apiUrl = `EXODB_API_GATEWAY_BASE_URL/dev/skillsranking?season=${season}&grade=${grade}&page=${1}`;
+        if (region) {
+          apiUrl += `&region=${region}`;
+        }
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          setError("Failed to find valid skills leaderboard");
+          throw new Error('Failed to fetch skills ranking');
+        }
+        const data = await response.json();
+        console.log(apiUrl);
+        setSkillsRanking(data);
+        setError(null);
+      } catch (error) {
+        setError("Failed to find valid skills leaderboard");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSkillsRanking();
   }, [season, region, grade]);
   
   // Fetch skills ranking when currentPage changes
   useEffect(() => {
-    if(!isFirstUseEffectDone) {
+    if (!post) {
       return;
     }
     if (getSeasonNameFromId(parseInt(season)).includes("VEXU")) {
@@ -77,8 +108,9 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
         setLoading(false);
       }
     };
+
     fetchSkillsRanking();
-  }, [season, grade, region, currentPage, isFirstUseEffectDone]);
+  }, [currentPage]);
 
   useEffect(() => {
     // Define generateId function inside the useEffect hook
@@ -119,25 +151,29 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
   };
 
   const handleFirstPage = () => {
+    setPost(true);
     setCurrentPage(1);
   };
 
   const handleLastPage = () => {
+    setPost(true);
     setCurrentPage(lastPage);
   };
 
   const handlePrevPage = () => {
+    setPost(true);
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
   const handleNextPage = () => {
+    setPost(true);
     if (currentPage >= 1 && currentPage < lastPage) {
       setCurrentPage(currentPage + 1);
     }
   };
-  console.log(currentPage);
+
   return (
   <div>
 
