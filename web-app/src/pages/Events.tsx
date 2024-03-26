@@ -20,7 +20,7 @@ const Events: React.FC = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const [status, setStatus] = useState<string>(searchParams.get('status') || ''); // for Ongoing
-  const [startAfterDate, setStartAfterDate] = useState<string>(searchParams.get('startAfterDate') || defaultDate); // for Start After Date
+  const [startAfterDate, setStartAfterDate] = useState<string>(searchParams.get('startAfterDate') || ''); // defaultDate - (today)
   const [region, setRegion] = useState<string>(searchParams.get('region') || ''); // for Region
   const [program, setProgram] = useState<string>(searchParams.get('program') || ''); // for Program Name
 
