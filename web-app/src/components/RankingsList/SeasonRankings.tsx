@@ -19,7 +19,10 @@ interface SeasonRankingItem {
     team_id: number;
     region: string;
     sigma: number;
-
+    avg_ccwm: number;
+    wins :number;
+    losses: number;
+    ties:number;
 }
 
 const SeasonRanking: React.FC<{ program:string; season: string; region?: string }> = ({ program, season, region }) => {
@@ -28,13 +31,52 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
   const [lastPage, setLastPage] = useState<number>(1); // State to track the last page
   const [loading, setLoading] = useState<boolean>(true); // State to track loading
   const [error, setError] = useState<string | null>(null); // State to track error message
+  const [post, setPost] = useState<boolean>(true);
   const page = 25;
 
   useEffect(() => {
-    setCurrentPage(1); // Reset page number when season changes
+    setCurrentPage(1);
+    setPost(false);
+    if (getSeasonNameFromId(parseInt(season)).includes("VEXU")) {
+      if (program !== 'VEXU') {
+        return;
+      }
+    } else {
+      if (program === 'VEXU') {
+        return ;
+      }
+    }
+    const fetchSeasonRanking = async () => {
+      try {
+        setLoading(true); // Set loading to true when fetching data
+        let apiUrl = `EXODB_API_GATEWAY_BASE_URL/dev/tsranking?season=${season}&page=${1}`;
+        if (region) {
+          apiUrl += `&region=${region}`; // Add region to the API URL if it's provided
+        }
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          setError("Failed to find valid rankings leaderboard");
+          throw new Error('Failed to fetch season ranking');
+        }
+        const data = await response.json();
+        setSeasonRanking(data.data);
+        console.log(data);
+        setError(null);
+      } catch (error) {
+        setError("Failed to find valid rankings leaderboard");
+        console.error('Error fetching season ranking:', error);
+      } finally {
+        setLoading(false); // Set loading to false after fetching data
+      }
+    };
+
+    fetchSeasonRanking();
   }, [program, season, region]);
 
   useEffect(() => {
+    if (!post) {
+      return;
+    }
     if (getSeasonNameFromId(parseInt(season)).includes("VEXU")) {
       if (program !== 'VEXU') {
         console.log("hi");
@@ -71,7 +113,7 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
     };
 
     fetchSeasonRanking();
-  }, [season, region, currentPage, program]);
+  }, [currentPage]);
 
 
   // Generate the query ID based on the provided parameters
@@ -106,20 +148,24 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
   };
 
   const handleFirstPage = () => {
+    setPost(true);
     setCurrentPage(1);
   };
 
   const handleLastPage = () => {
+    setPost(true);
     setCurrentPage(lastPage);
   };
 
   const handlePrevPage = () => {
+    setPost(true);
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
   const handleNextPage = () => {
+    setPost(true);
     if (currentPage >= 1 && currentPage < lastPage) {
       setCurrentPage(currentPage + 1);
     }
@@ -177,7 +223,31 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
                   </div>
                 </div>
               ))}
-            </div>         
+            </div>
+            <div className="header col stat">
+              <div className = "header-cell">
+                  W-L-T
+              </div>
+              {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
+                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                  <div>
+                    {rank.wins} - {rank.losses} - {rank.ties}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="header col stat">
+              <div className = "header-cell">
+                  Avg CCWM
+              </div>
+              {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
+                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                  <div>
+                    {rank.avg_ccwm.toFixed(2)}
+                  </div>
+                </div>
+              ))}
+            </div>           
             <div className="header col stat">
               <div className = "header-cell">
                   mu
@@ -185,23 +255,11 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
               {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
                 <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
                   <div>
-                    {rank.mu}
+                    {rank.mu.toFixed(2)}
                   </div>
                 </div>
               ))}
-            </div> 
-            <div className="header col stat">
-              <div className = "header-cell">
-                  Sigma
-              </div>
-              {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
-                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
-                  <div>
-                    {rank.sigma}
-                  </div>
-                </div>
-              ))}
-            </div>      
+            </div>       
           </div>
         </div>
       )}
