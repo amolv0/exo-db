@@ -6,7 +6,7 @@ dynamodb = boto3.resource('dynamodb')
 trueskill_table = dynamodb.Table('trueskill-rankings')
 team_table = dynamodb.Table('team-data')
 
-SEASON = 180
+SEASON = 125
 
 def update_team_rankings(season):
 
