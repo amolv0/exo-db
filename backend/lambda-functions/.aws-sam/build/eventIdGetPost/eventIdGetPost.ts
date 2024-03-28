@@ -1,9 +1,12 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, BatchGetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { Readable } from "node:stream";
 
 // Initialize DynamoDB Client
 const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
+const s3Client = new S3Client({ region: "us-east-1" });
 
 // CORS headers
 const headers = {
@@ -29,6 +32,29 @@ interface LambdaResponse {
 }
 
 
+async function fetch_divisions_from_s3(s3_reference: string): Promise<any> {
+    // Extract the bucket name and key from the S3 reference
+    const match = s3_reference.match(/^s3:\/\/([^\/]+)\/(.+)$/);
+    if (!match) {
+        throw new Error("Invalid S3 reference format");
+    }
+    const [, bucketName, key] = match;
+
+    // Fetch the object from S3
+    const command = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+    });
+    const { Body } = await s3Client.send(command);
+
+    if (Body instanceof Readable) { // Ensure the body is a stream
+        const divisionsData = await streamToString(Body);
+        return JSON.parse(divisionsData); // Assuming the divisions data is JSON-formatted
+    } else {
+        throw new Error("Expected a readable stream for S3 object body");
+    }
+}
+
 // Function to get specifi event details for a GET request
 const getEventDetails = async (eventId: string): Promise<any> => {
     const numericEventId = Number(eventId); // Convert eventId to a number
@@ -43,6 +69,15 @@ const getEventDetails = async (eventId: string): Promise<any> => {
     try {
         const command = new QueryCommand(params);
         const result = await docClient.send(command);
+        let items: Record<string, any>[] = result.Items ?? [];
+
+        for (let item of items){
+            if(item && item.divisions && item.divisions.divisions_s3_reference){
+                const divisions = await fetch_divisions_from_s3(item.divisions.divisions_s3_reference);
+                console.log(divisions);
+                item.divisions = divisions;
+            }
+        }
         return result.Items;
     } catch (error) {
         console.error('Error fetching event:', error);
@@ -50,6 +85,15 @@ const getEventDetails = async (eventId: string): Promise<any> => {
     }
 };
 
+async function streamToString(stream: Readable): Promise<string> {
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) {
+        chunks.push(chunk);
+    }
+    return Buffer.concat(chunks).toString('utf-8');
+}
+
+  
 // Function to get details for multiple events for a POST request
 const getMultipleEventDetails = async (eventIds: string[]): Promise<any> => {
     const numericEventIds = eventIds.map(id => ({ id: Number(id) })); // Convert each eventId to a number
