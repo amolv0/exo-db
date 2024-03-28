@@ -2,16 +2,17 @@ import decimal
 import boto3
 from decimal import Decimal
 from boto3.dynamodb.conditions import Key, Attr
+import json
 
 # Constants
 DEFAULT_ELO = 1000
-SEASON_ID = 180
+SEASON_ID = 125
 
 dynamodb = boto3.resource('dynamodb')
 events_table = dynamodb.Table('event-data')
 teams_table = dynamodb.Table('team-data')
 elo_table = dynamodb.Table('elo-rankings')
-
+s3_client = boto3.client('s3')
 
 def expected_score(rating_a, rating_b):
     return 1 / (1 + 10 ** ((rating_b - rating_a) / 400))
@@ -39,8 +40,8 @@ def fetch_events():
 
     # Correct the date range for the query
 
-    start_date = '2023-04-05T09:30:00-04:00'
-    end_date = '2024-04-05T09:30:00-04:00'
+    start_date = '2018-04-27T00:00:00-04:00'
+    end_date = '2019-04-25T00:00:00-04:00'
     
     while True:
         page += 1
@@ -49,7 +50,7 @@ def fetch_events():
         query_kwargs = {
             'IndexName': 'EventsByStartDateGSI',
             'KeyConditionExpression': Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').between(start_date, end_date),
-            'FilterExpression': Attr('program').is_in(['VIQRC'])
+            'FilterExpression': Attr('program').is_in(['VRC'])
         }
 
         if last_evaluated_key:
@@ -119,8 +120,6 @@ def process_events():
     
     for event_id in event_ids:
         print(f"Processing event {event_id}")
-        if event_id == 51522:
-            print("ASDJBASD")
         event_details = fetch_event_details(event_id)
         
         if not event_details or event_details['season']['id'] != SEASON_ID:
@@ -191,61 +190,95 @@ def process_events():
         
         
 def process_event(event_id):
-    team_elos = {}  # Dict to store team ELO ratings
+    team_metrics = {}  # Stores wins, losses, ties, avg_ccwm, high_score, and elo
+    print(f"Processing event {event_id}")
+    if event_id == 51522:
+        print("ASDJBASD")
     event_details = fetch_event_details(event_id)
     
-    if not event_details:
-        print("Event details could not be fetched.")
+    if not event_details or event_details['season']['id'] != SEASON_ID:
         return
     
     for division in event_details['divisions']:
-        if 'matches' not in division: continue
+        if 'matches' not in division or 'rankings' not in division: continue
+        
+        # Initialize or update team metrics based on division rankings
+        for ranking in division['rankings']:
+            team_id = int(ranking['team']['id'])
+            ccwm = safe_decimal_conversion(ranking.get('ccwm'), Decimal(0))
+            high_score = safe_decimal_conversion(ranking.get('high_score'), Decimal(0))
+            
+            if team_id not in team_metrics:
+                team_metrics[team_id] = {
+                    'wins': 0, 'losses': 0, 'ties': 0,
+                    'ccwms': [ccwm], 'high_score': high_score,
+                    'elo': DEFAULT_ELO,
+                    'events': 1
+                }
+            else:
+                team_metrics[team_id]['ccwms'].append(ccwm)
+                team_metrics[team_id]['events'] += 1
+                # Safely handle 'high_score' updates, ensuring no None values are compared
+                team_metrics[team_id]['high_score'] = max(team_metrics[team_id].get('high_score', Decimal(0)), high_score)
+        
+        # Process match outcomes for ELO calculations and win/loss/tie records
         for match in division['matches']:
-  
-            winning_team_ids, losing_team_ids = determine_match_outcome(match)
+            winning_team_ids, losing_team_ids, draw_team_ids = determine_match_outcome(match)
             
-
-            if len(winning_team_ids) == 0 or len(losing_team_ids) == 0: continue
-            
-            avg_win_elo = sum(team_elos.get(team_id, DEFAULT_ELO) for team_id in winning_team_ids) / len(winning_team_ids)
-            avg_lose_elo = sum(team_elos.get(team_id, DEFAULT_ELO) for team_id in losing_team_ids) / len(losing_team_ids)
-            
-
+            for team_list in (match.get('winning_team_ids', []), match.get('losing_team_ids', []), match.get('draw_team_ids', [])):
+                    for team_id in team_list:
+                        if team_id not in team_metrics: 
+                            team_metrics[team_id] = {
+                                'wins': 0, 'losses': 0, 'ties': 0,
+                                'ccwms': [], 'high_score': 0, 'elo': DEFAULT_ELO
+                            }
+                            
             for team_id in winning_team_ids:
-                current_elo = team_elos.get(team_id, DEFAULT_ELO)
-                new_elo, _ = update_elo(current_elo, avg_lose_elo)
-                team_elos[team_id] = new_elo
-
+                if team_id not in team_metrics: continue
+                team_metrics[team_id]['wins'] += 1
+                update_team_elo_and_metrics(team_metrics, team_id, winning_team_ids, losing_team_ids, True)
+            
             for team_id in losing_team_ids:
-                current_elo = team_elos.get(team_id, DEFAULT_ELO)
-                _, new_elo = update_elo(avg_win_elo, current_elo)
-                team_elos[team_id] = new_elo
+                if team_id not in team_metrics: continue
+                team_metrics[team_id]['losses'] += 1
+                update_team_elo_and_metrics(team_metrics, team_id, winning_team_ids, losing_team_ids, False)
+            
+            for team_id in draw_team_ids:
+                if team_id not in team_metrics: continue
+                team_metrics[team_id]['ties'] += 1
 
-    sorted_team_elos = sorted(team_elos.items(), key=lambda item: item[1], reverse=True)
+    for team_id, metrics in team_metrics.items():
+        if team_id not in team_metrics: continue
+        metrics['avg_ccwm'] = sum(metrics['ccwms']) / len(metrics['ccwms']) if metrics['ccwms'] else 0
     
-    log_file_path = "logs/elo.log"
-    with open(log_file_path, "w") as file:
-        file.write("Sorted Team ELOs:\n")
-        for team_id, elo in sorted_team_elos:
-            file.write(f"Team ID: {team_id}, ELO: {elo}\n")
-
-    print("batch writing to elo-rankings")
-    batch_write_elo_updates(team_elos, SEASON_ID)
+    # Update the database with the full set of metrics
+    print("finished scanning")
+    # batch_update_team_metrics(team_metrics, SEASON_ID)
     print("finished batch writing to elo-rankings")
-    # Update team data in the database with new ELO ratings
-    count = 0
-    for team_id, elo in team_elos.items():
-        count += 1
-        print(f"Updated team {team_id} with ELO, {count} teams updated")
-        update_team_elo(team_id, elo, SEASON_ID)  
+    
 
 def fetch_event_details(event_id):
     """
-    Fetch event details by event ID from DynamoDB.
+    Fetch event details by event ID from DynamoDB. If the 'divisions' attribute
+    contains an S3 reference, replace 'divisions' with the content of the S3 object.
     """
     try:
         response = events_table.get_item(Key={'id': event_id})
-        return response['Item'] if 'Item' in response else None
+        item = response.get('Item')
+        
+        if item and 'divisions' in item:
+            divisions = item['divisions']
+            # Check if 'divisions' contains an S3 reference
+            if isinstance(divisions, dict) and 'divisions_s3_reference' in divisions:
+                s3_reference = divisions['divisions_s3_reference']
+                # Assuming the S3 reference format is "s3://bucket-name/key"
+                bucket_name, key = s3_reference.replace("s3://", "").split("/", 1)
+                # Fetch the object from S3
+                s3_response = s3_client.get_object(Bucket=bucket_name, Key=key)
+                # Read the object's content and parse it as JSON
+                divisions_data = s3_response['Body'].read().decode('utf-8')
+                item['divisions'] = json.loads(divisions_data)
+        return item
     except Exception as e:
         print(f"Error fetching event details: {e}")
         return None
@@ -370,6 +403,6 @@ def update_team_elo(team_id, elo, season_id):
         print(f"Error updating team ELO: {e}")
 
 if __name__ == "__main__":
-    # process_event(51541)
+    # process_event(36082)
     
     process_events()
