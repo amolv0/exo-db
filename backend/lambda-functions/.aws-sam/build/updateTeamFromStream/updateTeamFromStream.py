@@ -4,7 +4,7 @@ import logging
 from boto3.dynamodb.types import TypeDeserializer
 import trueskill
 from decimal import Decimal
-
+from datetime import datetime
 
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
@@ -12,6 +12,7 @@ dynamodb = boto3.resource('dynamodb')
 # Initialize a TypeDeserializer for unmarshalling
 deserializer = TypeDeserializer()
 
+s3_client = boto3.client('s3')
 event_data_table = dynamodb.Table('event-data')
 team_data_table = dynamodb.Table('team-data')
 match_data_table = dynamodb.Table('match-data')
@@ -33,9 +34,19 @@ K_FACTOR = 40
 def unmarshall_dynamodb_item(item):
     return {k: deserializer.deserialize(v) for k, v in item.items()}
 
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)  # Convert Decimal to float
+    elif isinstance(obj, dict):
+        # Recursively process dictionary
+        return {k: decimal_default(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        # Recursively process list
+        return [decimal_default(v) for v in obj]
+    else:
+        return obj
+    
 def process_match(match, division_name, division_id, event_name, event_id, event_start, season):
-    update_ts_data_with_match(match, season)
-    update_elo_data_with_match(match, season)  
     update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start)
     teams = extract_teams_from_match(match)
     for team in teams:
@@ -43,6 +54,8 @@ def process_match(match, division_name, division_id, event_name, event_id, event
         if 'id' in match:
             match_id = match['id']
             update_team_data_with_match(team_id, match_id)
+    update_ts_data_with_match(match, season)
+    update_elo_data_with_match(match, season)  
             
 
 def remove_match(match, event_id):
@@ -95,7 +108,7 @@ def update_ts_elo_with_ranking(season, ranking):
             print(f"No item found for team ID {team_id} and season {season} in table {table.name}.")    
     
 def update_ts_data_with_match(match, season):
-    if season is not None:
+    if season == 181 or season == 182:
         teams = extract_teams_from_match(match)
         team_ids = [team['team']['id'] for team in teams]
         team_ratings = {team_id: get_team_trueskill(team_id, season) for team_id in team_ids}
@@ -234,8 +247,8 @@ def get_team_trueskill(team_id, season):
     
         
 def update_elo_data_with_match(match, season):
-    if season is None:
-        logging.info("No season specified, skipping ELO update.")
+    if season not in [181, 182]:
+        logging.info("Invalid season specified, skipping ELO update.")
         return
 
     # Determine match outcome
@@ -536,7 +549,19 @@ def find_match_differences(old_divisions, new_divisions):
                             **old_match
                         })
                         logging.info(f"Removed match found: {match_id}")
-
+                        
+    logging.error(f"OLD DIVISIONS IS: {old_divisions}")                                       
+    if not old_divisions:
+        logging.error("IN IF")
+        for new_division in new_divisions:
+            for match_id, new_match in new_matches_dict[new_division['id']].items():
+                logging.error("IN FOR LOOP")
+                updated_matches.append({
+                    'division_id': new_division['id'],
+                    'division_name': new_division.get('name', 'Unknown Division'),
+                    **new_match
+                })
+                logging.info(f"New match added (no old matches): {match_id}")
     return updated_matches, removed_matches
 
 def find_updated_rankings(old_divisions, new_divisions):
@@ -811,6 +836,36 @@ def update_skills_ranking_data(skills, event_id, event_name, event_start):
         for item in unique_items.values():
             batch.put_item(Item=item)
 
+
+def fetch_divisions_from_s3(s3_reference):
+    """
+    Fetch the current and previous version of the divisions data from S3 using the provided reference.
+    Returns a tuple (current_data, previous_data), where each is a dict representing the divisions data.
+    If there is no previous version, previous_data will be None.
+    """
+    bucket_name, key = s3_reference.replace("s3://", "").split("/", 1)
+    versions = s3_client.list_object_versions(Bucket=bucket_name, Prefix=key)
+    current_version_id = versions['Versions'][0]['VersionId']
+    previous_version_id = versions.get('Versions')[1]['VersionId'] if len(versions.get('Versions')) > 1 else None
+    
+    # Fetch the current version
+    current_obj = s3_client.get_object(Bucket=bucket_name, Key=key, VersionId=current_version_id)
+    current_data = json.loads(current_obj['Body'].read().decode('utf-8'))
+
+    # Fetch the previous version if it exists
+    previous_data = {}
+    if previous_version_id:
+        try:
+            previous_obj = s3_client.get_object(Bucket=bucket_name, Key=key, VersionId=previous_version_id)
+            previous_data = json.loads(previous_obj['Body'].read().decode('utf-8'))
+        except Exception as e:
+            logging.error(f"Error unloading previous s3 object, setting to an empty dict")
+
+    logging.error(f"current data: {current_data}")
+    logging.error(f"previous data: {previous_data}")
+    return decimal_default(current_data), decimal_default(previous_data)
+
+
 def handler(aws_event, context):
     logging.error("Beginning stream update process")
     for record in aws_event['Records']:
@@ -830,15 +885,24 @@ def handler(aws_event, context):
             # Convert 'awards_finalized' to a lowercase string representation
             if 'awards_finalized' in new_image and isinstance(new_image['awards_finalized'], bool):
                 new_image['awards_finalized'] = str(new_image['awards_finalized']).lower()
-
+                
             # Process new/removed matches and rankings
-            # Check if 'divisions' exists and
+            # Check if 'divisions' exist
             if 'divisions' in new_image and 'divisions' in old_image:
-                new_divisions = new_image['divisions']
-                old_divisions = old_image['divisions']
+                logging.error(f"new image divisions: {new_image['divisions']}")
+                if 'divisions_s3_reference' in new_image['divisions'] or f's3://exodb-event-data-storage/event-{event_id}/divisions' in new_image['divisions']:
+                    logging.error("LOOKING IN S3")
+                    divisions_reference = f's3://exodb-event-data-storage/event-{event_id}/divisions'
+                    new_divisions, old_divisions = fetch_divisions_from_s3(divisions_reference)
+                else:
+                    logging.error("NOT LOOKING IN S3")
+                    new_divisions = new_image['divisions']
+                    old_divisions = old_image['divisions']
                 updated_rankings = find_updated_rankings(old_divisions, new_divisions)
+                logging.error(f"{len(updated_rankings)} updated rankings")
                 updated_matches, removed_matches = find_match_differences(old_divisions, new_divisions)
-                logging.info(updated_matches)
+                logging.error(f"{len(updated_matches)} updated matches")
+                
                 # Process new/removed rankings within divisions
                 for updated_ranking in updated_rankings:
                     division_id = updated_ranking['division_id']
@@ -849,9 +913,9 @@ def handler(aws_event, context):
 
                 # Process new/removed matches within divisions
                 for match in updated_matches:
-                    division_id = match['division_id']
+                    division_id = int(match['division_id'])
                     division_name = match['division_name']
-                    process_match(match, division_name, division_id, event_name, event_id, event_start, season, new_divisions[division_id])
+                    process_match(match, division_name, division_id, event_name, event_id, event_start, season)
                     
                 for match in removed_matches:
                     logging.info(f"Found removed matches: {removed_matches}")
