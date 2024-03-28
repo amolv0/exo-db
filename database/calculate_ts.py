@@ -4,9 +4,10 @@ from boto3.dynamodb.conditions import Key, Attr
 from decimal import Decimal
 import trueskill
 from collections import defaultdict
+import json
 
 # Constants
-SEASON_ID = 180
+SEASON_ID = 125
 
 # Initialize TrueSkill environment
 env = trueskill.TrueSkill(draw_probability=0.01)  # Adjust draw_probability as needed
@@ -14,6 +15,7 @@ dynamodb = boto3.resource('dynamodb')
 events_table = dynamodb.Table('event-data')
 teams_table = dynamodb.Table('team-data')
 trueskill_table = dynamodb.Table('trueskill-rankings')
+s3_client = boto3.client('s3')
 
 team_metrics = defaultdict(lambda: {'wins': 0, 'losses': 0, 'ties': 0, 'ccwms': [], 'events': 1, 'rating': env.create_rating()})
 
@@ -23,8 +25,8 @@ def fetch_events():
     last_evaluated_key = None
     page = 0
     print("Scanning events")
-    start_date = '2023-04-05T09:30:00-04:00'
-    end_date = '2024-04-05T09:30:00-04:00'
+    start_date = '2018-04-27T00:00:00-04:00'
+    end_date = '2019-04-25T00:00:00-04:00'
     
     while True:
         page += 1
@@ -33,7 +35,7 @@ def fetch_events():
         query_kwargs = {
             'IndexName': 'EventsByStartDateGSI',
             'KeyConditionExpression': Key('gsiPartitionKey').eq('ALL_EVENTS') & Key('start').between(start_date, end_date),
-            'FilterExpression': Attr('program').is_in(['VIQRC'])
+            'FilterExpression': Attr('program').is_in(['VRC'])
         }
 
         if last_evaluated_key:
@@ -119,9 +121,27 @@ def process_event(event_id):
                 team_metrics[team_id]['high_score'] = max(team_metrics[team_id].get('high_score', Decimal(0)), high_score)
 
 def fetch_event_details(event_id):
+    """
+    Fetch event details by event ID from DynamoDB. If the 'divisions' attribute
+    contains an S3 reference, replace 'divisions' with the content of the S3 object.
+    """
     try:
         response = events_table.get_item(Key={'id': event_id})
-        return response.get('Item')
+        item = response.get('Item')
+        
+        if item and 'divisions' in item:
+            divisions = item['divisions']
+            # Check if 'divisions' contains an S3 reference
+            if isinstance(divisions, dict) and 'divisions_s3_reference' in divisions:
+                s3_reference = divisions['divisions_s3_reference']
+                # Assuming the S3 reference format is "s3://bucket-name/key"
+                bucket_name, key = s3_reference.replace("s3://", "").split("/", 1)
+                # Fetch the object from S3
+                s3_response = s3_client.get_object(Bucket=bucket_name, Key=key)
+                # Read the object's content and parse it as JSON
+                divisions_data = s3_response['Body'].read().decode('utf-8')
+                item['divisions'] = json.loads(divisions_data)
+        return item
     except Exception as e:
         print(f"Error fetching event details: {e}")
         return None
