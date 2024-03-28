@@ -13,7 +13,7 @@ import './Stylesheets/pageLayout.css';
 const Home: React.FC = () => {
   return (
     <div className="flex flex-col items-center">
-      <h1 className="title leftDisplay ml-24">Ongoinggg Events</h1>
+      <h1 className="title leftDisplay ml-24">Ongoingg Events</h1>
         <EventsListQuery status = 'ongoing'/>
     </div>
   );
