@@ -17,18 +17,17 @@ jobs:
       with:
         node-version: '14'
 
-    - name: Change to web-app Directory
-      run: cd web-app
+    # Note: The 'Change to web-app Directory' step is not necessary since you're using 'working-directory' in subsequent steps
 
     - name: Install Dependencies
-      run: |
-        cd web-app
-        npm install
+      run: npm install
+      working-directory: web-app
 
     - name: Build React App
-      run: |
-        cd web-app
-        npm run build
+      run: npm run build
+      working-directory: web-app
+      env:
+        CI: false
 
     - name: Deploy to Amazon S3
       uses: jakejarvis/s3-sync-action@v0.5.1
