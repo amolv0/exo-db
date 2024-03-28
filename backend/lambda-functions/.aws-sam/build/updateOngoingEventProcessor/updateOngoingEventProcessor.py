@@ -9,6 +9,7 @@ import requests
 import time
 import boto3
 from botocore.exceptions import ClientError
+from datetime import datetime
 
 # This function, along with updateOngoingEventProcessor, is designed to update any non-league events in real-time.
 # This function will poll messages from an SQS queue consisting of event ids that are currently ongoing
@@ -34,8 +35,33 @@ logging.setLevel("INFO")
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 event_data_table = dynamodb.Table('event-data')
+s3 = boto3.client('s3')
+DynamoDBSizeLimit = 400 * 1024  # 400 KB
 
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)  # Convert Decimal to float
+    elif isinstance(obj, dict):
+        # Recursively process dictionary
+        return {k: decimal_default(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        # Recursively process list
+        return [decimal_default(v) for v in obj]
+    else:
+        return obj
 
+def put_divisions_in_s3(event_id, divisions_data):
+    s3_bucket_name = "exodb-event-data-storage"  # Using a common bucket with unique keys
+    s3_key = f"event-{event_id}/divisions"
+    divisions_json = json.dumps(decimal_default(divisions_data))
+    try:
+        s3.put_object(Bucket=s3_bucket_name, Key=s3_key, Body=divisions_json)
+        logging.info(f"Divisions data for event {event_id} stored in S3.")
+        return f"s3://{s3_bucket_name}/{s3_key}"
+    except ClientError as e:
+        logging.error(f"Failed to store divisions in S3: {e}")
+        return None
+    
 def make_request(url, headers, initial_delay=5, retries=3):
     for _ in range(retries):
         response = requests.get(url, headers=headers)
@@ -101,7 +127,8 @@ def fetch_event_skills(event_id):
     return skills
 
 def update_if_changed(event_id, new_data):
-    # Read the current event data from DynamoDB
+    divisions_data = new_data.pop('divisions', None)
+
     try:
         response = event_data_table.get_item(Key={'id': event_id})
         current_data = response.get('Item', {})
@@ -109,7 +136,6 @@ def update_if_changed(event_id, new_data):
         logging.error(e.response['Error']['Message'])
         return
 
-    # Compare and construct update expression
     update_expression = "SET "
     expression_attribute_values = {}
     for key, value in new_data.items():
@@ -117,13 +143,40 @@ def update_if_changed(event_id, new_data):
             update_expression += f"{key} = :{key}, "
             expression_attribute_values[f":{key}"] = value
 
-    # Remove trailing comma and space
-    update_expression = update_expression.rstrip(', ')
+    if divisions_data:
+        serialized_divisions = divisions_data 
+        if isinstance(current_data.get('divisions'), dict) and 'divisions_s3_reference' in current_data.get('divisions', {}):
+            # Update directly in S3 if already referencing an S3 object
+            s3_reference = put_divisions_in_s3(event_id, serialized_divisions)
+            expression_attribute_values[":divisions"] = {"divisions_s3_reference": s3_reference, "divisions_last_changed": datetime.now().isoformat(), }
+            update_expression += "divisions = :divisions, "
+        else:
+            try:
+                # Check if the direct update to DynamoDB would work
+                test_update_expression = "SET divisions = :divisions_test"
+                test_response = event_data_table.update_item(
+                    Key={'id': event_id},
+                    UpdateExpression=test_update_expression,
+                    ExpressionAttributeValues={":divisions_test": serialized_divisions},
+                    ReturnValues="NONE",
+                    ConditionExpression="attribute_not_exists(divisions_s3_reference)"  # Ensure not to overwrite S3 reference if testing
+                )
+                # If the direct update test passes, prepare the actual update
+                expression_attribute_values[":divisions"] = divisions_data
+                update_expression += "divisions = :divisions, "
+            except ClientError as e:
+                # If error due to size, fallback to S3 and update reference in DynamoDB
+                if e.response['Error']['Code'] in ['ValidationException', 'RequestEntityTooLarge']:
+                    s3_reference = put_divisions_in_s3(event_id, serialized_divisions)
+                    if s3_reference:
+                        expression_attribute_values[":divisions"] = {"divisions_s3_reference": s3_reference, "divisions_last_changed": datetime.now().isoformat(), }
+                        update_expression += "divisions = :divisions, "
+
+    update_expression = update_expression.rstrip(', ')  # Remove trailing comma and space
 
     if expression_attribute_values:
-        # Update DynamoDB if there are changes
         try:
-            response = event_data_table.update_item(
+            event_data_table.update_item(
                 Key={'id': event_id},
                 UpdateExpression=update_expression,
                 ExpressionAttributeValues=expression_attribute_values,
@@ -131,8 +184,10 @@ def update_if_changed(event_id, new_data):
             )
             logging.info(f"Updated event {event_id} with changes.")
         except ClientError as e:
-            logging.error(e.response['Error']['Message'])
+            logging.error(f"Failed to update DynamoDB: {e}")
 
+                    
+                    
 def fetch_event_awards(event_id):
     awards = []
     page = 1
