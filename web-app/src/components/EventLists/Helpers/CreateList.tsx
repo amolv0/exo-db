@@ -13,7 +13,7 @@ interface EventListDisplayProps {
 
 const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
   const [maps, setMaps] = useState<any[]>([]);
-  const [ascending, setAscending] = useState<boolean>(true);
+  const [ascending, setAscending] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [groupsOf25, setGroupsOf25] = useState<number[][]>([]);
@@ -184,6 +184,13 @@ return (
             </div>
           ))}
         </div>
+      </div>
+      <div className = "mb-10" style={{ textAlign: 'right' }}>
+        {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
+        <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+        <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+        <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+        <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
       </div>
     </div>
   )}
