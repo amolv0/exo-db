@@ -9,7 +9,7 @@ interface TeamSkillsProps {
 }
 
 const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
-  const [seasonMap, setSeasonMap] = useState<{ [key: number]: any[] }>({});
+  const [seasonEventsMap, setSeasonEventsMap] = useState<{ [season: number]: { [eventId: number]: any[] } }>({});
   const [selectedSeason, setSelectedSeason] = useState<number>(181);
   const [posts, setPosts] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
@@ -37,7 +37,7 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
       if (skills && skills.length > 0) {
         try {
           setLoading(true);
-          const allEvents: any[] = [];
+          const allSkills: any[] = [];
           for (let i = 0; i < groupsOf50.length; i++) {
               const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/skills/', {
               method: 'POST',
@@ -47,24 +47,27 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
               body: JSON.stringify(groupsOf50[i])
               });
               const data = await response.json();
-              allEvents.push(...data);
+              allSkills.push(...data);
               console.log(groupsOf50[i]);
           }
-          console.log(allEvents);
+          console.log(allSkills);
 
-          const tempSeasonMap: { [season: number]: any[] } = {};
-          allEvents.forEach(event => {
-              if (!tempSeasonMap[event.season.id]) {
-                  tempSeasonMap[event.season.id] = [];
+          const tempSeasonEventsMap: { [season: number]: { [eventId: number]: any[] } } = {};
+          allSkills.forEach(skill => {
+              if (!tempSeasonEventsMap[skill.season.id]) {
+                  tempSeasonEventsMap[skill.season.id] = {};
               }
-              tempSeasonMap[event.season.id].push(event);
+              if (!tempSeasonEventsMap[skill.season.id][skill.event_id]) {
+                  tempSeasonEventsMap[skill.season.id][skill.event_id] = [];
+              }
+              tempSeasonEventsMap[skill.season.id][skill.event_id].push(skill);
           });
 
-          setSeasonMap(tempSeasonMap);
-          setSelectedSeason(Math.max(...Object.keys(tempSeasonMap).map(Number)));
-          console.log(seasonMap);
+          setSeasonEventsMap(tempSeasonEventsMap);
+          setSelectedSeason(Math.max(...Object.keys(tempSeasonEventsMap).map(Number)));
+          console.log(seasonEventsMap);
         } catch (error) {
-          console.error('Error fetching award details:', error);
+          console.error('Error fetching skills details:', error);
         } finally {
           setPosts(false);
           setLoading(false);
@@ -90,16 +93,23 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
               setSeasonId={setSelectedSeason}
               type=''
               grade=''
-              restrict={Object.keys(seasonMap)}
+              restrict={Object.keys(seasonEventsMap)}
             />      
           </div>
           <br />
           <div>
-          {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((skills, index) => (
-                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                    <Link to={`/events/${skills.event_id}`}>
-                      {skills.event_name}
-                    </Link>
+            {seasonEventsMap[selectedSeason] && Object.values(seasonEventsMap[selectedSeason]).map((eventSkills, index) => (
+              eventSkills.map((skills, index) => (
+                <div>
+                {index === 0 && (
+                  <Link to={`/events/${skills.event_id}`}>
+                    {skills.event_name}
+                  </Link>
+                )}
+                <div key={index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                  <div> 
+                    Type: {skills.type}
+                    </div>
                     <div> 
                       Skills Score: {skills.score}
                     </div>
@@ -109,9 +119,11 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                     <div>
                       Attempts: {skills.attempts}
                     </div>
+                  </div>
                 </div>
-                ))}
-            </div>
+              ))
+            ))}
+          </div>
         </div>
       )}
     </div>
