@@ -1,5 +1,6 @@
   import React, { useState, useEffect } from 'react';
   import CreateList from './Helpers/CreateList';
+  import { CircularProgress } from '@mui/material';
 
   interface AppProps {
     numberOfEvents?: number | null;
@@ -59,7 +60,7 @@
     return (
       <div>
         {loading ? ( // Display loading indicator if loading is true
-          <div>Loading...</div>
+          <CircularProgress style={{ margin: '20px' }} />
         ) : error ? ( 
           <div>Error: {error}</div>
         ) :  (
