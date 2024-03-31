@@ -259,6 +259,14 @@ const SkillsRanking: React.FC<{ season: string; grade: string; region?: string }
             ))}
           </div>     
         </div>
+        <div className = "flex justify-end items-center mb-10">
+          {(currentPage * page) - (page - 1)} - {Math.min(currentPage * page, skillsRanking.length + 
+            (currentPage * page) - (page))} of {Math.min(lastPage * page, skillsRanking.length + (lastPage * page) - (page))}
+          <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+          <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+          <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+          <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+        </div>
       </div>
     )}
     </div>
