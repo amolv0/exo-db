@@ -59,7 +59,7 @@ def calculate_and_update_rankings(event_id):
                     teams.add(team_id)
                     team_numbers[team_id] = team['team']['name']
         n = len(teams)
-        print(teams)
+        # print(teams)
         if n < 1:
             print(f"Found no matches with round==2 for event {event_id}")
             return
@@ -135,8 +135,8 @@ def calculate_and_update_rankings(event_id):
         # print(f"Updated event {event_id}, division {division_id}")
 
 
-calculate_and_update_rankings(53361)
+calculate_and_update_rankings(39957)
     
 print("Starting process")
 # process_rankings_for_all_events()
-print("Process complete")
+print("Process complete")  
