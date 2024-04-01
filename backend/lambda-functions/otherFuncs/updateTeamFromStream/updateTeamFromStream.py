@@ -68,6 +68,14 @@ def remove_match(match, event_id):
             match_id = match['id']
             remove_match_from_team_data(team_id, match_id)
             
+def remove_ranking(ranking, event_id):
+    logging.info(f"Removing ranking {ranking['id']} from event: {event_id}")
+    remove_ranking_from_ranking_data(ranking['id']) 
+    team_id = ranking['team']['id']
+    if 'id' in ranking:
+        ranking_id = ranking['id']
+        remove_ranking_from_team_data(team_id, ranking_id)
+            
             
 def update_ts_elo_with_ranking(season, ranking):
     team_id = ranking['team']['id']
@@ -431,6 +439,31 @@ def remove_match_from_team_data(team_id, match_id):
             logging.error(f"Error updating team-data for team ID {team_id}: {e}")
     else:
         logging.info(f"Match ID {match_id} not found in matches for team ID {team_id}.")
+        
+def remove_ranking_from_team_data(team_id, ranking_id):
+    response = team_data_table.get_item(
+        Key={'id': int(team_id)}
+    )
+    rankings = response['Item']['rankings'] if 'Item' in response and 'rankings' in response['Item'] else []
+
+    ranking_index = None
+    for index, r_id in enumerate(rankings):
+        if r_id == ranking_id:
+            ranking_index = index
+            break
+
+    if ranking_index is not None:
+        try:
+            update_response = team_data_table.update_item(
+                Key={'id': int(team_id)},
+                UpdateExpression=f'REMOVE matches[{ranking_index}]',
+                ReturnValues='UPDATED_NEW'
+            )
+            logging.error(f"Updated team-data for team ID {team_id} with removed match id {ranking_id}")
+        except Exception as e:
+            logging.error(f"Error updating team-data for team ID {team_id}: {e}")
+    else:
+        logging.info(f"Match ID {ranking_id} not found in matches for team ID {team_id}.")
     
 def remove_match_from_match_data(match_id):
     response = match_data_table.delete_item(
@@ -439,6 +472,14 @@ def remove_match_from_match_data(match_id):
         }
     )
     logging.info(f"Removed match data with match ID {match_id} from DynamoDB")
+    
+def remove_ranking_from_ranking_data(ranking_id):
+    response = rankings_data_table.delete_item(
+        Key={
+            'id': ranking_id 
+        }
+    )
+    logging.info(f"Removed match data with match ID {ranking_id} from DynamoDB")
     
 def update_team_data_with_award(team_id, award_id):
     response = team_data_table.update_item(
@@ -566,31 +607,55 @@ def find_match_differences(old_divisions, new_divisions):
 
 def find_updated_rankings(old_divisions, new_divisions):
     updated_rankings = []
-    for new_division in new_divisions:
-        for old_division in old_divisions:
-            if new_division['id'] == old_division['id'] and 'rankings' in new_division and 'rankings' in old_division:
-                logging.info(f"Looking at division id: {new_division['id']} for updated matches")
-                old_rankings_dict = {ranking['id']: ranking for ranking in old_division['rankings'] if isinstance(ranking, dict)}
+    removed_rankings = []
 
-                for new_ranking in new_division['rankings']:
-                    if isinstance(new_ranking, dict):
-                        ranking_id = new_ranking['id']
-                        if ranking_id not in old_rankings_dict or new_ranking != old_rankings_dict[ranking_id]:
-                            updated_rankings.append({
-                                'division_id': new_division['id'],
-                                'division_name': new_division.get('name', 'Unknown Division'),
-                                **new_ranking
-                            })
-                            logging.info(f"Updated or new ranking found: {ranking_id}")
-            elif 'rankings' in new_division and 'rankings' not in old_division:
-                for new_ranking in new_division['rankings']:
+    # Convert new rankings to a dictionary for easier lookup
+    new_rankings_dict = {}
+    for new_division in new_divisions:
+        if 'rankings' in new_division:
+            new_rankings_dict[new_division['id']] = {ranking['id']: ranking for ranking in new_division['rankings'] if isinstance(ranking, dict)}
+    
+    for old_division in old_divisions:
+        old_division_id = old_division['id']
+        # Check for updated or new rankings
+        if old_division_id in new_rankings_dict and 'rankings' in old_division:
+            logging.info(f"Looking at division id: {old_division_id} for updated rankings")
+            
+            # Convert old rankings to a dictionary for easier lookup by ranking id
+            old_rankings_dict = {ranking['id']: ranking for ranking in old_division['rankings'] if isinstance(ranking, dict)}
+
+            for ranking_id, new_ranking in new_rankings_dict.get(old_division_id, {}).items():
+                if ranking_id not in old_rankings_dict or new_ranking != old_rankings_dict[ranking_id]:
+                    updated_rankings.append({
+                        'division_id': old_division_id,
+                        'division_name': new_division.get('name', 'Unknown Division'),
+                        **new_ranking
+                    })
+                    logging.info(f"Updated/new ranking found: {ranking_id}")
+
+            # Check for removed rankings
+            for ranking_id, old_ranking in old_rankings_dict.items():
+                if old_division_id not in new_rankings_dict or ranking_id not in new_rankings_dict[old_division_id]:
+                    removed_rankings.append({
+                        'division_id': old_division_id,
+                        'division_name': old_division.get('name', 'Unknown Division'),
+                        **old_ranking
+                    })
+                    logging.info(f"Removed ranking found: {ranking_id}")
+                    
+    # Handle new divisions with new rankings when there are no old divisions
+    if not old_divisions:
+        for new_division in new_divisions:
+            if 'rankings' in new_division:
+                for ranking_id, new_ranking in new_rankings_dict[new_division['id']].items():
                     updated_rankings.append({
                         'division_id': new_division['id'],
                         'division_name': new_division.get('name', 'Unknown Division'),
-                                **new_ranking
+                        **new_ranking
                     })
-                    logging.error(f"New ranking found: {new_ranking['id']}")
-    return updated_rankings
+                    logging.info(f"New ranking added (no old rankings): {ranking_id}")
+
+    return updated_rankings, removed_rankings
 
 def find_updated_awards(old_awards, new_awards):
     updated_awards = []
@@ -891,14 +956,14 @@ def handler(aws_event, context):
             if 'divisions' in new_image and 'divisions' in old_image:
                 logging.error(f"new image divisions: {new_image['divisions']}")
                 if 'divisions_s3_reference' in new_image['divisions'] or f's3://exodb-event-data-storage/event-{event_id}/divisions' in new_image['divisions']:
-                    logging.error("LOOKING IN S3")
+                    logging.info("LOOKING IN S3")
                     divisions_reference = f's3://exodb-event-data-storage/event-{event_id}/divisions'
                     new_divisions, old_divisions = fetch_divisions_from_s3(divisions_reference)
                 else:
-                    logging.error("NOT LOOKING IN S3")
+                    logging.info("NOT LOOKING IN S3")
                     new_divisions = new_image['divisions']
                     old_divisions = old_image['divisions']
-                updated_rankings = find_updated_rankings(old_divisions, new_divisions)
+                updated_rankings, removed_rankings = find_updated_rankings(old_divisions, new_divisions)
                 logging.error(f"{len(updated_rankings)} updated rankings")
                 updated_matches, removed_matches = find_match_differences(old_divisions, new_divisions)
                 logging.error(f"{len(updated_matches)} updated matches")
@@ -920,6 +985,10 @@ def handler(aws_event, context):
                 for match in removed_matches:
                     logging.info(f"Found removed matches: {removed_matches}")
                     remove_match(match, event_id)
+                    
+                for ranking in removed_rankings:
+                    logging.error(f"Found removed rankings: {removed_rankings}")
+                    remove_ranking(ranking, event_id)
                 
 
 
