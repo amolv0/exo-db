@@ -4,7 +4,9 @@ const Navbar: React.FC = () => {
 
   return (
     <div>
-      <div className = "bg-theme_red h-8"></div>
+      <div className = "bg-theme_red h-8">
+        <p className = "ml-4">pre-release 1.0</p>
+      </div>
       <nav className="bg-dark_red p-4 text-xl text-white">
       <div className="container mx-auto flex justify-between items-center">
         {/* Powered By */}
