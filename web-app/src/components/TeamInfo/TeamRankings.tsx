@@ -42,7 +42,6 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
         try {
           setLoading(true);
           const allEvents: any[] = [];
-          console.log(groupsOf50);
           for (let i = 0; i < groupsOf50.length; i++) {
                 const response = await fetch('https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/rankings/', {
                 method: 'POST',
@@ -59,10 +58,12 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
           
           // THIS IS TEMPORARY UNTIL SEASON SUPPORT
           allEvents.forEach(event => {
-              if (!tempSeasonMap[181]) {
-                  tempSeasonMap[181] = [];
+            if (event.season) {
+                if (!tempSeasonMap[event.season]) {
+                  tempSeasonMap[event.season] = [];
               }
-              tempSeasonMap[181].push(event);
+              tempSeasonMap[event.season].push(event);
+            }
           });
 
           setSeasonMap(tempSeasonMap);
