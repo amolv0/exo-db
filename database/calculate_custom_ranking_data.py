@@ -8,7 +8,7 @@ from decimal import Decimal, ROUND_HALF_UP
 dynamodb = boto3.resource('dynamodb')
 event_table = dynamodb.Table('event-data')
 rankings_table = dynamodb.Table('rankings-data')
-
+team_data_table = dynamodb.Table('team-data')
 
 def process_rankings_for_all_events():
     page = 0
@@ -115,6 +115,17 @@ def calculate_and_update_rankings(event_id):
 
                 # Post ranking to rankings-data table
                 rankings_table.put_item(Item=ranking)
+                
+                response = team_data_table.update_item(
+                    Key={'id': int(team_id)},
+                    UpdateExpression='SET rankings = list_append(if_not_exists(rankings, :empty_list), :ranking)',
+                    ExpressionAttributeValues={
+                        ':ranking': [ranking['id']],
+                        ':empty_list': [],
+                    },
+                    ReturnValues='UPDATED_NEW'
+                )
+                
                 # Remove attributes we dont want in event-data
                 ranking.pop('event_id', None)
                 ranking.pop('event_name', None)
@@ -134,9 +145,42 @@ def calculate_and_update_rankings(event_id):
         )
         # print(f"Updated event {event_id}, division {division_id}")
 
+def delete_ranking(team_id):    
+    try:
+        response = team_data_table.update_item(
+            Key={'id': team_id}, 
+            UpdateExpression='REMOVE rankings',
+            ReturnValues='UPDATED_NEW'
+        )
+        # print(f"Successfully deleted rankings for team ID: {team_id}.")
+    except Exception as e:
+        print(f"Error deleting rankings for team ID: {team_id}: {e}")
 
-calculate_and_update_rankings(39957)
-    
+def delete_all_rankings():
+    dynamodb = boto3.resource('dynamodb')
+    team_data_table = dynamodb.Table('team-data')
+    scan_kwargs = {}
+    count = 0
+    while True:
+        count += 1
+        print(f"Scanning and deleting page {count}")
+        response = team_data_table.scan(**scan_kwargs)
+        for item in response.get('Items', []):
+            team_id = item['id']
+            delete_ranking(team_id)
+        
+        if 'LastEvaluatedKey' in response:
+            scan_kwargs['ExclusiveStartKey'] = response['LastEvaluatedKey']
+        else:
+            break
+# print("Starting process")
+# delete_ranking(34474)        
+# calculate_and_update_rankings(54701)
+# calculate_and_update_rankings(30390)
+# print("Process complete") 
+
 print("Starting process")
-# process_rankings_for_all_events()
+delete_all_rankings()
+print("Completed deleting all rankings")
+process_rankings_for_all_events()
 print("Process complete")  
