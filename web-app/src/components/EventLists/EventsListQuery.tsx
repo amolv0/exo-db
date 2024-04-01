@@ -42,7 +42,12 @@
         const result = await response.json();
         if (result.length === 0 || result.error) {
           setLoading(false);
-          setError("Failed to find valid events");
+          if (status == 'ongoing') {
+            setError("No ongoing events");
+          } else {
+            setError("No events found")
+          }
+
           return;
         }
         const formattedIds = JSON.stringify(result);
@@ -62,7 +67,7 @@
         {loading ? ( // Display loading indicator if loading is true
           <CircularProgress style={{ margin: '20px' }} />
         ) : error ? ( 
-          <div>Error: {error}</div>
+          <div>{error}</div>
         ) :  (
             <div>
               <div className = "tableTitleEvent">{region} {programCode} Events</div>
