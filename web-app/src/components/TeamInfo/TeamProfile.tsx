@@ -1,8 +1,8 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Switch} from '@mui/material';
 import TeamReveals from "./TeamReveals";
 import { getSeasonNameFromId } from '../../SeasonEnum';
-
+import '../../Stylesheets/teamInfo.css';
 
 interface LocationData {
   venue: string | null;
@@ -48,9 +48,20 @@ interface JSONComponentProps {
 
 
 const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
+
+  const [showCurrentRankings, setShowCurrentRankings] = useState(true);
+  
+  useEffect(() => {
+  }, [showCurrentRankings]);
+
+  const toggleRankingsDisplay = () => {
+    setShowCurrentRankings(prevState => !prevState);
+  };
+
   if (!data) return null;
 
-  const { location, robot_name, program, registered, organization, reveals, awards, skills_rankings, skills_regional_ranking, teamskill_rankings, teamskill_regional_rankings, region, events } = data;
+  const { registered, reveals, skills_rankings, skills_regional_ranking, teamskill_rankings, teamskill_regional_rankings} = data;
+  let r = registered;
 
   // Function to find the maximum ranking based on robot value
   const findRecentRobotRanking = (rankings: Record<number, { [key: string]: number }>) => {
@@ -59,7 +70,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
 
     for (const seasonId in rankings) {
       const robotValue = rankings[seasonId]['robot'];
-      if (registered === 'true') {
+      if (r === 'true') {
         if (Number(seasonId) > maxSeasonId) {
           maxRanking = robotValue;
           maxSeasonId = Number(seasonId);
@@ -81,7 +92,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
 
     for (const seasonId in rankings) {
       const eloValue = rankings[seasonId];
-      if (registered === 'true') { 
+      if (r === 'true') { 
         if (Number(seasonId) > maxSeasonId) {
           maxRanking = eloValue;
           maxSeasonId = Number(seasonId);
@@ -110,94 +121,98 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
   // Extracting recent or max elo regional ranking
   const { maxRanking: maxEloRegionalRanking, maxSeasonId: maxEloRegionalSeasonId } = findRecentEloRanking(teamskill_regional_rankings);
 
+  if (registered == 'true') {
+    r = 'false';
+  }
+
+  // Extracting recent or max skill ranking based on robot value
+  const { maxRanking: maxSkillRanking2, maxSeasonId: maxSkillSeasonId2 } = findRecentRobotRanking(skills_rankings);
+
+  // Extracting recent or max regional skills
+  const { maxRanking: maxRegionalSkillRanking2, maxSeasonId: maxRegionalSkillSeasonId2 } = findRecentRobotRanking(skills_regional_ranking);
+
+  // Extracting recent or max elo ranking
+  const { maxRanking: maxEloRanking2, maxSeasonId: maxEloSeasonId2 } = findRecentEloRanking(teamskill_rankings);
+
+  // Extracting recent or max elo regional ranking
+  const { maxRanking: maxEloRegionalRanking2, maxSeasonId: maxEloRegionalSeasonId2 } = findRecentEloRanking(teamskill_regional_rankings);
+
   return (
-    <Box mx="auto" bgcolor="white" color="black" p={4} borderRadius={2} boxShadow={3} display="flex" flexDirection="column">
-      {/* Location and Info Section */}
-      <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }}>
-        {location && (
-          <Box flex={1} mr={{ xs: 0, md: 2 }} p={4} bgcolor="#E5D5D1" borderRadius={8} boxShadow={3} className="rounded-md shadow-md">
-            <Typography variant="h6" color="#84202A" className="mb-4">
-              Team Info
-            </Typography>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <tbody>
-                <tr>
-                  <td style={{ padding: '1px'}}>Organization</td>
-                  <td style={{ padding: '1px'}}>{organization}</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: '1px' }}>Location</td>
-                  <td style={{ padding: '1px' }}>{location.city + ',' || ''} {region || ''}</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: '1px' }}>Robot Name</td>
-                  <td style={{ padding: '1px' }}>{robot_name}</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: '1px' }}>Program</td>
-                  <td style={{ padding: '1px' }}>{program || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: '1px' }}>Registered</td>
-                  <td style={{ padding: '1px' }}>{registered || 'N/A'}</td>
-                </tr>
-              </tbody>
-            </table>
-          </Box>
+    <div>
+      {showCurrentRankings === true ? (
+        <div>
+          <div className = "team-profile-subtitle"> Current Rankings      
+          {data.registered === 'true' && (
+              <Switch
+                checked={!showCurrentRankings}
+                onChange={toggleRankingsDisplay}
+              />
+          )}
+          </div>
+          <div className = "team-profile-info">
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label">Skills</span>
+                <span className="team-profile-rank-value">{maxSkillRanking}</span>
+                <span className="team-profile-rank-label">{maxSkillSeasonId && getSeasonNameFromId(maxSkillSeasonId)}</span>
+              </div>
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label">Regional Skills</span>
+                <span className="team-profile-rank-value">{maxRegionalSkillRanking}</span>
+                <span className="team-profile-rank-label">{maxRegionalSkillSeasonId && getSeasonNameFromId(maxRegionalSkillSeasonId)}</span>
+              </div>
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label">Elo</span>
+                <span className="team-profile-rank-value">{maxEloRanking}</span>
+                <span className="team-profile-rank-label">{maxEloSeasonId && getSeasonNameFromId(maxEloSeasonId)}</span>
+              </div>
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label">Regional Elo</span>
+                <span className="team-profile-rank-value">{maxEloRegionalRanking}</span>
+                <span className="team-profile-rank-label">{maxEloRegionalSeasonId && getSeasonNameFromId(maxEloRegionalSeasonId)}</span>
+              </div>
+          </div>
+        </div>
+      ) : (    
+        <div>
+          <div className = "team-profile-subtitle"> Highest Rankings 
+          {data.registered === 'true' && (
+              <Switch
+                checked={!showCurrentRankings}
+                onChange={toggleRankingsDisplay}
+              />
+          )}</div>
+          <div className = "team-profile-info">
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label">Skills</span>
+                <span className="team-profile-rank-value">{maxSkillRanking2}</span>
+                <span className="team-profile-rank-label">{maxSkillSeasonId2 && getSeasonNameFromId(maxSkillSeasonId2)}</span>
+              </div>
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label">Regional Skills</span>
+                <span className="team-profile-rank-value">{maxRegionalSkillRanking2}</span>
+                <span className="team-profile-rank-label">{maxRegionalSkillSeasonId2 && getSeasonNameFromId(maxRegionalSkillSeasonId2)}</span>
+              </div>
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label">Elo</span>
+                <span className="team-profile-rank-value">{maxEloRanking2}</span>
+                <span className="team-profile-rank-label">{maxEloSeasonId2 && getSeasonNameFromId(maxEloSeasonId2)}</span>
+              </div>
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label">Regional Elo</span>
+                <span className="team-profile-rank-value">{maxEloRegionalRanking2}</span>
+                <span className="team-profile-rank-label">{maxEloRegionalSeasonId2 && getSeasonNameFromId(maxEloRegionalSeasonId2)}</span>
+              </div>
+          </div>
+        </div>
         )}
-        {/* Rankings Section */}
-        <Box flex={{ xs: 1, md: 2 }} ml={{ xs: 0, md: 2 }} p={4} bgcolor="#E5D5D1" borderRadius={8} boxShadow={3} className="rounded-md shadow-md">
-          <Typography variant="h6" color="#84202A" className="mb-4">
-            Stats
-          </Typography>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <tbody>
-              <tr>
-                <td style={{ padding: '1px'}}>Total Events</td>
-                <td style={{ padding: '1px'}}>
-                  {events ? events.length : 0}
-                </td>
-                <td style={{ padding: '1px', textAlign: "right"}}></td>
-              </tr>
-              <tr>
-                <td style={{ padding: '1px'}}>Award Count</td>
-                <td style={{ padding: '1px'}}>
-                  {awards ? awards.length : 0}
-                </td>
-                <td style={{ padding: '1px', textAlign: "right"}}></td>
-              </tr>
-              <tr>
-                <td style={{ padding: '1px' }}>{registered === 'true' ? 'Current' : 'Best'} Skills Rank</td>
-                <td style={{ padding: '1px' }}>{maxSkillRanking}</td>
-                <td style={{ padding: '1px', textAlign: "right" }}>{maxSkillSeasonId && getSeasonNameFromId(maxSkillSeasonId)}</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '1px' }}>{registered === 'true' ? 'Current' : 'Best'} Regional Skills Rank</td>
-                <td style={{ padding: '1px' }}>{maxRegionalSkillRanking}</td>
-                <td style={{ padding: '1px', textAlign: "right" }}>{maxRegionalSkillSeasonId && getSeasonNameFromId(maxRegionalSkillSeasonId)}</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '1px' }}>{registered === 'true' ? 'Current' : 'Best'} Elo Rank</td>
-                <td style={{ padding: '1px' }}>{maxEloRanking}</td>
-                <td style={{ padding: '1px', textAlign: "right" }}>{maxEloSeasonId && getSeasonNameFromId(maxEloSeasonId)}</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '1px' }}>{registered === 'true' ? 'Current' : 'Best'} Regional Elo Rank</td>
-                <td style={{ padding: '1px' }}>{maxEloRegionalRanking}</td>
-                <td style={{ padding: '1px', textAlign: "right"}}>{maxEloRegionalSeasonId && getSeasonNameFromId(maxEloRegionalSeasonId)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </Box>
-      </Box>
-  
+
       {/* Reveals Section */}
       {reveals && (
         <Box mt={3}>
           <TeamReveals reveals={reveals} />
         </Box>
       )}
-    </Box>
+    </div>
   );
   
 };
