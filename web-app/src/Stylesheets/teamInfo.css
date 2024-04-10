@@ -1,0 +1,99 @@
+.team-info-layout {
+    background-color: #84202A;
+}
+
+.team-info-background {
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+.title-team-info {
+    padding-top: 10px;
+    color: white;
+    font-weight: bold;
+    font-size: 30px; 
+    margin-left:100px;
+}
+
+.subtitle-team-info {
+    color: rgb(227, 153, 153);
+    font-weight: bold;
+    font-size: 15px; 
+    margin-left:100px;
+}
+
+.team-container {
+    display: flex;
+    justify-content: center;
+    background-color: #84202A;
+    border-radius: 4px;
+    margin-top: -25px;
+}
+
+.team-button {
+    padding: 8px 16px;
+    color: white;
+    cursor: pointer;
+    margin: 0 4px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.team-button:hover {
+    background-color: grey;
+}
+
+.team-button:focus {
+    outline: none;
+}
+
+.team-button.active {
+    border-bottom: 5px solid rgb(22, 4, 4);
+}
+
+.team-info-display {
+    background-color: rgb(255, 255, 255);
+    margin-left: 100px;
+    margin-right: 100px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-bottom: 40px;
+}
+
+.team-profile-subtitle {
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    padding-top:20px;
+}
+.team-profile-info {
+    display: flex;
+    justify-content: center;
+}
+
+.team-profile-row {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    width: 250px;
+}
+
+.team-profile-label {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.team-profile-rank-value {
+    font-size: 40px;
+    color: #28191D;
+    text-align: center;
+}
+
+.team-profile-rank-label {
+    color: #84202A;
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+}
+
+  
