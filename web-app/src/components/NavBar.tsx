@@ -4,9 +4,6 @@ const Navbar: React.FC = () => {
 
   return (
     <div>
-      <div className = "bg-theme_red h-8">
-        <p className = "ml-4">pre-release 1.0</p>
-      </div>
       <nav className="bg-dark_red p-4 text-xl text-white">
       <div className="container mx-auto flex justify-between items-center">
         {/* Powered By */}
@@ -14,7 +11,10 @@ const Navbar: React.FC = () => {
           {/* First element */}
           <Link to="https://www.igniterobotics.org/" target="_blank" rel="noopener noreferrer">
             <div className="flex items-center transition duration-400 hover:scale-110">
-              <span className="text-xl mr-2 font-bold">ignite.db</span>
+            <span className="text-xl mr-2 font-bold">ignite.db</span>
+            <div>
+                <span className="text-xs">pre-release 1.1</span>
+            </div>
             </div>
           </Link>
           <div>
