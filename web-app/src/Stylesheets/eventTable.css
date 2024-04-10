@@ -8,7 +8,9 @@
   background-color: #E5DCD7;
   border: 1px solid #84202A;
   border-radius: 9px;
-  overflow:hidden;
+  overflow: hidden;
+  max-width: 1050px;
+  margin: 0 auto;
 }
 
 .col {
@@ -30,26 +32,9 @@
   width: 310px;
 }
 
-.header-cell {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 12px 24px;
-  width: auto; /* Adjusted to fit content */
-  min-width: 132.75px; /* Minimum width */
-  height: 44px;
-  background: #28191D;
-  border-bottom: 1px solid #CFA1A4;
-}
-
-/* Body Cell */
 .body-cell {
-  /* Body Cell */
 
   box-sizing: border-box;
-
-  /* Auto layout */
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -67,14 +52,6 @@
   align-self: stretch;
   flex-grow: 0;
   color: #28191D;
-}
-
-/* Header */
-.header {
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 14px;
-  color: #CFA1A4;
 }
 
 /* Program Tag */
@@ -165,10 +142,85 @@ color: #E5D5D1;
 font-weight: normal;
 }
 
-.location {
-color: #CFA1A4;
-}
-
 .bg-opacity-65 {
 background-color: rgba(255, 255, 255, .5); /* Alternate color row settings */
+}
+
+.stat {
+  width: 200px;
+}
+
+.team {
+  width: 310px;
+}
+
+/* Header */
+.header {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 14px;
+  color: #CFA1A4;
+}
+
+.teamBox {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  gap: 10px;
+  background: #84202A;
+  border-radius: 3px;
+  font-weight: normal;
+  color: #E5D5D1;
+}
+
+.tableTitle {
+  display:flex;
+  align-items:center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.tableTitleEvent {
+  display:flex;
+  align-items:center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom:-35px;
+}
+
+.rank {
+  width: 80px;
+}
+
+.score {
+  width: 200px;
+}
+
+.event {
+  width: 450px;
+}
+
+.header-cell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 24px;
+  width: auto; /* Adjusted to fit content */
+  min-width: 132.75px; /* Minimum width */
+  height: 44px;
+  background: #28191D;
+  border-bottom: 1px solid #CFA1A4;
+}
+
+.scoreDisplay {
+  flex-direction: row;
+  padding: 8px;
+  border: 1px solid #000;
+
+}
+
+.location {
+color: #CFA1A4;
 }
