@@ -8,6 +8,7 @@ import TeamMatches from '../components/TeamInfo/TeamMatches';
 import TeamRankings from '../components/TeamInfo/TeamRankings';
 import { Box, Typography, Button, ButtonGroup, CircularProgress } from '@mui/material';
 import '../Stylesheets/pageLayout.css';
+import '../Stylesheets/teamInfo.css';
 
 const TeamInfo: React.FC = () => {
   const { teamId } = useParams<{ teamId: string }>();
@@ -59,64 +60,72 @@ const TeamInfo: React.FC = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 4, width: '100%', color: 'white' }}>
+    <div>
       {loading ? (
         <CircularProgress color="inherit" />
       ) : (
         teamData ? (
-          <Box sx={{ width: '100%', maxWidth: '1000px', color: 'white', p: 2}}>
-            <Typography mb="20px" variant="h4" color="black" align="center">
-              {teamData[0].number} {teamData[0].team_name}
-            </Typography>
+          <div>
+            <div className = "team-info-layout">
+              <div className = "title-team-info flex">
+                {teamData[0].number} {teamData[0].team_name} 
+                {teamData[0].organization && (
+                    <div> {'\u00A0'}| {teamData[0].organization}</div>
+                )}
+              </div>
+              <div className="subtitle-team-info">
+                <span className="mr-1">&#x1F3E0;</span>
+                {teamData[0].location.city + ',' || ''} {teamData[0].location.region || ''}
+              </div>
+              <div className="subtitle-team-info">
+                {teamData[0].registered === 'true' ? (
+                  <span>&#x2713; {teamData[0].program} Registered </span> // Checkmark (✓)
+                ) : (
+                  <span>&#10006; Not {teamData[0].program} Registered</span> // Cross (✖)
+                )}
+                                
+              </div>
+            </div>
+
+            <div className="team-container">
+              <div className={`team-button ${activeElement === 'TeamInfo' ? 'active' : ''}`} onClick={() => handleHeaderClick('TeamInfo')}>Team Info</div>
+              <div className={`team-button ${activeElement === 'Events' ? 'active' : ''}`} onClick={() => handleHeaderClick('Events')}>Events</div>
+              <div className={`team-button ${activeElement === 'Matches' ? 'active' : ''}`} onClick={() => handleHeaderClick('Matches')}>Matches</div>
+              <div className={`team-button ${activeElement === 'Skills' ? 'active' : ''}`} onClick={() => handleHeaderClick('Skills')}>Skills</div>
+              <div className={`team-button ${activeElement === 'Rankings' ? 'active' : ''}`} onClick={() => handleHeaderClick('Rankings')}>Rankings</div>
+              <div className={`team-button ${activeElement === 'Awards' ? 'active' : ''}`} onClick={() => handleHeaderClick('Awards')}>Awards</div>
+            </div>
             
-            <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: '#84202A', p: 1, borderRadius: '4px' }}>
-              <ButtonGroup>
-                {['Team Info', 'Events', 'Matches', 'Skills', 'Rankings', 'Awards'].map((element, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => handleHeaderClick(element.replace(/\s+/g, ''))}
-                    sx={{
-                      bgcolor: '#28191D',
-                      '&:hover': { bgcolor: 'grey.700' },
-                      color: 'white',
-                      '&:focus': {
-                        outline: 'none'
-                      }
-                    }}
-                  >
-                    {element}
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </Box>
-            {activeElement === 'TeamInfo' && teamData && (
-              <TeamProfile
-                data={teamData[0]}
-              />
-            )}
-            {activeElement === 'Events' && 
-              <TeamEvents eventIdsString={eventIdsString}></TeamEvents>
-            }
-            {activeElement === 'Matches' && 
-              <TeamMatches matches={teamData[0].matches}></TeamMatches>
-            }
-            {activeElement === 'Skills' && 
-              <TeamSkills skills={teamData[0].skills}></TeamSkills>
-            }
-            {activeElement === 'Rankings' && 
-              <TeamRankings rankings={teamData[0].rankings}></TeamRankings>
-            }
-            {activeElement === 'Awards' && 
-              <TeamAwards awards={teamData[0].awards}></TeamAwards>
-            }
-          </Box>
+            <div className = "team-info-display">
+              {activeElement === 'TeamInfo' && teamData && (
+                <TeamProfile
+                  data={teamData[0]}
+                />
+              )}
+              {activeElement === 'Events' && 
+                <TeamEvents eventIdsString={eventIdsString}></TeamEvents>
+              }
+              {activeElement === 'Matches' && 
+                <TeamMatches matches={teamData[0].matches}></TeamMatches>
+              }
+              {activeElement === 'Skills' && 
+                <TeamSkills skills={teamData[0].skills}></TeamSkills>
+              }
+              {activeElement === 'Rankings' && 
+                <TeamRankings rankings={teamData[0].rankings}></TeamRankings>
+              }
+              {activeElement === 'Awards' && 
+                <TeamAwards awards={teamData[0].awards}></TeamAwards>
+              }
+            </div>
+          </div>
         ) : (
           <Typography variant="h6" color="textSecondary" align="center">
             Team Not Found {teamId}
           </Typography>
         )
       )}
-    </Box>
+    </div>
   );
 };
 
