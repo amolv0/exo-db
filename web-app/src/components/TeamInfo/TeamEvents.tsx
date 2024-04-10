@@ -3,6 +3,7 @@ import '../../Stylesheets/eventTable.css'
 import { Link } from 'react-router-dom';
 import { IconButton, CircularProgress } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
+import { getSeasonNameFromId } from '../../SeasonEnum';
 
 interface EventListDisplayProps {
   eventIdsString: string | null;
@@ -13,13 +14,14 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
     const [ascending, setAscending] = useState<boolean>(false);
     const [groupsOf25, setGroupsOf25] = useState<number[][]>([]);
     const [selectedSeason, setSelectedSeason] = useState<number>(181);
-
+    const [total, setTotal] = useState<number>(181);
     const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null); // State to track error message
 
 
     const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
+        setTotal(arr.length);
         const groups: number[][] = [];
         for (let i = 0; i < arr.length; i += groupSize) {
             groups.push(arr.slice(i, i + groupSize));
@@ -120,6 +122,16 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
         ) :  (
         <div style={{ color: 'black' }}>
             <br />
+            <div className = "team-profile-info">
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label">Total Events: </span>
+                <span className="team-profile-rank-value">{total}</span>
+              </div>
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label"> {getSeasonNameFromId(selectedSeason)} Events </span>
+                <span className="team-profile-rank-value">{seasonMap[selectedSeason].length}</span>
+              </div>
+          </div>
             <div className="flex justify-center"> 
                 <SeasonDropdown
                 seasonId={selectedSeason}
@@ -188,6 +200,10 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
             ))}
             </div>
         </div>
+        <br>
+        </br>
+        <br>
+        </br>
         </div>
     )}
     </div>
