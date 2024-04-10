@@ -49,6 +49,7 @@ interface JSONComponentProps {
 
 const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
 
+  
   const [showCurrentRankings, setShowCurrentRankings] = useState(true);
   
   useEffect(() => {
@@ -141,7 +142,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
     <div>
       {showCurrentRankings === true ? (
         <div>
-          <div className = "team-profile-subtitle"> Current Rankings      
+          <div className = "team-profile-subtitle"> {registered === "true" ? "Current Rankings" : "Highest Rankings"}    
           {data.registered === 'true' && (
               <Switch
                 checked={!showCurrentRankings}
