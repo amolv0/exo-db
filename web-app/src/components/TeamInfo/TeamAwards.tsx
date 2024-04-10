@@ -124,16 +124,26 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
       ) : posts ? ( 
         <div>No awards found</div>
       ) : (
+      
         <div className="text-black">
-          <div className = "flex gap-10 mt-5">
-            <div>Total Awards: {awardData.length}</div>
-            <div>Total Tournaments Won: {champ}</div>
-            <div>Total Skills Won: {skills}</div>
-            <div>Total Excellences Won: {exc}</div>
+          <div className = "team-profile-info">
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label">Total Awards </span>
+                <span className="team-profile-rank-value">{awardData.length}</span>
+              </div>
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label"> Total Tournaments Won </span>
+                <span className="team-profile-rank-value">{champ}</span>
+              </div>
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label">Total Skills Won </span>
+                <span className="team-profile-rank-value">{skills}</span>
+              </div>
+              <div className="team-profile-row">
+                <span className="team-profile-rank-label"> Total Excellences Won </span>
+                <span className="team-profile-rank-value">{exc}</span>
+              </div>
           </div>
-
-
-          <br />
           <div className="flex justify-center"> 
             <SeasonDropdown
               seasonId={selectedSeason}

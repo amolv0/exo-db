@@ -5,9 +5,8 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
-import '../../Stylesheets/rankingsTable.css';
+import '../../Stylesheets/eventTable.css';
 import { getSeasonNameFromId } from '../../SeasonEnum';
-import { Grade } from '@mui/icons-material';
 
 interface SeasonRankingItem {
     team_name: string;
