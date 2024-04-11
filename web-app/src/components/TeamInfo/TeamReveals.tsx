@@ -39,13 +39,13 @@ const TeamReveals: React.FC<TeamRevealsProps> = ({ reveals }) => {
         {reveals[currentSlide].reveal_title}
       </Typography>
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <IconButton onClick={handlePreviousSlide} style={{ color: '#fff', marginRight: '8px' }}>
+        <IconButton onClick={handlePreviousSlide} style={{ color: 'black', marginRight: '8px' }}>
           <ChevronLeft />
         </IconButton>
         <Box ref={playerRef} style={{ width: '100%', height: '400px', overflow: 'hidden' }}>
           <ReactPlayer url={reveals[currentSlide].reveal_url} width="100%" height="100%" controls />
         </Box>
-        <IconButton onClick={handleNextSlide} style={{ color: '#fff', marginLeft: '8px' }}>
+        <IconButton onClick={handleNextSlide} style={{ color: 'black', marginLeft: '8px' }}>
           <ChevronRight />
         </IconButton>
       </Box>
