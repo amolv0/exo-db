@@ -67,11 +67,12 @@ const TeamInfo: React.FC = () => {
         teamData ? (
           <div>
             <div className = "team-info-layout">
-              <div className = "title-team-info flex">
-                {teamData[0].number} {teamData[0].team_name} 
-                {teamData[0].organization && (
-                    <div> {'\u00A0'}| {teamData[0].organization}</div>
-                )}
+              <div className = "title-team-info">
+              {teamData[0].organization ? (
+                  <div>{teamData[0].number} {teamData[0].team_name} | {teamData[0].organization}</div>
+              ) : (
+                  <div>{teamData[0].number} {teamData[0].team_name}</div>
+              )}
               </div>
               <div className="subtitle-team-info">
                 <span className="mr-1">&#x1F3E0;</span>
@@ -88,12 +89,12 @@ const TeamInfo: React.FC = () => {
             </div>
 
             <div className="team-container">
-              <div className={`team-button ${activeElement === 'TeamInfo' ? 'active' : ''}`} onClick={() => handleHeaderClick('TeamInfo')}>Team Info</div>
-              <div className={`team-button ${activeElement === 'Events' ? 'active' : ''}`} onClick={() => handleHeaderClick('Events')}>Events</div>
-              <div className={`team-button ${activeElement === 'Matches' ? 'active' : ''}`} onClick={() => handleHeaderClick('Matches')}>Matches</div>
-              <div className={`team-button ${activeElement === 'Skills' ? 'active' : ''}`} onClick={() => handleHeaderClick('Skills')}>Skills</div>
-              <div className={`team-button ${activeElement === 'Rankings' ? 'active' : ''}`} onClick={() => handleHeaderClick('Rankings')}>Rankings</div>
-              <div className={`team-button ${activeElement === 'Awards' ? 'active' : ''}`} onClick={() => handleHeaderClick('Awards')}>Awards</div>
+              <div className={`team-button transition ${activeElement === 'TeamInfo' ? 'active' : ''}`} onClick={() => handleHeaderClick('TeamInfo')}>Team Info</div>
+              <div className={`team-button transition ${activeElement === 'Events' ? 'active' : ''}`} onClick={() => handleHeaderClick('Events')}>Events</div>
+              <div className={`team-button transition ${activeElement === 'Matches' ? 'active' : ''}`} onClick={() => handleHeaderClick('Matches')}>Matches</div>
+              <div className={`team-button transition ${activeElement === 'Skills' ? 'active' : ''}`} onClick={() => handleHeaderClick('Skills')}>Skills</div>
+              <div className={`team-button transition ${activeElement === 'Rankings' ? 'active' : ''}`} onClick={() => handleHeaderClick('Rankings')}>Rankings</div>
+              <div className={`team-button transition ${activeElement === 'Awards' ? 'active' : ''}`} onClick={() => handleHeaderClick('Awards')}>Awards</div>
             </div>
             
             <div className = "team-info-display">
