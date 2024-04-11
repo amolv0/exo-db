@@ -20,6 +20,10 @@
   padding: 0px;
 }
 
+.x-small {
+  width: 80px;
+}
+
 .small {
   width: 120px;
 }
@@ -34,6 +38,22 @@
 
 .mid {
   width: 310px;
+}
+
+.team {
+  width: 310px;
+}
+
+.stat {
+  width: 200px;
+}
+
+.rankings {
+  width: 121px;
+}
+
+.rankings-t {
+  width: 123px;
 }
 
 .body-cell {
@@ -150,13 +170,6 @@ font-weight: normal;
 background-color: rgba(255, 255, 255, .5); /* Alternate color row settings */
 }
 
-.stat {
-  width: 200px;
-}
-
-.team {
-  width: 310px;
-}
 
 /* Header */
 .header {
