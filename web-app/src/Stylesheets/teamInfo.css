@@ -8,18 +8,22 @@
 }
 
 .title-team-info {
+    text-align: left;
     padding-top: 10px;
     color: white;
     font-weight: bold;
-    font-size: 30px; 
-    margin-left:100px;
+    font-size: 30px;
+    position: relative;
+    left: calc((100vw - 1540px) / 2); /* Adjust this value to set the maximum leftward expansion */
 }
 
 .subtitle-team-info {
+    text-align: left;
     color: rgb(227, 153, 153);
     font-weight: bold;
     font-size: 15px; 
-    margin-left:100px;
+    position: relative;
+    left: calc((100vw - 1540px) / 2); /* Adjust this value to set the maximum leftward expansion */
 }
 
 .team-container {
@@ -27,20 +31,27 @@
     justify-content: center;
     background-color: #84202A;
     border-radius: 4px;
-    margin-top: -25px;
 }
 
 .team-button {
-    padding: 8px 16px;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 50px;
+    padding-bottom: 8px;
     color: white;
     cursor: pointer;
     margin: 0 4px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+    margin-top: -60px;
+}
+
+.transition {
+    transition-duration: 0.2s;
 }
 
 .team-button:hover {
-    background-color: grey;
+    transform: scale(1.1);
 }
 
 .team-button:focus {
@@ -53,11 +64,12 @@
 
 .team-info-display {
     background-color: rgb(255, 255, 255);
-    margin-left: 100px;
-    margin-right: 100px;
+    max-width:1200px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+    margin: 0 auto;
     margin-bottom: 40px;
+    display: block;
 }
 
 .team-profile-subtitle {
@@ -96,4 +108,44 @@
     text-align: center;
 }
 
-  
+.smooth-switch {
+    transition: all 0.3s ease;
+}
+
+.event-profile-info {
+    display: flex;
+    justify-content: center;
+}
+
+.event-profile-row {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    width: 250px;
+}
+
+.event-profile-label {
+    color: #84202A;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+}
+
+.event-profile-subtitle {
+    font-weight: bold;
+    font-size: 30px;
+    text-align: center;
+    padding-top:20px;
+}
+
+.champion {
+    font-family: 'Roboto', sans-serif; /* Use any desired font */
+    text-transform: uppercase; /* Transform text to uppercase */
+    font-weight: bold; /* Apply bold font weight */
+    color: rgb(47, 182, 255);
+}
+.event-profile-value {
+    font-size: 30px;
+    color: #28191D;
+    text-align: center;
+}
