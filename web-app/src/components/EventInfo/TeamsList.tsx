@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress } from '@mui/material';
 import { group } from 'console';
+import '../../Stylesheets/eventTable.css'
 
 interface LocationData {
   city: string | null;
@@ -22,7 +23,7 @@ interface JSONComponentProps {
 }
 
 const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
-  const [teamDetails, setTeamDetails] = useState<TeamDetail[]>([]);
+  const [teamDetails] = useState<TeamDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
   const [groupsOf100, setGroupsOf100] = useState<number[][]>([]);
@@ -80,56 +81,75 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
   }, [teams, isFirstUseEffectDone]);
 
   return (
-    <TableContainer component={Paper} sx={{ mt: 4, bgcolor: 'gray.700' }}>
+    <div>
       {loading ? (
         <CircularProgress color="inherit" />
       ) : teamDetails.length > 0 ? (
-        <>
-          <Table>
-            <TableHead sx={{ backgroundColor: 'grey' }}>
-              <TableRow>
-                <TableCell>Number</TableCell>
-                <TableCell>Team Name</TableCell>
-                <TableCell>Organization</TableCell>
-                <TableCell>Location</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {teamDetails.map((team, index) => (
-                <TableRow key={index} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell component="th" scope="row">
-                    <Typography sx={{ '& a': { color: 'black', textDecoration: 'none', '&:hover': { opacity: 0.7 } } }}>
-                      <Link to={`/teams/${team.id}`}>{team.number}</Link>
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography sx={{ '& a': { color: 'black', textDecoration: 'none', '&:hover': { opacity: 0.7 } } }}>
-                      <Link to={`/teams/${team.id}`}>{team.team_name}</Link>
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography sx={{ '& a': { color: 'black', textDecoration: 'none', '&:hover': { opacity: 0.7 } } }}>
-                      <Link to={`/teams/${team.id}`}>{team.organization}</Link>
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography sx={{ '& a': { color: 'black', textDecoration: 'none', '&:hover': { opacity: 0.7 } } }}>
-                      <Link to={`/teams/${team.id}`}>
-                        {team.location?.city}{team.location?.city && team.location?.region ? ', ' : ''}{team.location?.region}{team.location?.region && team.location?.country ? ', ' : ''}{team.location?.country}
-                      </Link>
-                    </Typography>
-                  </TableCell>
-                </TableRow>
+        <div className = "p-10">
+        <div className="table">
+          <div className="header col small">
+            <div className = "header-cell rounded-tl-lg">
+            Number
+            </div>
+            {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index, array) => (
+              <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                <div>
+                      <Link to={`/teams/${team.id}`} className = "teamBox">{team.number}</Link>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div>
+            <div className="header col mid">
+              <div className = "header-cell">
+              Team Name
+              </div>
+              {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
+                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                  <div>
+                    <Link to={`/teams/${team.id}`}>{team.team_name}</Link>
+                  </div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
-        </>
+            </div>
+          </div>
+          <div>
+            <div className="header col mid">
+              <div className = "header-cell">
+              Organization
+              </div>
+              {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
+                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                  <div>
+                    {team.organization}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="header col mid">
+              <div className = "rounded-tr-lg header-cell">
+              Location
+              </div>
+              {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
+                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                  <div>
+                  {team.location?.city}{team.location?.city && team.location?.region ? ', ' : ''}
+                  {team.location?.region}{team.location?.region && team.location?.country ? ', ' : ''}{team.location?.country}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        </div>
       ) : (
         <Typography variant="h6" component="div" sx={{ p: 2, color: 'white', textAlign: 'center' }}>
           No teams available
         </Typography>
       )}
-    </TableContainer>
+    </div>
   );
 };
 
