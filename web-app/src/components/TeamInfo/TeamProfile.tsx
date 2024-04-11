@@ -55,6 +55,12 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
   useEffect(() => {
   }, [showCurrentRankings]);
 
+  useEffect(() => {
+    if (data) {
+     
+    }
+  }, [data]);
+
   const toggleRankingsDisplay = () => {
     setShowCurrentRankings(prevState => !prevState);
   };
@@ -145,29 +151,30 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
           <div className = "team-profile-subtitle"> {registered === "true" ? "Current Rankings" : "Highest Rankings"}    
           {data.registered === 'true' && (
               <Switch
-                checked={!showCurrentRankings}
-                onChange={toggleRankingsDisplay}
+                  checked={!showCurrentRankings}
+                  onChange={toggleRankingsDisplay}
+                  className="smooth-switch"
               />
           )}
           </div>
           <div className = "team-profile-info">
               <div className="team-profile-row">
-                <span className="team-profile-rank-label">Skills</span>
+                <span className="team-profile-rank-label">Global Skills Rank</span>
                 <span className="team-profile-rank-value">{maxSkillRanking}</span>
                 <span className="team-profile-rank-label">{maxSkillSeasonId && getSeasonNameFromId(maxSkillSeasonId)}</span>
               </div>
               <div className="team-profile-row">
-                <span className="team-profile-rank-label">Regional Skills</span>
+                <span className="team-profile-rank-label">Regional Skills Rank</span>
                 <span className="team-profile-rank-value">{maxRegionalSkillRanking}</span>
                 <span className="team-profile-rank-label">{maxRegionalSkillSeasonId && getSeasonNameFromId(maxRegionalSkillSeasonId)}</span>
               </div>
               <div className="team-profile-row">
-                <span className="team-profile-rank-label">Elo</span>
+                <span className="team-profile-rank-label">Global Elo Rank</span>
                 <span className="team-profile-rank-value">{maxEloRanking}</span>
                 <span className="team-profile-rank-label">{maxEloSeasonId && getSeasonNameFromId(maxEloSeasonId)}</span>
               </div>
               <div className="team-profile-row">
-                <span className="team-profile-rank-label">Regional Elo</span>
+                <span className="team-profile-rank-label">Regional Elo Rank</span>
                 <span className="team-profile-rank-value">{maxEloRegionalRanking}</span>
                 <span className="team-profile-rank-label">{maxEloRegionalSeasonId && getSeasonNameFromId(maxEloRegionalSeasonId)}</span>
               </div>
@@ -184,22 +191,22 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ data }) => {
           )}</div>
           <div className = "team-profile-info">
               <div className="team-profile-row">
-                <span className="team-profile-rank-label">Skills</span>
+                <span className="team-profile-rank-label">Global Skills Rank</span>
                 <span className="team-profile-rank-value">{maxSkillRanking2}</span>
                 <span className="team-profile-rank-label">{maxSkillSeasonId2 && getSeasonNameFromId(maxSkillSeasonId2)}</span>
               </div>
               <div className="team-profile-row">
-                <span className="team-profile-rank-label">Regional Skills</span>
+                <span className="team-profile-rank-label">Regional Skills Rank</span>
                 <span className="team-profile-rank-value">{maxRegionalSkillRanking2}</span>
                 <span className="team-profile-rank-label">{maxRegionalSkillSeasonId2 && getSeasonNameFromId(maxRegionalSkillSeasonId2)}</span>
               </div>
               <div className="team-profile-row">
-                <span className="team-profile-rank-label">Elo</span>
+                <span className="team-profile-rank-label">Global Elo Rank</span>
                 <span className="team-profile-rank-value">{maxEloRanking2}</span>
                 <span className="team-profile-rank-label">{maxEloSeasonId2 && getSeasonNameFromId(maxEloSeasonId2)}</span>
               </div>
               <div className="team-profile-row">
-                <span className="team-profile-rank-label">Regional Elo</span>
+                <span className="team-profile-rank-label">Regional Elo Rank</span>
                 <span className="team-profile-rank-value">{maxEloRegionalRanking2}</span>
                 <span className="team-profile-rank-label">{maxEloRegionalSeasonId2 && getSeasonNameFromId(maxEloRegionalSeasonId2)}</span>
               </div>
