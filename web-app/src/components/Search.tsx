@@ -4,6 +4,7 @@ import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>('');
@@ -75,16 +76,19 @@ const Search: React.FC = () => {
 
   return (
     <div className="text-xl relative">
-        <TextField
-        variant="outlined"
-        size="small"
-        placeholder="Search"
-        value={query}
-        onChange={handleInputChange}
-        onClick={handleSearchQuery}
-        style={{ backgroundColor: "#f5f5f5" }}
-        />
-
+       {/* Adjust the margin and color as needed */}
+      <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Search"
+          value={query}
+          onChange={handleInputChange}
+          onClick={handleSearchQuery}
+          style={{
+              backgroundColor: "#f5f5f5",
+              borderRadius: "5px"  /* Adjust the value to control the roundness */
+          }}
+      />
         {showDropdown && (
             <List
                 sx={{
