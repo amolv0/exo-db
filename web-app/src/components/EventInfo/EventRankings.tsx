@@ -7,6 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import '../../Stylesheets/eventTable.css';
 
 interface TeamData {
     name: string;
@@ -53,63 +54,115 @@ const RankingsComponent: React.FC<Props> = ({ divisions }) => {
     const { rankings } = selectedDivision;
     const sortedRankings = [...rankings].sort((a, b) => a.rank - b.rank);
 
-    const headerStyle = {
-        backgroundColor: '#595959',
-        color: 'white',
-    };
-
-    const rowStyle = {
-        height: '36px',
-    };
-
     return (
         <div>
-            <select value={selectedDivisionIndex} onChange={(e) => handleDivisionChange(Number(e.target.value))}>
-                {divisions.map((division, index) => (
-                    <option key={index} value={index}>
-                        {division.name}
-                    </option>
-                ))}
-            </select>
+            {divisions.length > 1 && (
+                <select value={selectedDivisionIndex} onChange={(e) => handleDivisionChange(Number(e.target.value))}>
+                    {divisions.map((division, index) => (
+                        <option key={index} value={index}>
+                            {division.name}
+                        </option>
+                    ))}
+                </select>
+            )}
 
-            <TableContainer component={Paper}>
-                <Table aria-label="simple table" size="small">
-                    <TableHead style={headerStyle}>
-                        <TableRow>
-                            <TableCell style={{ fontWeight: 'bold' }}>Rank</TableCell>
-                            <TableCell align="right" style={{ fontWeight: 'bold' }}>Number</TableCell>
-                            <TableCell align="right" style={{ fontWeight: 'bold' }}>W-L-T</TableCell>
-                            <TableCell align="right" style={{ fontWeight: 'bold' }}>Avg Points</TableCell>
-                            <TableCell align="right" style={{ fontWeight: 'bold' }}>OPR</TableCell>
-                            <TableCell align="right" style={{ fontWeight: 'bold' }}>DPR</TableCell>
-                            <TableCell align="right" style={{ fontWeight: 'bold' }}>CCWM</TableCell>
-                            <TableCell align="right" style={{ fontWeight: 'bold' }}>WP</TableCell>
-                            <TableCell align="right" style={{ fontWeight: 'bold' }}>AP</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {sortedRankings.map((rank) => (
-                            <TableRow key={rank.team.id} style={rowStyle}>
-                                <TableCell component="th" scope="row">
-                                    {rank.rank}
-                                </TableCell>
-                                <TableCell align="right">
-                                    <Link to={`/teams/${rank.team.id}`} style={{ color: 'blue', textDecoration: 'underline' }}>
-                                        {rank.team.name}
-                                    </Link>
-                                </TableCell>
-                                <TableCell align="right">{rank.wins}-{rank.losses}-{rank.ties}</TableCell>
-                                <TableCell align="right">{rank.average_points}</TableCell>
-                                <TableCell align="right">{rank.opr}</TableCell>
-                                <TableCell align="right">{rank.dpr}</TableCell>
-                                <TableCell align="right">{rank.ccwm}</TableCell>
-                                <TableCell align="right">{rank.wp}</TableCell>
-                                <TableCell align="right">{rank.ap}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+
+            <div className="table">
+                <div className="header col x-small">
+                    <div className = "header-cell rounded-tl-lg">
+                    Rank
+                    </div>
+                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                            {index + 1}
+                        </div>
+                    ))}
+                </div>
+                <div className="header col rankings-t">
+                    <div className = "header-cell">
+                    Number
+                    </div>
+                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                            <div>
+                                <Link className="teamBox" to={`/teams/${rank.team.id}`}>
+                                    {rank.team.name}
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="header col rankings">
+                    <div className = "header-cell">
+                    W-L-T
+                    </div>
+                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                            {rank.wins}-{rank.losses}-{rank.ties}
+                        </div>
+                    ))}
+                </div>
+                <div className="header col rankings">
+                    <div className = "header-cell">
+                    Avg Points
+                    </div>
+                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                            {rank.average_points}
+                        </div>
+                    ))}
+                </div>
+                <div className="header col rankings">
+                    <div className = "header-cell">
+                    OPR
+                    </div>
+                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                            {rank.opr}
+                        </div>
+                    ))}
+                </div>
+                <div className="header col rankings">
+                    <div className = "header-cell">
+                    DPR
+                    </div>
+                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                            {rank.dpr}
+                        </div>
+                    ))}
+                </div>
+                <div className="header col rankings">
+                    <div className = "header-cell">
+                    CCWM
+                    </div>
+                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                            {rank.ccwm}
+                        </div>
+                    ))}
+                </div>
+                <div className="header col rankings">
+                    <div className = "header-cell">
+                    WP
+                    </div>
+                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                            {rank.wp}
+                        </div>
+                    ))}
+                </div>
+                <div className="header col rankings">
+                    <div className = "rounded-tr-lg header-cell">
+                    AP
+                    </div>
+                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                            {rank.ap}
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };
