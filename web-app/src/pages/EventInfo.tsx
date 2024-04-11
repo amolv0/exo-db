@@ -6,8 +6,9 @@ import MatchesList from '../components/EventInfo/MatchesList';
 import EventRankings from '../components/EventInfo/EventRankings';
 import EventSkills from '../components/EventInfo/EventSkills';
 import EventElims from '../components/EventInfo/EventElims';
-import { Box, Typography, Button, ButtonGroup, CircularProgress } from '@mui/material';
-
+import { Box, Typography, Button, ButtonGroup, CircularProgress} from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import '../Stylesheets/teamInfo.css';
 const EventInfo: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -50,50 +51,54 @@ const EventInfo: React.FC = () => {
   }, [location.search]);
   
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 4, bgcolor: 'lightgrey', width: '100%' }}>
+    <div>
       {loading ? (
         <CircularProgress color="inherit" />
       ) : (
         eventData && eventData.length > 0 ? (
-          <Box sx={{ width: '100%', maxWidth: '800px', bgcolor: 'white', color: 'text.primary', p: 2, borderRadius: 2, boxShadow: 3 }}>
-            <Typography variant="h4" color="textPrimary" align="center" my={4}>
-              Event Details for {eventData[0].name}
-            </Typography>
+          
+          <div>
+            <div className = "team-info-layout">
+              <div className = "title-team-info">
+              {eventData[0].name && (
+                  <div>{eventData[0].name}</div>
+              )}
+              </div>
+              <div className="subtitle-team-info">
+                <span className="mr-1">&#x1F3E0;</span>
+                {eventData[0].location.address_1 + ', ' || ''}{eventData[0].location.city + ', ' || ''} 
+                 {eventData[0].location.region + ', ' || ''}{eventData[0].location.country || ''}
+              </div>
+              <div className="subtitle-team-info">
+                <InfoIcon/>
+                {eventData[0].season.name || 'N/A'}           
+              </div>
+            </div>
             
-            <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: 'darkgrey', p: 1, borderRadius: '4px', mb: 4 }}>
-              <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                {['Event Info', 'Teams List', 'Matches', 'Rankings', 'Elims', 'Skills'].map((element, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => handleHeaderClick(element.replace(/\s+/g, ''))}
-                    sx={{
-                      bgcolor: 'darkgrey',
-                      '&:hover': { bgcolor: 'grey.700' },
-                      color: 'white',
-                      '&:focus': { // Targeting the focus state
-                        outline: 'none'
-                      }
-                    }}
-                  >
-                    {element}
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </Box>
-            {activeElement === 'EventInfo' && <EventLocation location={eventData[0].location} season={eventData[0].season} program={eventData[0].program.code} awards={eventData[0].awards} />}
-            {activeElement === 'TeamsList' && <TeamsList teams={eventData[0].teams} />}
-            {activeElement === 'Matches' && <MatchesList divisions={eventData[0].divisions} />}
-            {activeElement === 'Rankings' && <EventRankings divisions={eventData[0].divisions} />}
-            {activeElement === 'Elims' && <EventElims division={eventData[0].divisions[0]} />}
-            {activeElement === 'Skills' && <EventSkills skills={eventData[0].skills} />}
-          </Box>
+            <div className="team-container">
+              <div className={`team-button transition ${activeElement === 'EventInfo' ? 'active' : ''}`} onClick={() => handleHeaderClick('EventInfo')}>Event Info</div>
+              <div className={`team-button transition ${activeElement === 'TeamsList' ? 'active' : ''}`} onClick={() => handleHeaderClick('TeamsList')}>Teams List</div>
+              <div className={`team-button transition ${activeElement === 'Matches' ? 'active' : ''}`} onClick={() => handleHeaderClick('Matches')}>Matches</div>
+              <div className={`team-button transition ${activeElement === 'Rankings' ? 'active' : ''}`} onClick={() => handleHeaderClick('Rankings')}>Rankings</div>
+              <div className={`team-button transition ${activeElement === 'Elims' ? 'active' : ''}`} onClick={() => handleHeaderClick('Elims')}>Elims</div>
+              <div className={`team-button transition ${activeElement === 'Skills' ? 'active' : ''}`} onClick={() => handleHeaderClick('Skills')}>Skills</div>
+            </div>
+            <div className = "team-info-display">
+              {activeElement === 'EventInfo' && <EventLocation location={eventData[0].location} season={eventData[0].season} program={eventData[0].program.code} awards={eventData[0].awards} />}
+              {activeElement === 'TeamsList' && <TeamsList teams={eventData[0].teams} />}
+              {activeElement === 'Matches' && <MatchesList divisions={eventData[0].divisions} />}
+              {activeElement === 'Rankings' && <EventRankings divisions={eventData[0].divisions} />}
+              {activeElement === 'Elims' && <EventElims division={eventData[0].divisions[0]} />}
+              {activeElement === 'Skills' && <EventSkills skills={eventData[0].skills} />}
+            </div>
+          </div>
         ) : (
           <Typography variant="h6" color="textSecondary" align="center">
-            Match not found for Event ID {eventId}
+            Event {eventId} Not Found
           </Typography>
         )
       )}
-    </Box>
+    </div>
   );
 };
 
