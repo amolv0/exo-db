@@ -181,7 +181,7 @@ const SeasonRanking: React.FC<{ program:string; season: string; region?: string 
         <div>
           <div className="flex justify-between items-center mt-4">
             <div className = "tableTitle">
-            {region} {getSeasonNameFromId(parseInt(season))} Skills
+            {region} {getSeasonNameFromId(parseInt(season))} Rankings
             </div>
             <div className = "page">
               {(currentPage * page) - (page -1)} - {Math.min(currentPage * page, seasonRanking.length + 
