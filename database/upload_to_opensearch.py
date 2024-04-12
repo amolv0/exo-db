@@ -1,6 +1,7 @@
 import boto3
 import json
 import requests
+import os
 from requests_aws4auth import AWS4Auth
 from boto3.dynamodb.types import TypeDeserializer
 from decimal import Decimal
@@ -8,7 +9,7 @@ from decimal import Decimal
 # AWS Configuration
 region = 'us-east-1'
 service = 'es'
-opensearch_endpoint = 'OPENSEARCH_API_ENDPOINT'
+opensearch_endpoint = os.getenv('OPENSEARCH_API_ENDPOINT')
 index_name = 'search-index'  # Unified index name
 
 # Initialize AWS services
