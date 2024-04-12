@@ -179,8 +179,8 @@ def delete_all_rankings():
 # calculate_and_update_rankings(30390)
 # print("Process complete") 
 
-print("Starting process")
-delete_all_rankings()
-print("Completed deleting all rankings")
-process_rankings_for_all_events()
-print("Process complete")  
+# print("Starting process")
+# delete_all_rankings()
+# print("Completed deleting all rankings")
+# process_rankings_for_all_events()
+# print("Process complete")  
