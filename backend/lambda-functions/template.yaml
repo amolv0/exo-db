@@ -165,6 +165,15 @@ Resources:
       CodeUri: ./otherFuncs/auditOngoing
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
 
+  matchSimulatorPost:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: exodb-matchSimulatorPost
+      Handler: MatchSimulatorPost.handler
+      Runtime: python3.10 
+      CodeUri: ./restApi/MatchSimulator/MatchSimulatorPost
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+
   updateTeamFromStream:
     Type: AWS::Serverless::Function 
     Properties:
