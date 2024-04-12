@@ -3,19 +3,16 @@ import { DynamoDBDocumentClient, BatchGetCommand, QueryCommand } from "@aws-sdk/
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { Readable } from "node:stream";
 
-// Initialize DynamoDB Client
 const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 const s3Client = new S3Client({ region: "us-east-1" });
 
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-// Interface for Lambda event structure
 interface LambdaEvent {
     httpMethod: string;
     pathParameters?: {
@@ -24,7 +21,6 @@ interface LambdaEvent {
     body?: string;
 }
 
-// Interface for the response structure
 interface LambdaResponse {
     statusCode: number;
     headers: {};
@@ -40,29 +36,28 @@ async function fetch_divisions_from_s3(s3_reference: string): Promise<any> {
     }
     const [, bucketName, key] = match;
 
-    // Fetch the object from S3
     const command = new GetObjectCommand({
         Bucket: bucketName,
         Key: key,
     });
     const { Body } = await s3Client.send(command);
 
-    if (Body instanceof Readable) { // Ensure the body is a stream
+    if (Body instanceof Readable) {
         const divisionsData = await streamToString(Body);
-        return JSON.parse(divisionsData); // Assuming the divisions data is JSON-formatted
+        return JSON.parse(divisionsData); 
     } else {
         throw new Error("Expected a readable stream for S3 object body");
     }
 }
 
-// Function to get specifi event details for a GET request
+// Function to get specific event details for a GET request
 const getEventDetails = async (eventId: string): Promise<any> => {
-    const numericEventId = Number(eventId); // Convert eventId to a number
+    const numericEventId = Number(eventId);
     const params = {
         TableName: 'event-data',
         KeyConditionExpression: 'id = :eventIdValue',
         ExpressionAttributeValues: {
-            ':eventIdValue': numericEventId, // Use numericEventId here
+            ':eventIdValue': numericEventId,
         },
     };
 
@@ -96,11 +91,11 @@ async function streamToString(stream: Readable): Promise<string> {
   
 // Function to get details for multiple events for a POST request
 const getMultipleEventDetails = async (eventIds: string[]): Promise<any> => {
-    const numericEventIds = eventIds.map(id => ({ id: Number(id) })); // Convert each eventId to a number
+    const numericEventIds = eventIds.map(id => ({ id: Number(id) }));
     const params = {
         RequestItems: {
             'event-data': {
-                Keys: numericEventIds, // Use numericEventIds here
+                Keys: numericEventIds,
                 ProjectionExpression: "id, #name, #start, #end, #location, #region, #season, #program, #level",
                 ExpressionAttributeNames: {
                     "#name": "name",
@@ -144,10 +139,8 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
                 throw new Error("Event Id not properly provided through path parameters");
             }
         } else if (event.httpMethod === 'POST') {
-            // Handle POST request
             let eventIds: string[];
 
-            // Parse the JSON string from the request body
             try {
                 const parsedBody = JSON.parse(event.body || '[]');
                 if (Array.isArray(parsedBody)) {

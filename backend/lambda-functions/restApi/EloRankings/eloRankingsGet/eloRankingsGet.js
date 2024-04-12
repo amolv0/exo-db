@@ -3,10 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-// Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -30,7 +28,6 @@ const fetchPage = async (season, desiredPage = 1, regions) => {
         Limit: fetchLimit,
     };
     if (regions && regions.length > 0) {
-        // Construct the filter expression for regions
         const regionFilters = regions.map((_, index) => `#region${index} = :region${index}`).join(' OR ');
         baseParams.FilterExpression = `(${regionFilters})`;
         baseParams.ExpressionAttributeNames = {};
@@ -55,7 +52,6 @@ const fetchPage = async (season, desiredPage = 1, regions) => {
                     // Start adding items to the results once the correct offset is reached
                     results.push(item);
                     if (results.length === pageSize) {
-                        // Stop if the page is filled
                         break;
                     }
                 }
@@ -63,7 +59,6 @@ const fetchPage = async (season, desiredPage = 1, regions) => {
         }
         ExclusiveStartKey = response.LastEvaluatedKey;
         itemsFetched += response.Items?.length || 0;
-        // Break the loop if there are no more items to fetch or we've already collected enough items
         if (!ExclusiveStartKey || (results.length >= pageSize)) {
             break;
         }
@@ -250,7 +245,6 @@ const determineRegions = async (input) => {
         "United Arab Emirates": ["United Arab Emirates"],
         "United Kingdom": ["United Kingdom"],
         "Vietnam": ["Vietnam"],
-        // Add other countries and their regions if necessary
     };
     // Dynamically determine if the country should be treated as its own region or has specific regions
     if (regions.hasOwnProperty(input)) {
@@ -260,7 +254,6 @@ const determineRegions = async (input) => {
         // Check if input is a region in any of the countries
         for (const countryRegions of Object.values(regions)) {
             if (countryRegions.includes(input)) {
-                // Input is a region
                 return [input];
             }
         }

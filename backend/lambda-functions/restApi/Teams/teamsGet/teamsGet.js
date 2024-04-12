@@ -3,10 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-// Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -18,8 +16,8 @@ const handler = async (event) => {
     const program = event.queryStringParameters?.program;
     const registered = event.queryStringParameters?.registered;
     let responsesParam = parseInt(event.queryStringParameters?.responses || '100', 10);
-    responsesParam = isNaN(responsesParam) ? 100 : responsesParam; // Default to 100 if not a number
-    const maxResponses = Math.min(responsesParam, 500); // Cap at 500
+    responsesParam = isNaN(responsesParam) ? 100 : responsesParam;
+    const maxResponses = Math.min(responsesParam, 500); // Cap at 500, remove later?
     let accumulatedItems = [];
     let lastEvaluatedKey = undefined;
     const baseParams = {
@@ -31,7 +29,6 @@ const handler = async (event) => {
     if (registered === 'any') {
         // When registered=any, do not filter by registered status
         if (region) {
-            // Start with base query parameters for RegionRegisteredIndex
             let queryParams = {
                 ...baseParams,
                 IndexName: 'RegionRegisteredIndex',
@@ -40,7 +37,6 @@ const handler = async (event) => {
                 ExpressionAttributeValues: { ':region': region },
             };
             if (program) {
-                // If program is also specified, add a FilterExpression to filter the results by program
                 queryParams.FilterExpression = '#program = :program';
                 queryParams.ExpressionAttributeNames['#program'] = 'program';
                 queryParams.ExpressionAttributeValues[':program'] = program;
@@ -58,13 +54,12 @@ const handler = async (event) => {
             });
         }
         else {
-            // Perform a simple scan if no region or program is specified
             command = new lib_dynamodb_1.ScanCommand(baseParams);
         }
     }
     else {
         // Handle cases with specific registered values or when registered is not provided
-        const registeredValue = registered === 'false' ? 'false' : 'true'; // Default to 'true' if not explicitly set to 'false'
+        const registeredValue = registered === 'false' ? 'false' : 'true';
         if (region) {
             // Use RegionRegisteredIndex to filter by region
             let queryParams = {
@@ -81,7 +76,6 @@ const handler = async (event) => {
                 },
             };
             if (program) {
-                // If program is also specified, add a FilterExpression to filter the results by program
                 queryParams.FilterExpression = '#program = :program';
                 queryParams.ExpressionAttributeNames['#program'] = 'program';
                 queryParams.ExpressionAttributeValues[':program'] = program;
@@ -89,7 +83,6 @@ const handler = async (event) => {
             command = new lib_dynamodb_1.QueryCommand(queryParams);
         }
         else if (program) {
-            // If only program is specified, use ProgramRegisteredIndex to filter by program
             command = new lib_dynamodb_1.QueryCommand({
                 ...baseParams,
                 IndexName: 'ProgramRegisteredIndex',
