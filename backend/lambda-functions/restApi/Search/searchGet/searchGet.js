@@ -29,7 +29,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const axios_1 = __importDefault(require("axios"));
 const aws4 = __importStar(require("aws4"));
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -299,17 +298,16 @@ const handler = async (event) => {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(query), // Stringify your query payload
+        body: JSON.stringify(query),
         region: region,
         service: service,
     };
-    // Sign the request
-    aws4.sign(request); // This modifies the `request` object in place
+    aws4.sign(request);
     try {
         const response = await (0, axios_1.default)({
-            method: 'POST', // Set method explicitly
-            url: `https://${request.host}${request.path}`, // Construct URL from host and path
-            headers: request.headers, // Cast headers to match axios expectations
+            method: 'POST',
+            url: `https://${request.host}${request.path}`,
+            headers: request.headers,
             data: request.body,
         });
         console.log("Success");
