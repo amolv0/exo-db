@@ -3,10 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-// Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -14,7 +12,7 @@ const headers = {
 };
 // Function to get details for a single match
 const getMatchDetails = async (matchId) => {
-    const numericMatchId = Number(matchId); // Convert matchId to a Number
+    const numericMatchId = Number(matchId);
     const params = {
         TableName: 'match-data',
         KeyConditionExpression: 'id = :matchIdValue',
@@ -34,7 +32,7 @@ const getMatchDetails = async (matchId) => {
 };
 // Function to get details for multiple matches for a POST request
 const getMultipleMatchDetails = async (matchIds) => {
-    const numericMatchIds = matchIds.map(id => ({ id: Number(id) })); // Convert each matchId to a number
+    const numericMatchIds = matchIds.map(id => ({ id: Number(id) }));
     const params = {
         RequestItems: {
             'match-data': {
