@@ -5,11 +5,9 @@ const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 const client_s3_1 = require("@aws-sdk/client-s3");
 const node_stream_1 = require("node:stream");
-// Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
 const s3Client = new client_s3_1.S3Client({ region: "us-east-1" });
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -22,28 +20,27 @@ async function fetch_divisions_from_s3(s3_reference) {
         throw new Error("Invalid S3 reference format");
     }
     const [, bucketName, key] = match;
-    // Fetch the object from S3
     const command = new client_s3_1.GetObjectCommand({
         Bucket: bucketName,
         Key: key,
     });
     const { Body } = await s3Client.send(command);
-    if (Body instanceof node_stream_1.Readable) { // Ensure the body is a stream
+    if (Body instanceof node_stream_1.Readable) {
         const divisionsData = await streamToString(Body);
-        return JSON.parse(divisionsData); // Assuming the divisions data is JSON-formatted
+        return JSON.parse(divisionsData);
     }
     else {
         throw new Error("Expected a readable stream for S3 object body");
     }
 }
-// Function to get specifi event details for a GET request
+// Function to get specific event details for a GET request
 const getEventDetails = async (eventId) => {
-    const numericEventId = Number(eventId); // Convert eventId to a number
+    const numericEventId = Number(eventId);
     const params = {
         TableName: 'event-data',
         KeyConditionExpression: 'id = :eventIdValue',
         ExpressionAttributeValues: {
-            ':eventIdValue': numericEventId, // Use numericEventId here
+            ':eventIdValue': numericEventId,
         },
     };
     try {
@@ -73,11 +70,11 @@ async function streamToString(stream) {
 }
 // Function to get details for multiple events for a POST request
 const getMultipleEventDetails = async (eventIds) => {
-    const numericEventIds = eventIds.map(id => ({ id: Number(id) })); // Convert each eventId to a number
+    const numericEventIds = eventIds.map(id => ({ id: Number(id) }));
     const params = {
         RequestItems: {
             'event-data': {
-                Keys: numericEventIds, // Use numericEventIds here
+                Keys: numericEventIds,
                 ProjectionExpression: "id, #name, #start, #end, #location, #region, #season, #program, #level",
                 ExpressionAttributeNames: {
                     "#name": "name",
@@ -121,9 +118,7 @@ const handler = async (event) => {
             }
         }
         else if (event.httpMethod === 'POST') {
-            // Handle POST request
             let eventIds;
-            // Parse the JSON string from the request body
             try {
                 const parsedBody = JSON.parse(event.body || '[]');
                 if (Array.isArray(parsedBody)) {

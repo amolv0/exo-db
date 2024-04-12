@@ -3,10 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-// Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -14,12 +12,12 @@ const headers = {
 };
 const getTeamDetails = async (query, queryType) => {
     if (queryType == "id") {
-        const numbericTeamId = Number(query); // Convert teamId to a Number
+        const numbericTeamId = Number(query);
         const params = {
             TableName: 'team-data',
             KeyConditionExpression: 'id = :teamIdValue',
             ExpressionAttributeValues: {
-                ':teamIdValue': numbericTeamId, // Use numbericTeamId here
+                ':teamIdValue': numbericTeamId,
             },
         };
         try {
@@ -63,7 +61,7 @@ const getMultipleTeamDetails = async (queries, queryType) => {
         const params = {
             RequestItems: {
                 'team-data': {
-                    Keys: numericTeamids, // Use numericTeamids here
+                    Keys: numericTeamids,
                 }
             }
         };
@@ -80,7 +78,7 @@ const getMultipleTeamDetails = async (queries, queryType) => {
     else if (queryType === 'number') {
         try {
             const results = [];
-            for (let teamNumber of queries) { // Iterate over each team number in the queries array
+            for (let teamNumber of queries) {
                 const params = {
                     TableName: 'team-data',
                     IndexName: 'TeamNumberIndex',
@@ -123,7 +121,6 @@ const handler = async (event) => {
                 };
             }
             else {
-                // Return an error response if the path parameter is missing
                 return {
                     statusCode: 400,
                     headers: headers,
@@ -139,7 +136,6 @@ const handler = async (event) => {
                     queries = parsedBody;
                 }
                 else {
-                    // Return an error response if the body is not an array
                     return {
                         statusCode: 400,
                         headers: headers,
@@ -171,7 +167,6 @@ const handler = async (event) => {
             body: JSON.stringify({ error: error.message || 'Failed to fetch team(s)' }),
         };
     }
-    // Default response for unsupported HTTP methods
     return {
         statusCode: 405,
         headers: headers,
