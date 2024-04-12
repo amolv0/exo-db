@@ -162,13 +162,23 @@ Resources:
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditOngoing
+  matchSimulatorPost:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: exodb-matchSimulatorPost
+      Handler: MatchSimulatorPost.handler
+      Runtime: python3.10
+      CodeUri: s3://exodblambdafunctions/437a3be203ec51013f4c83f5dbb82679
+      Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
+    Metadata:
+      SamResourceId: matchSimulatorPost
   updateTeamFromStream:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: exodb-updateTeamFromStream
       Handler: updateTeamFromStream.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/80c9d2ca32a243321ea8ffd2ff9f3a12
+      CodeUri: s3://exodblambdafunctions/d036b153c2f61a03caa80f544e769614
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateTeamFromStream
@@ -238,7 +248,7 @@ Resources:
       FunctionName: exodb-updateOpenSearchFunc
       Handler: updateOpenSearch.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/0f0071b94a913a1e4593a333d9bb0fff
+      CodeUri: s3://exodblambdafunctions/0b0abc7362ae95ca7afed907d28a0c81
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOpenSearch
