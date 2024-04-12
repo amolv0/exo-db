@@ -1,66 +1,77 @@
 import boto3
-from boto3.dynamodb.conditions import Key
-from decimal import Decimal
-import logging
 
-# Initialize DynamoDB resource and table
 dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('team-data')
+event_table = dynamodb.Table('event-data')
+team_table = dynamodb.Table('team-data')
 
-# Setup logging
-logging.basicConfig(level=logging.INFO)
-count = 0
+def update_team_matches():
+    count = 1
+    response = event_table.scan()
+    
+    while True:
+        print(f"Scanning page {count}")
+        count += 1
+        process_events(response['Items'])
+        
 
-def remove_duplicate_matches(matches):
-    """Remove duplicates from the matches list and maintain order."""
-    seen = set()
-    unique_matches = [x for x in matches if not isinstance(x, dict) and not (x in seen or seen.add(x))]
-    return unique_matches
+        if 'LastEvaluatedKey' in response:
+            response = event_table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+        else:
+            break
+        
 
-def update_item_matches(team_id, unique_matches):
-    global count
-    count += 1
-    """Update the item's matches with a list of unique matches."""
-    response = table.update_item(
-        Key={'id': Decimal(team_id)},
-        UpdateExpression='SET matches = :val',
-        ExpressionAttributeValues={
-            ':val': unique_matches,
-        }
-    )
-    logging.info(f"Updated team {team_id} with unique matches. {count} teams updated")
+def update_team_matches_for_event(event_id):
+    print(f"Processing event {event_id}")
+    response = event_table.get_item(Key={'id': event_id})
+    event = response.get('Item')
+    
+    if not event:
+        print(f"No event found with ID: {event_id}")
+        return
 
-def process_single_item(team_id):
-    """Process a single item for duplicate matches."""
-    response = table.get_item(Key={'id': Decimal(team_id)})
-    item = response.get('Item', {})
-    if 'matches' in item:
-        unique_matches = remove_duplicate_matches(item['matches'])
-        if len(unique_matches) != len(item['matches']):
-            update_item_matches(team_id, unique_matches)
+    process_event(event)
+    
+def process_event(event):
+    divisions = event.get('divisions', [])
+    for division in divisions:
+        matches = division.get('matches', [])
+        for match in matches:
+            update_teams_in_match(match)
 
-def process_entire_table():
-    """Scan through the entire table and process each item for duplicate matches."""
-    scan_kwargs = {
-        'ProjectionExpression': "id, matches"
-    }
-    done = False
-    start_key = None
-    pages = 0
-    while not done:
-        pages += 1
-        logging.info(f"Scanned page {pages}")
-        if start_key:
-            scan_kwargs['ExclusiveStartKey'] = start_key
-        response = table.scan(**scan_kwargs)
-        for item in response.get('Items', []):
-            if 'matches' in item:
-                unique_matches = remove_duplicate_matches(item['matches'])
-                if len(unique_matches) != len(item['matches']):
-                    update_item_matches(item['id'], unique_matches)
-        start_key = response.get('LastEvaluatedKey', None)
-        done = start_key is None
+def process_events(events):
+    for event in events:
+        divisions = event.get('divisions', [])
+        for division in divisions:
+            matches = division.get('matches', [])
+            for match in matches:
+                update_teams_in_match(match)
 
-# Example usage:
-# process_single_item(team_id=85881)  # Replace 123 with the actual team ID for testing
-process_entire_table()
+def update_teams_in_match(match):
+    match_id = match.get('id')
+    alliances = match.get('alliances', [])
+    for alliance in alliances:
+        teams = alliance.get('teams', [])
+        for team in teams:
+            team_item = team.get('team')
+            team_id = team_item.get('id')
+            update_team_match_list(team_id, match_id)
+
+def update_team_match_list(team_id, match_id):
+    response = team_table.get_item(Key={'id': team_id})
+    team_data = response.get('Item')
+    
+    if team_data:
+        matches = team_data.get('matches', [])
+        if match_id not in matches:
+            matches.append(match_id)
+            team_table.update_item(
+                Key={'id': team_id},
+                UpdateExpression='SET matches = :val',
+                ExpressionAttributeValues={
+                    ':val': matches
+                }
+            )
+
+if __name__ == "__main__":
+    update_team_matches()
+    # update_team_matches_for_event(54701)
