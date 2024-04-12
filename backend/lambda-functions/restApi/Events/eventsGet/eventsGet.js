@@ -3,10 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-// Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -75,16 +73,14 @@ const buildQueryParams = (startDate, numberOfEvents = 10, eventCode, eventLevel,
         KeyConditionExpression: '#partition_key = :partition_value',
         ExpressionAttributeNames: {
             '#partition_key': 'gsiPartitionKey',
-            // '#start_attr' will be conditionally added below if needed
         },
         ExpressionAttributeValues: {
             ':partition_value': 'ALL_EVENTS',
         },
         ProjectionExpression: 'id',
-        ScanIndexForward: startDate ? !isBefore : false, // false for descending (most recent first) by default
+        ScanIndexForward: startDate ? !isBefore : false,
         Limit: numberOfEvents
     };
-    // Conditionally add start date condition and '#start_attr'
     if (startDate) {
         params.KeyConditionExpression += ` AND #start_attr ${isBefore ? '<' : '>'} :start_date`;
         params.ExpressionAttributeNames['#start_attr'] = 'start';
@@ -96,7 +92,6 @@ const buildQueryParams = (startDate, numberOfEvents = 10, eventCode, eventLevel,
         params.ExpressionAttributeValues[':program_value'] = eventCode;
         filterExpressions.push('#program = :program_value');
     }
-    // Constructing FilterExpression for eventLevel
     if (eventLevel) {
         params.ExpressionAttributeNames['#level'] = 'level';
         if (eventLevel === 'Regional') {
@@ -158,7 +153,6 @@ const getEventsByRegion = async (region, startDate, numberOfEvents = 10, eventCo
                 filterExpressions.push('(#level = :level_value_regional OR #level = :level_value_state)');
             }
             else {
-                // Single eventLevel
                 params.ExpressionAttributeValues[':level_value'] = eventLevel;
                 filterExpressions.push('#level = :level_value');
             }
@@ -193,7 +187,6 @@ const getEventsByCountry = async (regions, startDate, numberOfEvents = 10, event
             Limit: numberOfEvents,
             ExclusiveStartKey: lastEvaluatedKey,
         };
-        // Add start date condition
         if (startDate) {
             params.KeyConditionExpression += ` AND #start_attr ${isBefore ? '<' : '>'} :start_date`;
             params.ExpressionAttributeNames['#start_attr'] = 'start';
@@ -219,7 +212,6 @@ const getEventsByCountry = async (regions, startDate, numberOfEvents = 10, event
                 filterExpressions.push('#level = :level_value');
             }
         }
-        // Combine all filter expressions
         if (filterExpressions.length > 0) {
             params.FilterExpression = filterExpressions.join(' AND ');
         }
@@ -372,13 +364,13 @@ const determineRegions = async (input) => {
             "Girona",
             "Guipuzcoa",
             "Madrid",
-            "Vizcaya", // p sure
+            "Vizcaya",
         ],
         "Switzerland": [
             "Aargau",
             "Basel-Landschaft",
             "Basel-Stadt",
-            "Rhône" // this is a river? what?
+            "Rhône"
         ],
         // Countries as their own regions
         "Andorra": ["Andorra"],
@@ -421,7 +413,6 @@ const determineRegions = async (input) => {
         "United Arab Emirates": ["United Arab Emirates"],
         "United Kingdom": ["United Kingdom"],
         "Vietnam": ["Vietnam"],
-        // Add other countries and their regions if necessary
     };
     // Dynamically determine if the country should be treated as its own region or has specific regions
     if (regions.hasOwnProperty(input)) {
@@ -431,7 +422,6 @@ const determineRegions = async (input) => {
         // Check if input is a region in any of the countries
         for (const countryRegions of Object.values(regions)) {
             if (countryRegions.includes(input)) {
-                // Input is a region
                 return [input];
             }
         }
@@ -471,7 +461,6 @@ const handler = async (event) => {
             body: JSON.stringify({ error: `Invalid 'program' parameter. Must be one of ${validEventCodes.join(', ')}.` })
         };
     }
-    // Validate startBefore and startAfter dates format if provided
     const datetimeRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|([+-]\d{2}:\d{2})))?$/;
     if (startBefore && !datetimeRegex.test(startBefore)) {
         return {
@@ -487,7 +476,6 @@ const handler = async (event) => {
             body: JSON.stringify({ error: "Invalid 'start_after' parameter. Must be a date in 'YYYY-MM-DD' format." })
         };
     }
-    // Validate eventLevel
     const validEventLevels = ['Regional', 'National', 'Signature', 'World'];
     if (eventLevel && !validEventLevels.includes(eventLevel)) {
         return {
@@ -514,7 +502,7 @@ const handler = async (event) => {
             let lastEvaluatedKey = undefined;
             do {
                 const params = buildQueryParams(startBefore || startAfter, numberOfEvents - id_array.length, eventCode, eventLevel, !!startBefore);
-                params.ExclusiveStartKey = lastEvaluatedKey; // Use the last evaluated key for pagination
+                params.ExclusiveStartKey = lastEvaluatedKey;
                 const command = new lib_dynamodb_1.QueryCommand(params);
                 const response = await docClient.send(command);
                 const items = response.Items;
@@ -522,7 +510,6 @@ const handler = async (event) => {
                 lastEvaluatedKey = response.LastEvaluatedKey;
             } while (lastEvaluatedKey && id_array.length < numberOfEvents);
         }
-        //console.log('Event items:', result);
         return {
             statusCode: 200,
             headers,
