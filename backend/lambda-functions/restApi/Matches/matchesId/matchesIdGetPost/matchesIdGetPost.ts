@@ -1,18 +1,15 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, BatchGetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
-// Initialize DynamoDB Client
 const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-// Interface for Lambda event structure
 interface LambdaEvent {
     httpMethod: string;
     pathParameters?: {
@@ -21,7 +18,6 @@ interface LambdaEvent {
     body?: string;
 }
 
-// Interface for the response structure
 interface LambdaResponse {
     statusCode: number;
     headers: {};
@@ -30,7 +26,7 @@ interface LambdaResponse {
 
 // Function to get details for a single match
 const getMatchDetails = async (matchId: string): Promise<any> => {
-    const numericMatchId = Number(matchId); // Convert matchId to a Number
+    const numericMatchId = Number(matchId);
     const params = {
         TableName: 'match-data',
         KeyConditionExpression: 'id = :matchIdValue',
@@ -50,7 +46,7 @@ const getMatchDetails = async (matchId: string): Promise<any> => {
 
 // Function to get details for multiple matches for a POST request
 const getMultipleMatchDetails = async (matchIds: string[]): Promise<any> => {
-    const numericMatchIds = matchIds.map(id => ({ id: Number(id) })); // Convert each matchId to a number
+    const numericMatchIds = matchIds.map(id => ({ id: Number(id) }));
     const params = {
         RequestItems: {
             'match-data': {

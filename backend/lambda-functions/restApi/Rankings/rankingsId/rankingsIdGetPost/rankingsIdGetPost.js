@@ -3,10 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-// Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -14,7 +12,7 @@ const headers = {
 };
 // Function to get details for a single ranking
 const getrankingDetails = async (rankingId) => {
-    const numericrankingId = Number(rankingId); // Convert rankingId to a Number
+    const numericrankingId = Number(rankingId);
     const params = {
         TableName: 'rankings-data',
         KeyConditionExpression: 'id = :rankingIdValue',
@@ -34,7 +32,7 @@ const getrankingDetails = async (rankingId) => {
 };
 // Function to get details for multiple rankings for a POST request
 const getMultiplerankingDetails = async (rankingIds) => {
-    const numericrankingIds = rankingIds.map(id => ({ id: Number(id) })); // Convert each rankingId to a number
+    const numericrankingIds = rankingIds.map(id => ({ id: Number(id) }));
     const params = {
         RequestItems: {
             'rankings-data': {
