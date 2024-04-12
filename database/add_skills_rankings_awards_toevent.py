@@ -4,6 +4,7 @@ import requests
 from botocore.exceptions import ClientError
 from decimal import Decimal
 import json
+import os
 
 # Script to populate event-data table with rankings, awards, and skills data for every event. 
 # Run with nohup: nohup python3 -u database/add_skills_rankings_awards_toevent.py > ./logs/output.log 2>&1 &
@@ -15,7 +16,7 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('event-data')
 count = 0
 
-API_KEY = 'REDACTED_API_KEY'
+API_KEY = os.getenv('ROBOTEVENTS_API_KEY_1')
 headers = {
     'accept': 'application/json',
     'Authorization': f'Bearer {API_KEY}'
