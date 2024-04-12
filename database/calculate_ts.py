@@ -6,11 +6,11 @@ import trueskill
 from collections import defaultdict
 import json
 
-# Constants
+
 SEASON_ID = 125
 
-# Initialize TrueSkill environment
-env = trueskill.TrueSkill(draw_probability=0.01)  # Adjust draw_probability as needed
+
+env = trueskill.TrueSkill(draw_probability=0.01) 
 dynamodb = boto3.resource('dynamodb')
 events_table = dynamodb.Table('event-data')
 teams_table = dynamodb.Table('team-data')
