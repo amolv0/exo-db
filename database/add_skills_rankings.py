@@ -7,7 +7,6 @@ from botocore.exceptions import ClientError
 # Script to get team skills, awards, and rankings data.
 
 
-# Initialize a DynamoDB client
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('team-data')
 
@@ -17,7 +16,6 @@ headers = {
     'Authorization': f'Bearer {API_KEY}'
 }
 
-# Function to make API requests with rate limiting handling
 def make_request(url, headers, initial_delay=5, retries=15):
     for _ in range(retries):
         response = requests.get(url, headers=headers)
@@ -34,7 +32,6 @@ def make_request(url, headers, initial_delay=5, retries=15):
 
     return None
 
-# General function to fetch data for a team (skills, rankings, awards)
 def fetch_team_data(team_id, data_type):
     data = []
     page = 1
@@ -50,13 +47,12 @@ def fetch_team_data(team_id, data_type):
         data.extend(page_data)
 
         if not response_json.get('meta', {}).get('next_page_url'):
-            break  # No more pages to fetch
+            break
 
         page += 1
 
     return data
 
-# Update DynamoDB with the fetched data
 def update_team_data_in_dynamodb(team_id, data, data_type):
     try:
         update_expression = f"SET {data_type} = :val"
@@ -80,10 +76,9 @@ def process_teams():
     page_count = 1
 
     while not done:
-        # Fetch a page of teams
         scan_kwargs = {
             'ProjectionExpression': 'id',
-            'Limit': 25  # Adjust based on your capacity and needs
+            'Limit': 25
         }
         if start_key:
             scan_kwargs['ExclusiveStartKey'] = start_key
@@ -92,15 +87,12 @@ def process_teams():
         teams = response.get('Items', [])
         print(f"Processing page {page_count} with {len(teams)} teams")
 
-        # Process each team in the current page
         for team in teams:
             team_id = team['id']
             for data_type in ['skills', 'rankings', 'awards']:
                 team_data = fetch_team_data(team_id, data_type)
                 update_team_data_in_dynamodb(team_id, team_data, data_type)
                 print(f"Updated {data_type} for team {team_id}")
-
-        # Check if there are more pages to fetch
         start_key = response.get('LastEvaluatedKey', None)
         done = start_key is None
         page_count += 1
