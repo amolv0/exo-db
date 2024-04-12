@@ -11,7 +11,7 @@ import os
 # Find elapsed time with: ps -p $(pgrep -f database/add_skills_rankings_awards_toevent.py) -o etime=
 
 
-# Initialize a DynamoDB client
+
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('event-data')
 count = 0
@@ -56,7 +56,7 @@ def fetch_event_data(event_id, data_type):
         data.extend(page_data)
 
         if not response_json.get('meta', {}).get('next_page_url'):
-            break  # No more pages to fetch
+            break
 
         page += 1
 
@@ -79,7 +79,7 @@ def fetch_ranking_data(event_id, division_id):
         data.extend(page_data)
 
         if not response_json.get('meta', {}).get('next_page_url'):
-            break  # No more pages to fetch
+            break
 
         page += 1
 
@@ -99,8 +99,6 @@ def convert_floats_to_decimals(obj):
     else:
         return obj
 
-
-# Main function to process each event
 def process_events():
     done = False
     start_key = None
@@ -140,7 +138,6 @@ def process_events():
             # Convert all floats to Decimals
             event_data = convert_floats_to_decimals(event_data)
 
-            # Update the entire event object in DynamoDB
             try:
                 table.put_item(Item=event_data)
                 count += 1
@@ -148,7 +145,6 @@ def process_events():
             except ClientError as e:
                 print(f"Error updating event {event_id} in DynamoDB: {e.response['Error']['Message']}")
 
-        # Check if there are more pages to fetch
         start_key = response.get('LastEvaluatedKey', None)
         done = start_key is None
         page_count += 1
@@ -156,7 +152,6 @@ def process_events():
 # Main function to process a single event
 def process_single_event(event_id):
     try:
-        # Fetch the existing event data from DynamoDB
         response = table.get_item(Key={'id': event_id})
     except ClientError as e:
         print(f"Error fetching event {event_id} from DynamoDB: {e.response['Error']['Message']}")
@@ -177,12 +172,11 @@ def process_single_event(event_id):
         for division in event['divisions']:
             division_id = division['id']
             division_rankings = fetch_ranking_data(event_id, division_id)
-            division['rankings'] = division_rankings  # Store fetched rankings in the division object
+            division['rankings'] = division_rankings
 
     event = convert_floats_to_decimals(event)
-    # Update the entire event object in DynamoDB with a single update
     try:
-        response = table.put_item(Item=event)  # Using put_item to replace the entire item
+        response = table.put_item(Item=event)
         print(f"Successfully updated event {event_id} with all changes.")
     except ClientError as e:
         print(f"Error updating event {event_id} in DynamoDB: {e.response['Error']['Message']}")
