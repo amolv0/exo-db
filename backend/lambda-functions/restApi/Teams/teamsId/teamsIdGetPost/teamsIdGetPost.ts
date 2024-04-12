@@ -1,24 +1,19 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, BatchGetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
-// Initialize DynamoDB Client
 const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
-
-
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-// Interface for Lambda event structure
 interface LambdaEvent {
     httpMethod: string;
     pathParameters?: {
-        teamId?: string; // It will come as a string through the path param, we convert to a number later
+        teamId?: string;
     };
     queryStringParameters?: {
         [key: string]: string; // This allows any key-value pair in queryStringParameters
@@ -26,7 +21,6 @@ interface LambdaEvent {
     body?: string;
 }
 
-// Interface for the response structure
 interface LambdaResponse {
     statusCode: number;
     headers: {};
@@ -35,12 +29,12 @@ interface LambdaResponse {
 
 const getTeamDetails = async (query: string, queryType: string): Promise<any> => {
     if(queryType == "id"){
-        const numbericTeamId = Number(query); // Convert teamId to a Number
+        const numbericTeamId = Number(query);
         const params = {
             TableName: 'team-data',
             KeyConditionExpression: 'id = :teamIdValue',
             ExpressionAttributeValues: {
-                ':teamIdValue': numbericTeamId, // Use numbericTeamId here
+                ':teamIdValue': numbericTeamId,
             },
         };
         try {
@@ -82,7 +76,7 @@ const getMultipleTeamDetails = async (queries: string[], queryType: string): Pro
         const params = {
             RequestItems: {
                 'team-data': {
-                    Keys: numericTeamids, // Use numericTeamids here
+                    Keys: numericTeamids,
                 }
             }
         };
@@ -97,7 +91,7 @@ const getMultipleTeamDetails = async (queries: string[], queryType: string): Pro
     } else if(queryType === 'number'){
         try {
             const results: Record<string, any>[] = []; 
-            for (let teamNumber of queries) { // Iterate over each team number in the queries array
+            for (let teamNumber of queries) {
                 const params = {
                     TableName: 'team-data',
                     IndexName: 'TeamNumberIndex', 
@@ -140,7 +134,6 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
                     body: JSON.stringify(teamDetails),
                 };
             } else {
-                // Return an error response if the path parameter is missing
                 return {
                     statusCode: 400,
                     headers: headers,
@@ -154,7 +147,6 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
                 if (Array.isArray(parsedBody)) {
                     queries = parsedBody;
                 } else {
-                    // Return an error response if the body is not an array
                     return {
                         statusCode: 400,
                         headers: headers,
@@ -184,8 +176,6 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
             body: JSON.stringify({ error: (error as Error).message || 'Failed to fetch team(s)' }),
         };
     }
-
-    // Default response for unsupported HTTP methods
     return {
         statusCode: 405,
         headers: headers,
