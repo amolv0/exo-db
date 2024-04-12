@@ -4,10 +4,8 @@ exports.handler = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 const util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
-// Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -30,21 +28,18 @@ const getEventDivisionById = async (eventId, divId) => {
                 // Unmarshall the entire DynamoDB item into a regular JavaScript object
                 const unmarshalledItem = (0, util_dynamodb_1.unmarshall)(item);
                 console.log("Unmarshalled item:", unmarshalledItem);
-                // Now you can directly work with the unmarshalledItem, which should have a more straightforward structure
                 if (unmarshalledItem.divisions && Array.isArray(unmarshalledItem.divisions)) {
                     console.log("Got here");
-                    // Iterate over the array of divisions in the unmarshalled item
                     for (const division of unmarshalledItem.divisions) {
                         console.log('Division:', division);
-                        // Check if the division has the matching divId
                         if (division.id === divId) {
-                            return division; // Return the matching division object
+                            return division;
                         }
                     }
                 }
             }
         }
-        return null; // Return null if no matching division is found
+        return null;
     }
     catch (error) {
         console.error('Error fetching event division:', error);
