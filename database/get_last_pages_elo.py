@@ -1,7 +1,8 @@
 import requests
 import boto3
+import os
 
-API_BASE_URL = "https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/eloranking"
+API_BASE_URL = os.getenv('EXODB_API_GATEWAY_ELORANKING_BASE_URL')
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('last-page-data')
