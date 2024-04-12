@@ -1,7 +1,8 @@
 import requests
 import boto3
+import os
 
-API_BASE_URL = "EXODB_API_GATEWAY_BASE_URL/dev/tsranking"
+API_BASE_URL = os.getenv('EXODB_API_GATEWAY_TSRANKING_BASE_URL')
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('last-page-data')
