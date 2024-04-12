@@ -271,4 +271,13 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["updateReveals"]
 
+[function_build_definitions.959bd483-1011-478b-a01a-27e3c68bac4b]
+codeuri = "/home/amol/repos/exo-db/backend/lambda-functions/restApi/MatchSimulator/MatchSimulatorPost"
+runtime = "python3.10"
+architecture = "x86_64"
+handler = "MatchSimulatorPost.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["matchSimulatorPost"]
+
 [layer_build_definitions]
