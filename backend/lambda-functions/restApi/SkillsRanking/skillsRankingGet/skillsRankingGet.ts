@@ -2,18 +2,15 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, BatchGetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { spec } from 'node:test/reporters';
 
-// Initialize DynamoDB Client
 const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-// Interface for Lambda event structure
 interface LambdaEvent {
     httpMethod: string;
     queryStringParameters?: {
@@ -27,7 +24,6 @@ interface LambdaEvent {
     };
 }
 
-// Interface for the response structure
 interface LambdaResponse {
     statusCode: number;
     headers: {};
@@ -48,7 +44,6 @@ const buildEventQuery = async (event_id: number, type?: string) => {
         ScanIndexForward: false,
     };
 
-    // If 'type' is provided, add a filter expression
     if (type) {
         params.FilterExpression = '#type = :type_val';
         params.ExpressionAttributeNames['#type'] = 'type'; 
@@ -72,7 +67,6 @@ const buildTeamQuery = async (team_id: number, type?: string, season?: number) =
         ScanIndexForward: false,
     };
     
-    // Include 'type' in the KeyConditionExpression if provided
     if (type) {
         params.KeyConditionExpression += ' AND #type = :type_val';
         params.ExpressionAttributeNames['#type'] = 'type';
@@ -112,7 +106,6 @@ const buildEventTeamQuery = async (event_id: number, team_id: number, type?: str
 }
 
 const buildSeasonQuery = async (season: number, type: string, evaluateKey?: any, fullFetch = false, grade?: string, regions?: string[], limit = 100) => {
-    // Initialize the basic query parameters
     const params: any = {
         TableName: 'skills-ranking-data',
         IndexName: 'SeasonScoreIndex',
@@ -167,11 +160,9 @@ const fetchPage = async (season: number, skills_type: string, desiredPage: numbe
     let fullFetch = false;
     let foundTeams = 0
     const neededTeamsBeforeFullFetch = pageSize*(desiredPage-1);
-    // console.log("In fetchpage");
     let done = false;
     if(desiredPage != 1){
         while (true){
-            // console.log("in while loop 1");
             const queryParameters = await buildSeasonQuery(season, skills_type, lastEvaluatedKey, fullFetch, grade, region);
             const command = new QueryCommand(queryParameters);
             const response = await docClient.send(command);
@@ -184,14 +175,12 @@ const fetchPage = async (season: number, skills_type: string, desiredPage: numbe
                     if (foundTeams >= neededTeamsBeforeFullFetch){
                         done = true;
                         lastEvaluatedKey = response.LastEvaluatedKey;
-                        // console.log(lastEvaluatedKey);
                         specificEvaluatedKey = {
                             'season': item.season,
                             'score': item.score,
                             'event_team_id': item.event_team_id,
                             'type': item.type
                         }
-                        // console.log(specificEvaluatedKey);
                         break;
                     }
                 }
@@ -206,7 +195,6 @@ const fetchPage = async (season: number, skills_type: string, desiredPage: numbe
     }
     fullFetch = true;
     while (true){
-        // console.log("in while loop 2");
         const queryParameters = await buildSeasonQuery(season, skills_type, specificEvaluatedKey, fullFetch, grade, region);
         const command = new QueryCommand(queryParameters);
         const response = await docClient.send(command);
@@ -362,14 +350,14 @@ const determineRegions = async (input: string): Promise<string[]> => {
             "Girona",
             "Guipuzcoa",
             "Madrid",
-            "Vizcaya", // p sure
+            "Vizcaya",
         ],
     
         "Switzerland": [
             "Aargau",
             "Basel-Landschaft",
             "Basel-Stadt",
-            "Rhône" // this is a river? what?
+            "Rhône"
         ],
         // Countries as their own regions
         "Andorra": ["Andorra"],
@@ -412,7 +400,6 @@ const determineRegions = async (input: string): Promise<string[]> => {
         "United Arab Emirates": ["United Arab Emirates"],
         "United Kingdom": ["United Kingdom"],
         "Vietnam": ["Vietnam"],
-        // Add other countries and their regions if necessary
     };
 
     // Dynamically determine if the country should be treated as its own region or has specific regions
@@ -445,20 +432,15 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
 
     let regions_array;
 
-    // Build query parameters based on event_id, team_id, and skills_type
     let queryParameters;
 
     if(event_id && team_id){
-        // console.log("eventId and teamId found");
         queryParameters = await buildEventTeamQuery(event_id, team_id, skills_type)
     } else if(event_id){
-        // console.log("eventId found");
         queryParameters = await buildEventQuery(event_id, skills_type);
     } else if(team_id){
-        // console.log("teamId found");
         queryParameters = await buildTeamQuery(team_id, skills_type, season)
     } else if(season){
-        // console.log("Season query");
         if(region){
             regions_array = await determineRegions(region)
         }
@@ -479,11 +461,11 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
                 const programmingScoreB = b.programming_component ? Number(b.programming_component) : 0;
                 // If scores are equal, sort by programming_score
                 if (scoreA === scoreB) {
-                    return programmingScoreB - programmingScoreA; // For descending order
+                    return programmingScoreB - programmingScoreA;
                 }
         
                 // Otherwise, sort by score
-                return scoreB - scoreA; // For descending order
+                return scoreB - scoreA;
             });
         }
         return {

@@ -4,10 +4,8 @@ exports.handler = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 const util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
-// Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -25,7 +23,6 @@ const getEventDivisions = async (eventId) => {
     try {
         const command = new client_dynamodb_1.QueryCommand(params);
         const result = await docClient.send(command);
-        // Extract divisions from the event details
         const divisions = result.Items?.map(item => item.divisions?.L).flat();
         return divisions;
     }
