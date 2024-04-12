@@ -1,6 +1,7 @@
 import boto3
 import time
 import requests
+import os
 from botocore.exceptions import ClientError
 
 # Script to get team skills, awards, and rankings data.
