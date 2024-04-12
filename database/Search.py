@@ -124,7 +124,6 @@ def search_opensearch(queryTerm):
         print(f"Failed to query OpenSearch: {response.status_code} - {response.text}")
         return None
 
-# Example usage
 queryTerm = "2024 vex"  # This is the programmatically assigned query term
 results = search_opensearch(queryTerm)
 if results:
