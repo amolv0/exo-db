@@ -6,18 +6,17 @@ from requests_aws4auth import AWS4Auth
 from boto3.dynamodb.types import TypeDeserializer
 from decimal import Decimal
 
-# AWS Configuration
+
 region = 'us-east-1'
 service = 'es'
 opensearch_endpoint = os.getenv('OPENSEARCH_API_ENDPOINT')
-index_name = 'search-index'  # Unified index name
+index_name = 'search-index' 
 
-# Initialize AWS services
+
 dynamodb = boto3.client('dynamodb', region_name=region)
 credentials = boto3.Session().get_credentials()
 awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, service, session_token=credentials.token)
 
-# Function to deserialize DynamoDB items to Python dictionary
 deserializer = TypeDeserializer()
 
 def deserialize_dynamodb_item(item):
@@ -40,7 +39,7 @@ def delete_index():
     except requests.exceptions.RequestException as e:
         print(f"Failed to delete index: {e}")
 
-# Function to scan DynamoDB table and yield items
+
 def scan_dynamodb_table(table_name):
     count = 1
     response = dynamodb.scan(TableName=table_name)
@@ -62,7 +61,6 @@ def create_index_with_combined_mapping():
     mapping = {
         "mappings": {
             "properties": {
-                # Common fields can go here
                 "program": {"type": "keyword"},
                 # Add specific fields for 'event-data'
                 "event_id": {"type": "keyword", "index": True},
@@ -96,7 +94,7 @@ def extract_relevant_attributes(item, source_table):
             'event_id': decimal_to_number(item.get('id')),
             'event_name': item.get('name'),
             'event_start': item.get('start')
-            # Add other 'event-data' specific fields here
+
         })
     elif source_table == 'team-data':
         registered = item.get('registered')
@@ -110,7 +108,6 @@ def extract_relevant_attributes(item, source_table):
             'team_number': decimal_to_number(item.get('number')),
             'team_name': item.get('team_name'),
             'team_registered': registered_bool
-            # Add other 'team-data' specific fields here
         })
     return common_data
 
@@ -118,10 +115,8 @@ def extract_relevant_attributes(item, source_table):
 def bulk_upload_to_opensearch(data):
     global count
     bulk_data = ''
-    for doc in data:  # Assuming 'data' contains documents already processed by 'extract_relevant_attributes'
-        # Add action and metadata JSON without the '_type' field
+    for doc in data: 
         bulk_data += json.dumps({"index": {"_index": "search-index"}}) + '\n'
-        # Add the actual document
         bulk_data += json.dumps(doc) + '\n'
 
     headers = {"Content-Type": "application/json"}
@@ -131,8 +126,7 @@ def bulk_upload_to_opensearch(data):
     else:
         print(f"Error during bulk upload: {response.text}")
 
-# Main script execution
-# Main script execution
+
 if __name__ == '__main__':
     print("Starting process, deleting current index data")
     delete_index()  # Delete existing index if necessary
@@ -146,29 +140,29 @@ if __name__ == '__main__':
     print("Uploading data from 'event-data' table")
     for item in scan_dynamodb_table('event-data'):
         data_to_upload.append(extract_relevant_attributes(item, 'event-data'))
-        if len(data_to_upload) >= 100:  # Bulk upload in batches of 100 (adjust as needed)
+        if len(data_to_upload) >= 100:  # Bulk upload in batches of 100 
             bulk_upload_to_opensearch(data_to_upload)
-            count += 1  # Increment count after each batch upload
-            data_to_upload = []  # Reset the batch list
+            count += 1 
+            data_to_upload = []
 
-    # Upload any remaining documents from 'event-data'
+ 
     if data_to_upload:
         bulk_upload_to_opensearch(data_to_upload)
-        count += 1  # Increment count for the final batch
-        data_to_upload = []  # Clear the list after the final upload
+        count += 1 
+        data_to_upload = [] 
 
     # Process 'team-data' table
     print("Uploading data from 'team-data' table")
     for item in scan_dynamodb_table('team-data'):
         data_to_upload.append(extract_relevant_attributes(item, 'team-data'))
-        if len(data_to_upload) >= 100:  # Adjust batch size as needed
+        if len(data_to_upload) >= 100: 
             bulk_upload_to_opensearch(data_to_upload)
-            count += 1  # Increment count after each batch upload
-            data_to_upload = []  # Reset the batch list after uploading
+            count += 1 
+            data_to_upload = []
 
-    # Upload any remaining documents from 'team-data'
+
     if data_to_upload:
         bulk_upload_to_opensearch(data_to_upload)
-        count += 1  # Increment count for the final batch
+        count += 1
 
     print(f"Process finished. Total bulk uploads completed: {count}")
