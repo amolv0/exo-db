@@ -2,16 +2,13 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
 
-// Initialize DynamoDB Client
 const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
-// Type for the event item
 interface EventItem {
     id: number;
 }
 
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -89,17 +86,15 @@ const buildQueryParams = (startDate?: string, numberOfEvents = 10, eventCode?: s
         KeyConditionExpression: '#partition_key = :partition_value',
         ExpressionAttributeNames: {
             '#partition_key': 'gsiPartitionKey',
-            // '#start_attr' will be conditionally added below if needed
         },
         ExpressionAttributeValues: {
             ':partition_value': 'ALL_EVENTS',
         },
         ProjectionExpression: 'id',
-        ScanIndexForward: startDate ? !isBefore : false, // false for descending (most recent first) by default
+        ScanIndexForward: startDate ? !isBefore : false, 
         Limit: numberOfEvents
     };
 
-    // Conditionally add start date condition and '#start_attr'
     if (startDate) {
         params.KeyConditionExpression += ` AND #start_attr ${isBefore ? '<' : '>'} :start_date`;
         params.ExpressionAttributeNames['#start_attr'] = 'start';
@@ -113,7 +108,6 @@ const buildQueryParams = (startDate?: string, numberOfEvents = 10, eventCode?: s
             filterExpressions.push('#program = :program_value');
         }
 
-        // Constructing FilterExpression for eventLevel
         if (eventLevel) {
             params.ExpressionAttributeNames['#level'] = 'level';
             if (eventLevel === 'Regional') {
@@ -180,7 +174,6 @@ const getEventsByRegion = async (region: string, startDate?: string, numberOfEve
                 params.ExpressionAttributeValues[':level_value_state'] = 'State';
                 filterExpressions.push('(#level = :level_value_regional OR #level = :level_value_state)');
             } else {
-                // Single eventLevel
                 params.ExpressionAttributeValues[':level_value'] = eventLevel;
                 filterExpressions.push('#level = :level_value');
             }
@@ -221,7 +214,6 @@ const getEventsByCountry = async (regions: string[], startDate?: string, numberO
             ExclusiveStartKey: lastEvaluatedKey,
         };
 
-        // Add start date condition
         if (startDate) {
             params.KeyConditionExpression += ` AND #start_attr ${isBefore ? '<' : '>'} :start_date`;
             params.ExpressionAttributeNames['#start_attr'] = 'start';
@@ -249,7 +241,6 @@ const getEventsByCountry = async (regions: string[], startDate?: string, numberO
             }
         }
 
-        // Combine all filter expressions
         if (filterExpressions.length > 0) {
             params.FilterExpression = filterExpressions.join(' AND ');
         }        
@@ -414,14 +405,14 @@ const determineRegions = async (input: string): Promise<string[]> => {
             "Girona",
             "Guipuzcoa",
             "Madrid",
-            "Vizcaya", // p sure
+            "Vizcaya",
         ],
     
         "Switzerland": [
             "Aargau",
             "Basel-Landschaft",
             "Basel-Stadt",
-            "Rhône" // this is a river? what?
+            "Rhône"
         ],
         // Countries as their own regions
         "Andorra": ["Andorra"],
@@ -464,7 +455,6 @@ const determineRegions = async (input: string): Promise<string[]> => {
         "United Arab Emirates": ["United Arab Emirates"],
         "United Kingdom": ["United Kingdom"],
         "Vietnam": ["Vietnam"],
-        // Add other countries and their regions if necessary
     };
 
     // Dynamically determine if the country should be treated as its own region or has specific regions
@@ -474,7 +464,6 @@ const determineRegions = async (input: string): Promise<string[]> => {
         // Check if input is a region in any of the countries
         for (const countryRegions of Object.values(regions)) {
             if (countryRegions.includes(input)) {
-                // Input is a region
                 return [input];
             }
         }
@@ -520,7 +509,6 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         };
     }
 
-    // Validate startBefore and startAfter dates format if provided
     const datetimeRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|([+-]\d{2}:\d{2})))?$/;
     if (startBefore && !datetimeRegex.test(startBefore)) {
         return {
@@ -537,7 +525,6 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         };
     }
 
-    // Validate eventLevel
     const validEventLevels = ['Regional', 'National', 'Signature', 'World'];
     if(eventLevel && !validEventLevels.includes(eventLevel)){
         return {
@@ -562,7 +549,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
                 let lastEvaluatedKey = undefined;
                 do {
                     const params = buildQueryParams(startBefore || startAfter, numberOfEvents - id_array.length, eventCode, eventLevel, !!startBefore);
-                    params.ExclusiveStartKey = lastEvaluatedKey; // Use the last evaluated key for pagination
+                    params.ExclusiveStartKey = lastEvaluatedKey;
                     const command = new QueryCommand(params);
                     const response = await docClient.send(command);
                     const items = response.Items as EventItem[];
@@ -570,8 +557,6 @@ export const handler = async (event: APIGatewayProxyEvent) => {
                     lastEvaluatedKey = response.LastEvaluatedKey;
                 } while (lastEvaluatedKey && id_array.length < numberOfEvents);
             }
-
-        //console.log('Event items:', result);
 
         return {
             statusCode: 200,

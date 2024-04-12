@@ -1,14 +1,12 @@
 import axios from 'axios';
 import * as aws4 from 'aws4';
 
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-// Interface for the event parameter
 interface LambdaEvent {
     pathParameters: {
         queryTerm?: string;
@@ -18,7 +16,6 @@ interface LambdaEvent {
     }
 }
 
-// Interface for the response structure
 interface LambdaResponse {
     statusCode: number;
     headers: {};
@@ -289,19 +286,18 @@ export const handler = async (event: LambdaEvent): Promise<LambdaResponse> => {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(query), // Stringify your query payload
+        body: JSON.stringify(query),
         region: region,
         service: service, 
     };
 
-    // Sign the request
-    aws4.sign(request); // This modifies the `request` object in place
+    aws4.sign(request);
 
     try {
         const response = await axios({
-            method: 'POST', // Set method explicitly
-            url: `https://${request.host}${request.path}`, // Construct URL from host and path
-            headers: request.headers as Record<string, string>, // Cast headers to match axios expectations
+            method: 'POST',
+            url: `https://${request.host}${request.path}`,
+            headers: request.headers as Record<string, string>,
             data: request.body,
         });
         console.log("Success")
