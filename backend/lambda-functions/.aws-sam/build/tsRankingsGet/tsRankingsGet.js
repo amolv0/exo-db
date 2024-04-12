@@ -3,10 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-// Initialize DynamoDB Client
 const ddbClient = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-1' });
 const docClient = lib_dynamodb_1.DynamoDBDocumentClient.from(ddbClient);
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
@@ -18,7 +16,7 @@ const fetchPage = async (season, desiredPage = 1, regions) => {
     const fetchLimit = regions ? pageSize * 5 : pageSize;
     let ExclusiveStartKey = undefined;
     const results = [];
-    let totalFetchedItems = 0; // Total fetched items that match the filter
+    let totalFetchedItems = 0;
     const baseParams = {
         TableName: "trueskill-rankings",
         IndexName: "SeasonMuIndex",
@@ -30,7 +28,6 @@ const fetchPage = async (season, desiredPage = 1, regions) => {
         Limit: fetchLimit,
     };
     if (regions && regions.length > 0) {
-        // Construct the filter expression for regions
         const regionFilters = regions.map((_, index) => `#region${index} = :region${index}`).join(' OR ');
         baseParams.FilterExpression = `(${regionFilters})`;
         baseParams.ExpressionAttributeNames = {};
@@ -48,14 +45,11 @@ const fetchPage = async (season, desiredPage = 1, regions) => {
         if (response.Items) {
             for (const item of response.Items) {
                 if (itemsToSkip > 0) {
-                    // Skip items until reaching the start of the desired page
                     itemsToSkip--;
                 }
                 else {
-                    // Start adding items to the results once the correct offset is reached
                     results.push(item);
                     if (results.length === pageSize) {
-                        // Stop if the page is filled
                         break;
                     }
                 }
@@ -63,12 +57,10 @@ const fetchPage = async (season, desiredPage = 1, regions) => {
         }
         ExclusiveStartKey = response.LastEvaluatedKey;
         itemsFetched += response.Items?.length || 0;
-        // Break the loop if there are no more items to fetch or we've already collected enough items
         if (!ExclusiveStartKey || (results.length >= pageSize)) {
             break;
         }
     }
-    // Return only the items for the desired page
     const pageStartIndex = (desiredPage - 1) * pageSize;
     console.log("Length:", results.length);
     return results;
@@ -201,13 +193,13 @@ const determineRegions = async (input) => {
             "Girona",
             "Guipuzcoa",
             "Madrid",
-            "Vizcaya", // p sure
+            "Vizcaya",
         ],
         "Switzerland": [
             "Aargau",
             "Basel-Landschaft",
             "Basel-Stadt",
-            "Rhône" // this is a river? what?
+            "Rhône"
         ],
         // Countries as their own regions
         "Andorra": ["Andorra"],
@@ -250,7 +242,6 @@ const determineRegions = async (input) => {
         "United Arab Emirates": ["United Arab Emirates"],
         "United Kingdom": ["United Kingdom"],
         "Vietnam": ["Vietnam"],
-        // Add other countries and their regions if necessary
     };
     // Dynamically determine if the country should be treated as its own region or has specific regions
     if (regions.hasOwnProperty(input)) {

@@ -1,18 +1,15 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
-// Initialize DynamoDB Client
 const ddbClient = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
-// CORS headers
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-// Interface for Lambda event structure
 interface LambdaEvent {
     httpMethod: string;
     queryStringParameters?: {
@@ -22,7 +19,6 @@ interface LambdaEvent {
     };
 }
 
-// Interface for the response structure
 interface LambdaResponse {
     statusCode: number;
     headers: {};
@@ -49,7 +45,6 @@ const fetchPage = async (season: number, desiredPage: number = 1, regions?: stri
     };
 
     if (regions && regions.length > 0) {
-        // Construct the filter expression for regions
         const regionFilters = regions.map((_, index) => `#region${index} = :region${index}`).join(' OR ');
         baseParams.FilterExpression = `(${regionFilters})`;
         baseParams.ExpressionAttributeNames = {};
@@ -77,7 +72,6 @@ const fetchPage = async (season: number, desiredPage: number = 1, regions?: stri
                     // Start adding items to the results once the correct offset is reached
                     results.push(item);
                     if (results.length === pageSize) {
-                        // Stop if the page is filled
                         break;
                     }
                 }
@@ -87,8 +81,7 @@ const fetchPage = async (season: number, desiredPage: number = 1, regions?: stri
         ExclusiveStartKey = response.LastEvaluatedKey;
         itemsFetched += response.Items?.length || 0;
 
-       
-        // Break the loop if there are no more items to fetch or we've already collected enough items
+
         if (!ExclusiveStartKey || (results.length >= pageSize)) {
             break;
         }
@@ -283,7 +276,6 @@ const determineRegions = async (input: string): Promise<string[]> => {
         "United Arab Emirates": ["United Arab Emirates"],
         "United Kingdom": ["United Kingdom"],
         "Vietnam": ["Vietnam"],
-        // Add other countries and their regions if necessary
     };
 
     // Dynamically determine if the country should be treated as its own region or has specific regions
@@ -293,7 +285,6 @@ const determineRegions = async (input: string): Promise<string[]> => {
         // Check if input is a region in any of the countries
         for (const countryRegions of Object.values(regions)) {
             if (countryRegions.includes(input)) {
-                // Input is a region
                 return [input];
             }
         }
