@@ -10,7 +10,7 @@ from botocore.exceptions import ClientError
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('team-data')
 
-API_KEY = 'REDACTED_API_KEY'
+API_KEY = os.getenv('ROBOTEVENTS_API_KEY_1')
 headers = {
     'accept': 'application/json',
     'Authorization': f'Bearer {API_KEY}'
