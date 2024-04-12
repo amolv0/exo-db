@@ -1,17 +1,15 @@
 import requests
 import json
+import os
 
 def search_opensearch(queryTerm):
     # OpenSearch endpoint
-    url = 'https://search-team-data-search-xaeptdqqk2djjjmer2bq63eetq.us-east-1.es.amazonaws.com/search-index/_search'
+    url = os.getenv('OPENSEARCH_API_URL')
     
-    # Headers for the request (adjust if you have additional headers, like authentication)
     headers = {
         'Content-Type': 'application/json',
-        # Add authentication headers here if needed
     }
-    
-    # Constructing the query
+
     query = {
         "query": {
             "query_string": {
@@ -118,11 +116,9 @@ def search_opensearch(queryTerm):
     # Making the POST request
     response = requests.post(url, headers=headers, data=json.dumps(query2))
 
-    # Checking the response
+
     if response.status_code == 200:
-        # Parsing the response JSON
         results = response.json()
-        # Do something with the results
         return results
     else:
         print(f"Failed to query OpenSearch: {response.status_code} - {response.text}")
