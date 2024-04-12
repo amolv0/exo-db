@@ -6,6 +6,7 @@ import trueskill
 from decimal import Decimal
 from datetime import datetime
 
+
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
 
@@ -36,18 +37,16 @@ def unmarshall_dynamodb_item(item):
 
 def decimal_default(obj):
     if isinstance(obj, Decimal):
-        return float(obj)  # Convert Decimal to float
+        return float(obj)  
     elif isinstance(obj, dict):
-        # Recursively process dictionary
         return {k: decimal_default(v) for k, v in obj.items()}
     elif isinstance(obj, list):
-        # Recursively process list
         return [decimal_default(v) for v in obj]
     else:
         return obj
     
 def process_match(match, division_name, division_id, event_name, event_id, event_start, season):
-    update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start)
+    update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start, season)
     teams = extract_teams_from_match(match)
     for team in teams:
         team_id = team['team']['id']
@@ -79,27 +78,22 @@ def remove_ranking(ranking, event_id):
             
 def update_ts_elo_with_ranking(season, ranking):
     team_id = ranking['team']['id']
-    new_ccwm = ranking['ccwm']  # Assuming 'ccwm' is directly accessible within 'ranking'
+    new_ccwm = ranking['ccwm']
     partition_key = f"{season}-{team_id}"
     
-    # Define the tables to update
     tables = [elo_data_table, trueskill_data_table]
     
     for table in tables:
-        # First, retrieve the current 'ccwms' and 'events' for the given team and season
         response = table.get_item(Key={'season-team': partition_key})
         if 'Item' in response:
             item = response['Item']
             ccwms = item.get('ccwms', [])
-            events = item.get('events', 1)  # Default to 1 to avoid division by zero
+            events = item.get('events', 1)
             
             if ccwms:
-                # Replace the last 'ccwm' with the new one
                 ccwms[-1] = new_ccwm
-                # Recalculate 'avg_ccwm'
                 avg_ccwm = sum(ccwms) / events
                 
-                # Update the item
                 update_response = table.update_item(
                     Key={'season-team': partition_key},
                     UpdateExpression='SET ccwms = :ccwms, avg_ccwm = :avg_ccwm',
@@ -505,7 +499,7 @@ def update_team_data_with_ranking(team_id, ranking_id):
     )
     logging.info(f"Updated team-data for team ID {team_id} with ranking id {ranking_id}.")
 
-def update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start):
+def update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start, season):
     # Extract the match ID and use it as the primary key
     match_id = match.pop('id')  # This removes the 'id' key and gets its value
 
@@ -518,6 +512,7 @@ def update_match_data_with_match(match, division_name, division_id, event_name, 
             'event_name': event_name,
             'event_id': event_id,
             'event_start': event_start,
+            'season': season,
             **match  # Spread the remaining match data as item attributes
         }
     )

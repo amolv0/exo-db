@@ -255,6 +255,17 @@ Purpose: Handle information about the last page of a specific paginated query
 
 `id` for elo and trueskill is formed by `{querytype}-{season}` with an optional `-{region}`
 
+## MatchSimulator
+
+Resource Path `/matchsimulator`
+
+Purpose: To determine the win percentage of a 2v2 match based on current trueskill data.
+
+Operations:
+
+- POST `/matchsimulator` to post 4 teams, with the first 2 being red alliance and last 2 being blue alliance. The predicted winrate of red alliance will be returned.
+
+
 For example:
 
 - `trueskill-181-Washington`
