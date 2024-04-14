@@ -39,12 +39,17 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
           const groupedIds: number[][] = divideIntoGroups(awards, 100);
           setGroupsOf100(groupedIds); 
           setIsFirstUseEffectDone(true);
+      } else {
+        setLoading(false);
       }
   }, [awards]);
 
   useEffect(() => {
+    if (!isFirstUseEffectDone) {
+      return;
+    }
     const fetchAwardDetails = async () => {
-      if (awards && awards.length > 0 && isFirstUseEffectDone) {
+      if (awards && awards.length > 0) {
         try {
           setLoading(true);
             for (let i = 0; i < groupsOf100.length; i++) {
@@ -75,7 +80,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
   }, [awards,  isFirstUseEffectDone]);
 
   useEffect(() => {
-    if (awardData.length === 0 || loading) {
+    if (loading) {
       return;
     }
     if (awardData.length > 0) {
@@ -124,7 +129,6 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
       ) : posts ? ( 
         <div>No awards found</div>
       ) : (
-      
         <div className="text-black">
           <div className = "team-profile-info">
               <div className="team-profile-row">
