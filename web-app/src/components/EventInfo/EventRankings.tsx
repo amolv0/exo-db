@@ -1,13 +1,7 @@
-import React, { Component, useState } from 'react';
+import React, {  useState } from 'react';
 import { Link } from 'react-router-dom';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import '../../Stylesheets/eventTable.css';
+import DivisionDropDown from '../Dropdowns/DivisionDropDown'
 
 interface TeamData {
     name: string;
@@ -43,10 +37,6 @@ const RankingsComponent: React.FC<Props> = ({ divisions }) => {
     const [selectedDivisionIndex, setSelectedDivisionIndex] = useState(0);
     const selectedDivision = divisions[selectedDivisionIndex];
 
-    const handleDivisionChange = (index: number) => {
-        setSelectedDivisionIndex(index);
-    };
-
     if (!selectedDivision) {
         return <div>No division selected</div>;
     }
@@ -55,18 +45,19 @@ const RankingsComponent: React.FC<Props> = ({ divisions }) => {
     const sortedRankings = [...rankings].sort((a, b) => a.rank - b.rank);
 
     return (
-        <div>
-            {divisions.length > 1 && (
-                <select value={selectedDivisionIndex} onChange={(e) => handleDivisionChange(Number(e.target.value))}>
-                    {divisions.map((division, index) => (
-                        <option key={index} value={index}>
-                            {division.name}
-                        </option>
-                    ))}
-                </select>
-            )}
-
-
+        <div className = "p-10">
+            <div className="eventsListsTitle">
+                Rankings List
+            </div>
+            <div className = "eventsDropDown">
+                {divisions.length > 1 && (
+                    <DivisionDropDown 
+                        setSelectedDivision={setSelectedDivisionIndex} 
+                        division={selectedDivisionIndex}
+                        divisions={divisions}
+                    />  
+                )}
+            </div>  
             <div className="table">
                 <div className="header col x-small">
                     <div className = "header-cell rounded-tl-lg">
