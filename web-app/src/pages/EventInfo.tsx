@@ -6,7 +6,7 @@ import MatchesList from '../components/EventInfo/MatchesList';
 import EventRankings from '../components/EventInfo/EventRankings';
 import EventSkills from '../components/EventInfo/EventSkills';
 import EventElims from '../components/EventInfo/EventElims';
-import { Box, Typography, Button, ButtonGroup, CircularProgress} from '@mui/material';
+import { Typography, CircularProgress} from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import '../Stylesheets/teamInfo.css';
 const EventInfo: React.FC = () => {
@@ -36,6 +36,7 @@ const EventInfo: React.FC = () => {
         console.error('Error fetching or parsing JSON:', error);
       } finally {
         setLoading(false);
+        handleHeaderClick(activeElement)
       }
     };
 
@@ -68,6 +69,12 @@ const EventInfo: React.FC = () => {
                 <span className="mr-1">&#x1F3E0;</span>
                 {eventData[0].location.address_1 + ', ' || ''}{eventData[0].location.city + ', ' || ''} 
                  {eventData[0].location.region + ', ' || ''}{eventData[0].location.country || ''}
+              </div>
+              <div className="subtitle-team-info">
+              <span className="mr-1">&#x1F55C;</span>
+                {eventData[0].start.substring(0, eventData[0].start.indexOf('T'))}
+                {eventData[0].start.substring(0, eventData[0].start.indexOf('T')) !== eventData[0].end.substring(0, eventData[0].start.indexOf('T')) && 
+                  ` - ${eventData[0].end.substring(0, eventData[0].start.indexOf('T'))}`}
               </div>
               <div className="subtitle-team-info">
                 <InfoIcon/>

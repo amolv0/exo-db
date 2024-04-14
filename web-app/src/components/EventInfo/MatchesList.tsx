@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import MatchBasic from '../EventLists/Helpers/MatchBasic';
+import DivisionDropDown from '../Dropdowns/DivisionDropDown'
 
 interface Match {
   scheduled: string;
@@ -36,7 +37,7 @@ interface Props {
 }
 
 const MatchesDisplay: React.FC<Props> = ({ divisions }) => {
-  console.log(divisions);
+
   const [selectedDivisionIndex, setSelectedDivisionIndex] = useState(0);
 
   const handleDivisionChange = (index: number) => {
@@ -62,18 +63,22 @@ const MatchesDisplay: React.FC<Props> = ({ divisions }) => {
   });
 
   return (
-    <div>
-      <select value={selectedDivisionIndex} onChange={(e) => handleDivisionChange(Number(e.target.value))}>
-        {divisions.map((division, index) => (
-          <option key={index} value={index}>
-            {division.name}
-          </option>
+    <div className = "p-10">
+        <div className="eventsListsTitle">
+            Matches List
+        </div>
+        <div className = "eventsDropDown">
+            {divisions.length > 1 && (
+                <DivisionDropDown 
+                    setSelectedDivision={setSelectedDivisionIndex} 
+                    division={selectedDivisionIndex}
+                    divisions={divisions}
+                />  
+            )}
+        </div> 
+        {sortedMatches.map((match, index) => (
+          <MatchBasic key={index} match={match} />
         ))}
-      </select>
-
-      {sortedMatches.map((match, index) => (
-        <MatchBasic key={index} match={match} />
-      ))}
     </div>
   );
 };
