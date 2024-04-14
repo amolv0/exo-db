@@ -33,7 +33,9 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
         const groupedIds: number[][] = divideIntoGroups(uniqueRankings, 50);
         setGroupsOf50(groupedIds); 
         setIsFirstUseEffectDone(true);
-    }
+      } else {
+        setLoading(false);
+      }
   }, [rankings]);
 
   useEffect(() => {
@@ -53,7 +55,6 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
               const data = await response.json();
               allEvents.push(...data);
           }
-          console.log(allEvents);
           const tempSeasonMap: { [season: number]: any[] } = {};
           
           // THIS IS TEMPORARY UNTIL SEASON SUPPORT
@@ -74,6 +75,8 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
           setPosts(false);
           setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
     };
 
