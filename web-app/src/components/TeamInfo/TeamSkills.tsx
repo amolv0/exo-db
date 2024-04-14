@@ -29,10 +29,15 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
           const groupedIds: number[][] = divideIntoGroups(skills, 50);
           setGroupsOf50(groupedIds); 
           setIsFirstUseEffectDone(true);
+      } else {
+        setLoading(false);
       }
   }, [skills]);
 
   useEffect(() => {
+    if (!isFirstUseEffectDone) {
+      return;
+    }
     const fetchSkillsDetails = async () => {
       if (skills && skills.length > 0) {
         try {
@@ -48,9 +53,7 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
               });
               const data = await response.json();
               allSkills.push(...data);
-              console.log(groupsOf50[i]);
           }
-          console.log(allSkills);
 
           const tempSeasonEventsMap: { [season: number]: { [eventId: number]: any[] } } = {};
           allSkills.forEach(skill => {
@@ -65,13 +68,14 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
 
           setSeasonEventsMap(tempSeasonEventsMap);
           setSelectedSeason(Math.max(...Object.keys(tempSeasonEventsMap).map(Number)));
-          console.log(seasonEventsMap);
         } catch (error) {
           console.error('Error fetching skills details:', error);
         } finally {
           setPosts(false);
           setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
     };
 
