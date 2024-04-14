@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress } from '@mui/material';
-import { group } from 'console';
+import { Typography, CircularProgress } from '@mui/material';
 import '../../Stylesheets/eventTable.css'
 
 interface LocationData {
@@ -86,6 +85,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
         <CircularProgress color="inherit" />
       ) : teamDetails.length > 0 ? (
         <div className = "p-10">
+        <div className="eventsListsTitle">Teams List</div>
         <div className="table">
           <div className="header col small">
             <div className = "header-cell rounded-tl-lg">
