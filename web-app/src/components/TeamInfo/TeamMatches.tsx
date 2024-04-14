@@ -30,6 +30,8 @@ const Teammatches: React.FC<TeammatchesProps> = ({ matches }) => {
           const groupedIds: number[][] = divideIntoGroups(matches, 100);
           setGroupsOf100(groupedIds); 
           setIsFirstUseEffectDone(true);
+      } else {
+        setLoading(false);
       }
   }, [matches]);
 
@@ -82,6 +84,8 @@ const Teammatches: React.FC<TeammatchesProps> = ({ matches }) => {
           setPosts(false);
           setLoading(false);
         }
+      } else {
+         setLoading(false);
       }
     };
   
