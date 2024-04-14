@@ -13,6 +13,21 @@
   margin: 0 auto;
 }
 
+.skillsTable {
+  box-sizing: border-box;
+
+  /* Auto layout */
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  background-color: #E5DCD7;
+  border: 1px solid #84202A;
+  border-radius: 9px;
+  overflow: hidden;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
 .col {
   display: flex;
   flex-direction: column;
@@ -240,4 +255,29 @@ background-color: rgba(255, 255, 255, .5); /* Alternate color row settings */
 
 .location {
 color: #CFA1A4;
+}
+
+.eventsListsTitle {
+  color: #000;
+  font-size: 2rem;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: bold;
+  margin-top: -20px;
+}
+
+.skillsListsTitle {
+  color: #000;
+  font-size: 2rem;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: bold;
+  margin-top: -20px;
+}
+
+.eventsDropDown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
 }
