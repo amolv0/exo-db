@@ -100,4 +100,4 @@ def update_ranking_in_rankings_table(ranking_id, season):
     
 if __name__ == "__main__":
     # update_team_rankings()
-    update_team_rankings_for_event(38379)
+    update_team_rankings_for_event(40254)
