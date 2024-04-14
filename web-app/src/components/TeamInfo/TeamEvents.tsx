@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { IconButton, CircularProgress } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import { getSeasonNameFromId } from '../../SeasonEnum';
+import { KeyboardReturnOutlined } from '@mui/icons-material';
 
 interface EventListDisplayProps {
   eventIdsString: string | null;
@@ -35,12 +36,19 @@ const EventListDisplay: React.FC<EventListDisplayProps> = ({ eventIdsString }) =
             const groupedIds: number[][] = divideIntoGroups(parsedEventIdsArray, 25);
             setGroupsOf25(groupedIds); 
             setIsFirstUseEffectDone(true);
+        } else {
+            setError ("Failed to find valid events");
+            setLoading(false);
         }
     }, [eventIdsString]);
 
     useEffect(() => {
-        if (!isFirstUseEffectDone || !eventIdsString) {
+        if (!isFirstUseEffectDone ) {
+            return;
+        }
+        if (!eventIdsString) {
             setError ("Failed to find valid events");
+            setLoading(false);
             return;
         }
         const fetchData = async () => {
