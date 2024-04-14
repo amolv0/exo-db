@@ -1,65 +1,103 @@
 import boto3
-from boto3.dynamodb.conditions import Key
+import json
 from decimal import Decimal
-import logging
 
-# Initialize DynamoDB resource and table
 dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('team-data')
+s3_client = boto3.client('s3')
 
-# Setup logging
-logging.basicConfig(level=logging.INFO)
-count = 0
+event_table = dynamodb.Table('event-data')
+team_table = dynamodb.Table('team-data')
+rankings_table = dynamodb.Table('rankings-data')
 
-def remove_duplicate_and_small_rankings(rankings):
-    """Remove duplicates from the rankings list, discard rankings < 10, and maintain order."""
-    seen = set()
-    unique_rankings = [x for x in rankings if x >= 10 and not (x in seen or seen.add(x))]
-    return unique_rankings
+def update_team_rankings():
+    count = 1
+    response = event_table.scan()
+    
+    while True:
+        print(f"Scanning page {count}")
+        count += 1
+        process_events(response['Items'])
+        
 
-def update_item_rankings(team_id, unique_rankings):
-    global count
-    count += 1
-    """Update the item's rankings with a list of unique rankings."""
-    response = table.update_item(
-        Key={'id': Decimal(team_id)},
-        UpdateExpression='SET rankings = :val',
-        ExpressionAttributeValues={
-            ':val': unique_rankings,
-        }
-    )
-    logging.info(f"Updated team {team_id} with unique rankings. {count} teams updated")
+        if 'LastEvaluatedKey' in response:
+            response = event_table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+        else:
+            break
+        
 
-def process_single_item(team_id):
-    """Process a single item for duplicate rankings."""
-    response = table.get_item(Key={'id': Decimal(team_id)})
-    item = response.get('Item', {})
-    if 'rankings' in item:
-        unique_rankings = remove_duplicate_and_small_rankings(item['rankings'])
-        if len(unique_rankings) != len(item['rankings']):
-            update_item_rankings(team_id, unique_rankings)
+def update_team_rankings_for_event(event_id):
+    print(f"Processing event {event_id}")
+    response = event_table.get_item(Key={'id': event_id})
+    event = response.get('Item')
+    
+    if not event:
+        print(f"No event found with ID: {event_id}")
+        return
 
-def process_entire_table():
-    """Scan through the entire table and process each item for duplicate rankings."""
-    scan_kwargs = {
-        'ProjectionExpression': "id, rankings"
-    }
-    done = False
-    start_key = None
-    pages = 0
-    while not done:
-        pages += 1
-        logging.info(f"Scanned page {pages}")
-        if start_key:
-            scan_kwargs['ExclusiveStartKey'] = start_key
-        response = table.scan(**scan_kwargs)
-        for item in response.get('Items', []):
-            if 'rankings' in item:
-                unique_rankings = remove_duplicate_and_small_rankings(item['rankings'])
-                if len(unique_rankings) != len(item['rankings']):
-                    update_item_rankings(item['id'], unique_rankings)
-        start_key = response.get('LastEvaluatedKey', None)
-        done = start_key is None
+    process_event(event)
+    
+def process_event(event):
+    divisions = event.get('divisions', [])
+    if 'divisions_s3_reference' in divisions:
+        bucket_name, key = divisions['divisions_s3_reference'].replace("s3://", "").split("/", 1)
+        response = s3_client.get_object(Bucket=bucket_name, Key=key)
+        divisions = json.loads(response['Body'].read().decode('utf-8'))
+    for division in divisions:
+        rankings = division.get('rankings', [])
+        for ranking in rankings:
+            update_rankings(ranking, event['season']['id'])
 
-# process_single_item(team_id=93544) 
-process_entire_table()
+def process_events(events):
+    for event in events:
+        divisions = event.get('divisions', [])
+        if 'divisions_s3_reference' in divisions:
+            bucket_name, key = divisions['divisions_s3_reference'].replace("s3://", "").split("/", 1)
+            response = s3_client.get_object(Bucket=bucket_name, Key=key)
+            divisions = json.loads(response['Body'].read().decode('utf-8'))
+        for division in divisions:
+            rankings = division.get('ranking', [])
+            for ranking in rankings:
+                update_rankings(ranking, Decimal(event['season']['id']))
+
+def update_rankings(ranking, season):
+    ranking_id = ranking.get('id')
+    team_item = ranking.get('team')
+    team_id = team_item.get('id')
+    update_ranking_in_team(team_id, ranking_id)
+    update_ranking_in_rankings_table(ranking_id, season)
+
+def update_ranking_in_team(team_id, ranking_id):
+    response = team_table.get_item(Key={'id': team_id})
+    team_data = response.get('Item')
+    
+    if team_data:
+        rankings = team_data.get('rankings', [])
+        if ranking_id not in rankings:
+            print(f"Adding ranking {ranking_id} to team {team_id}")
+            rankings.append(ranking_id)
+            team_table.update_item(
+                Key={'id': team_id},
+                UpdateExpression='SET rankings = :val',
+                ExpressionAttributeValues={
+                    ':val': rankings
+                }
+            )
+        
+def update_ranking_in_rankings_table(ranking_id, season):
+    response = rankings_table.get_item(Key={'id': ranking_id})
+    ranking = response['Item']
+    if 'season' not in ranking:
+        print(f"Added season to ranking: {ranking_id}")
+        ranking['season'] = season
+        rankings_table.update_item(
+            Key={'id': ranking_id},
+            UpdateExpression='SET season = :val',
+            ExpressionAttributeValues={
+                ':val': season
+            }
+        )
+    
+    
+if __name__ == "__main__":
+    # update_team_rankings()
+    update_team_rankings_for_event(38379)
