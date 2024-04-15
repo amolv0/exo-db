@@ -60,7 +60,7 @@ const TeamRankingsChart: React.FC<TeamRankingsProps> = ({ rankings }) => {
           const rankingsData: RankingItem[] = [];
           console.log("groups of 50 len:", groupsOf50.length)
           for (let i = 0; i < groupsOf50.length; i++) {
-            const response = await fetch('EXODB_API_GATEWAY_BASE_URL/dev/rankings/', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/rankings/`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
