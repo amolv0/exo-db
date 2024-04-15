@@ -85,7 +85,11 @@ def update_ranking_in_team(team_id, ranking_id):
         
 def update_ranking_in_rankings_table(ranking_id, season):
     response = rankings_table.get_item(Key={'id': ranking_id})
-    ranking = response['Item']
+    if 'Item' in response:
+        ranking = response['Item']
+    else:
+        print(f"Ranking not found in rankings table: {ranking_id}")
+        return
     if 'season' not in ranking:
         print(f"Added season to ranking: {ranking_id}")
         ranking['season'] = season
@@ -100,4 +104,4 @@ def update_ranking_in_rankings_table(ranking_id, season):
     
 if __name__ == "__main__":
     # update_team_rankings()
-    update_team_rankings_for_event(40254)
+    update_team_rankings_for_event(33805)
