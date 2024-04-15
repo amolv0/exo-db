@@ -1,13 +1,15 @@
 import '../../Stylesheets/dropdown.css';
 
-/** This drop down should be called with a drop down that limits the display to VEX, VEXU, or vexIQ */
+// This represents the dropdown to select the grade
 
+// Get the set grade function, and the current grade
 interface GradeDropdownProps {
     setGrade: (grade: string) => void;
     grade : string;
 }
 
-const GradeDropdown: React.FC<GradeDropdownProps> = ({ setGrade, grade}) => {
+const GradeDropDown: React.FC<GradeDropdownProps> = ({ setGrade, grade}) => {
+
     const handleGradeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setGrade(event.target.value);
     };
@@ -18,6 +20,8 @@ const GradeDropdown: React.FC<GradeDropdownProps> = ({ setGrade, grade}) => {
                 Grade
             </div>
             <div className="search-filter">
+
+            {/* Current grade options */}
             <select id="grade" value={grade} onChange={handleGradeChange}>
                 <option value="High School">High School</option>
                 <option value="College">College</option>
@@ -28,4 +32,4 @@ const GradeDropdown: React.FC<GradeDropdownProps> = ({ setGrade, grade}) => {
     );
 }
 
-export default GradeDropdown;
+export default GradeDropDown;
