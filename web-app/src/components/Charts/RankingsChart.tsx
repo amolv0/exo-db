@@ -40,7 +40,7 @@ const TeamRankingsChart: React.FC<TeamRankingsProps> = ({ rankings }) => {
       const uniqueRankings = rankings.filter((value, index, self) => {
           return self.indexOf(value) === index;
       });
-      // Divide uniqueRankings into groups of 50
+      // Divide uniqueRankings into groups of 50 :)
       console.log("unique rankings:", uniqueRankings)
       const groupedIds: number[][] = divideIntoGroups(uniqueRankings, 50);
       console.log("grouped ids:", groupedIds)
