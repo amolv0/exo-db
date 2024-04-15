@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import '../../Stylesheets/eventTable.css';
 import DivisionDropDown from '../Dropdowns/DivisionDropDown'
 
+// Displays the rankings for the event
+
 interface TeamData {
     name: string;
     id: string;
 }
 
-interface Rank {
+interface RankingData {
     wins: number;
     team: TeamData;
     name: string;
@@ -26,14 +28,14 @@ interface Rank {
 
 interface Division {
     name: string;
-    rankings: Rank[];
+    rankings: RankingData[];
 }
 
-interface Props {
+interface Divisions {
     divisions: Division[];
 }
 
-const RankingsComponent: React.FC<Props> = ({ divisions }) => {
+const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
     const [selectedDivisionIndex, setSelectedDivisionIndex] = useState(0);
     const selectedDivision = divisions[selectedDivisionIndex];
 
@@ -41,7 +43,10 @@ const RankingsComponent: React.FC<Props> = ({ divisions }) => {
         return <div>No division selected</div>;
     }
 
+    // The rankings should only be that of the given division
     const { rankings } = selectedDivision;
+
+    // Sort the rankings by rank
     const sortedRankings = [...rankings].sort((a, b) => a.rank - b.rank);
 
     return (
@@ -50,6 +55,7 @@ const RankingsComponent: React.FC<Props> = ({ divisions }) => {
                 Rankings List
             </div>
             <div className = "eventsDropDown">
+                {/* Display divisions dropdown only if there are multiple divisions */}
                 {divisions.length > 1 && (
                     <DivisionDropDown 
                         setSelectedDivision={setSelectedDivisionIndex} 
@@ -158,4 +164,4 @@ const RankingsComponent: React.FC<Props> = ({ divisions }) => {
     );
 };
 
-export default RankingsComponent;
+export default EventRankingsComponent;
