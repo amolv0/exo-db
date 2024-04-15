@@ -48,43 +48,38 @@ const EventsList: React.FC<Events> = ({ eventIdsString }) => {
     // If the page changes, the firstUseEffect is done, this indicates that we need to update the page
     // And thus we also need to update they query
     useEffect(() => {
-      if (!isFirstUseEffectDone) {
-          return;
-      }
-      if (!eventIdsString) {
-          setError ("Failed to find valid events");
-          return;
-      }
-
-      const fetchData = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/events/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(groupsOf25[currentPage - 1])
-            });
-            const data = await response.json();
-            // Sort events by date according to ascending or not
-            if (ascending) {
-                data.sort((a: any, b: any) => new Date(a.start).getTime() - new Date(b.start).getTime());
-            } else {
-                data.sort((a: any, b: any) => new Date(b.start).getTime() - new Date(a.start).getTime());
-            }
-            setEventsMap(data);
-            setError(null);
-          } catch (error) {
+        if (!isFirstUseEffectDone) {
+            return;
+        }
+        if (!eventIdsString) {
             setError ("Failed to find valid events");
-          } finally {
-            setLoading(false);
-          }
-      };
+            return;
+        }
 
-      fetchData();
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/events/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(groupsOf25[currentPage - 1])
+                });
+                const data = await response.json();
+                data.sort((a: any, b: any) => new Date(b.start).getTime() - new Date(a.start).getTime());
+                setEventsMap(data);
+                setError(null);
+            } catch (error) {
+                setError ("Failed to find valid events");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    }, [currentPage, isFirstUseEffectDone]);
+        fetchData();
+
+    }, [currentPage, isFirstUseEffectDone, eventIdsString, groupsOf25]);
 
     // If the user changes the order of events, display the other way
     useEffect(() => {
@@ -96,7 +91,7 @@ const EventsList: React.FC<Events> = ({ eventIdsString }) => {
             }
         });
         setEventsMap(sortedMaps);
-    }, [ascending]);
+    }, [ascending, eventsMap]);
 
     const toggleSortingDirection = () => {
         setAscending((prevAscending) => !prevAscending);
