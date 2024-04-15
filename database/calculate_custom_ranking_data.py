@@ -2,14 +2,41 @@ import boto3
 import numpy as np
 from scipy.linalg import cho_factor, cho_solve
 from decimal import Decimal, ROUND_HALF_UP
+import json
+from botocore.exceptions import ClientError
+from datetime import datetime
 
 ## Calculate OPR, DPR, CCWM for each ranking item in each event, and then post that to rankings-data. 
 
 dynamodb = boto3.resource('dynamodb')
+s3_client = boto3.client('s3')
+
+
 event_table = dynamodb.Table('event-data')
 rankings_table = dynamodb.Table('rankings-data')
 team_data_table = dynamodb.Table('team-data')
 
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)  # Convert Decimal to float
+    elif isinstance(obj, dict):
+        return {k: decimal_default(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [decimal_default(v) for v in obj]
+    else:
+        return obj
+    
+    
+def float_default(obj):
+    if isinstance(obj, float):
+        return Decimal(str(obj))  # Convert float to Decimal
+    elif isinstance(obj, dict):
+        return {k: float_default(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [float_default(v) for v in obj]
+    else:
+        return obj
+    
 def process_rankings_for_all_events():
     page = 0
     count = 0
@@ -31,6 +58,7 @@ def process_rankings_for_all_events():
 
 
 def calculate_and_update_rankings(event_id):
+    count = 0
     event_item = event_table.get_item(Key={'id': event_id}).get('Item')
     if not event_item:
         print(f"No event found with ID: {event_id}")
@@ -42,13 +70,26 @@ def calculate_and_update_rankings(event_id):
     program = event_item['program']
     season = event_item['season']['id']
     divisions = event_item.get('divisions', [])
+    in_s3 = False
+    if 'divisions_s3_reference' in divisions:
+        bucket_name, key = divisions['divisions_s3_reference'].replace("s3://", "").split("/", 1)
+        response = s3_client.get_object(Bucket=bucket_name, Key=key)
+        divisions = json.loads(response['Body'].read().decode('utf-8'))
+        in_s3 = True
+        divisions = float_default(divisions)
+    division_num = 0
     for division in divisions:
+        division_num += 1
+        print(f"Doing division {division_num}")
         if 'rankings' not in division or len(division['rankings']) < 1:
-            return
+            print("Rankings not found/ranking len < 1, continuing")
+            continue
         division_id = division['id']
         if 'matches' in division:
             matches = [match for match in division.get('matches', []) if match['round'] == 2]
-        else: continue
+        else: 
+            print("continuing")
+            continue
 
         teams = set()
         team_numbers = {}
@@ -61,8 +102,8 @@ def calculate_and_update_rankings(event_id):
         n = len(teams)
         # print(teams)
         if n < 1:
-            print(f"Found no matches with round==2 for event {event_id}")
-            return
+            print(f"Found no matches with round==2 for division {division['id']} in event {event_id}")
+            continue
         team_indices = {team_id: i for i, team_id in enumerate(teams)}
         A = np.zeros((n, n))
         B_opr = np.zeros(n)
@@ -114,17 +155,20 @@ def calculate_and_update_rankings(event_id):
                 ranking['division_name'] = division['name']
 
                 # Post ranking to rankings-data table
+                count += 1
+                # print(f"Putting in rankings {ranking['id']}. {count} rankings put in")
                 rankings_table.put_item(Item=ranking)
                 
-                response = team_data_table.update_item(
-                    Key={'id': int(team_id)},
-                    UpdateExpression='SET rankings = list_append(if_not_exists(rankings, :empty_list), :ranking)',
-                    ExpressionAttributeValues={
-                        ':ranking': [ranking['id']],
-                        ':empty_list': [],
-                    },
-                    ReturnValues='UPDATED_NEW'
-                )
+                # rankings are already in team_data
+                # response = team_data_table.update_item(
+                #     Key={'id': int(team_id)},
+                #     UpdateExpression='SET rankings = list_append(if_not_exists(rankings, :empty_list), :ranking)',
+                #     ExpressionAttributeValues={
+                #         ':ranking': [ranking['id']],
+                #         ':empty_list': [],
+                #     },
+                #     ReturnValues='UPDATED_NEW'
+                # )
                 
                 # Remove attributes we dont want in event-data
                 ranking.pop('event_id', None)
@@ -137,13 +181,32 @@ def calculate_and_update_rankings(event_id):
                 ranking.pop('program', None)
                 ranking.pop('season', None)
 
-        # Update the event item with the new rankings
+    # Update the event item with the new rankings
+    if not in_s3:
         event_table.update_item(
             Key={'id': event_id},
             UpdateExpression='SET divisions = :divisions',
             ExpressionAttributeValues={':divisions': divisions}
         )
-        # print(f"Updated event {event_id}, division {division_id}")
+    else:
+        divisions_json = json.dumps(decimal_default(divisions))
+        try:
+            s3_client.put_object(Bucket=bucket_name, Key=key, Body=divisions_json)
+            update_expression = "SET "
+            expression_attribute_values = {}
+            expression_attribute_values[":divisions"] = {"divisions_s3_reference": f"s3://{bucket_name}/{key}", "divisions_last_changed": datetime.now().isoformat(), }
+            update_expression += "divisions = :divisions"
+            event_table.update_item(
+                Key={'id': event_id},
+                UpdateExpression=update_expression,
+                ExpressionAttributeValues=expression_attribute_values,
+                ReturnValues="UPDATED_NEW"
+            )
+            print(f"Divisions data for event {event_id} stored in S3.")
+        except ClientError as e:
+            print(f"Failed to store divisions in S3: {e}")
+    return None
+    # print(f"Updated event {event_id}, division {division_id}")
 
 def delete_ranking(team_id):    
     try:
@@ -184,3 +247,7 @@ def delete_all_rankings():
 # print("Completed deleting all rankings")
 # process_rankings_for_all_events()
 # print("Process complete")  
+
+print("Starting process")
+calculate_and_update_rankings(33805)
+print("DONE")
