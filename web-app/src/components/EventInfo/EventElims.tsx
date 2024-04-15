@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 
+// Current Bracket code -> Subject to change ***
+
 interface Team {
   sitting: boolean,
   team: {

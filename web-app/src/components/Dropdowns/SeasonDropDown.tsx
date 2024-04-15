@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import '../../Stylesheets/dropdown.css';
 import { getSeasonNameFromId } from '../../SeasonEnum';
 
-/** This drop down should be called with a drop down that limits the display to VEX, VEXU, or vexIQ */
+// This dropdown shows the current seasons
+
+// The following gets the setSeasonID, the current seasonId
+// Also takes in the type / grade, which restricts which seasons to display
+// and a manual restrict array, which makes it not display the seasons in the array
 
 interface SeasonDropdownProps {
     setSeasonId: (seasonId: number) => void;
@@ -12,13 +16,15 @@ interface SeasonDropdownProps {
     restrict : string[] | null;
 }
 
-const SeasonDropdown: React.FC<SeasonDropdownProps> = ({ setSeasonId, seasonId, type, grade, restrict}) => {
+const SeasonDropDown: React.FC<SeasonDropdownProps> = ({ setSeasonId, seasonId, type, grade, restrict}) => {
     const [seasons, setSeasons] = useState<number[]>([]);
 
+    // Sets the all the season options to display
     useEffect(() => {
         let filteredSeasons: number[] = [];
         if (!restrict) {
-            for (let i = 50; i <= 250; i++) {
+            // Loops through the possible seasonIds (up to 250)
+            for (let i = 90; i <= 250; i++) {
                 const seasonName = getSeasonNameFromId(i);
                 if (seasonName !== i.toString()) {
                     filteredSeasons.push(i);
@@ -28,7 +34,7 @@ const SeasonDropdown: React.FC<SeasonDropdownProps> = ({ setSeasonId, seasonId, 
             filteredSeasons = restrict.map(s => parseInt(s));
         }
         setSeasons(filteredSeasons);
-    }, []);
+    }, [restrict]);
 
     const handleSeasonChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSeasonId(parseInt(event.target.value));
@@ -41,6 +47,7 @@ const SeasonDropdown: React.FC<SeasonDropdownProps> = ({ setSeasonId, seasonId, 
             </div>
             <div className="search-filter">
                 <select id="season" value={seasonId} onChange={handleSeasonChange}>
+                    {/* Display based on restrictions */}
                     {seasons
                         .filter(s => {
                             if (type === 'VEXU' || grade === 'College') {
@@ -61,4 +68,4 @@ const SeasonDropdown: React.FC<SeasonDropdownProps> = ({ setSeasonId, seasonId, 
     );
 }
 
-export default SeasonDropdown;
+export default SeasonDropDown;
