@@ -38,7 +38,7 @@ const EventsListQuery: React.FC<EventFilter> = ({numberOfEvents, programCode, st
             const result = await response.json();
             if (result.length === 0 || result.error) {
                 setLoading(false);
-            if (status == 'ongoing') {
+            if (status === 'ongoing') {
                 setError("No ongoing events");
             } else {
                 setError("No events found")
