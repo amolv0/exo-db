@@ -60,7 +60,7 @@ const TeamRankingsChart: React.FC<TeamRankingsProps> = ({ rankings }) => {
           const rankingsData: RankingItem[] = [];
           console.log("groups of 50 len:", groupsOf50.length)
           for (let i = 0; i < groupsOf50.length; i++) {
-            const response = await fetch('https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/rankings/', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/rankings/`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
