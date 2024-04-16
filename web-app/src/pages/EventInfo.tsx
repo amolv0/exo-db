@@ -14,12 +14,13 @@ import '../Stylesheets/teamInfo.css';
 
 
 const EventInfo: React.FC = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
     const { eventId } = useParams<{ eventId: string }>();
     const [eventData, setEventData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [activeElement, setActiveElement] = useState<string>('EventInfo');
+
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const handleHeaderClick = (element: string) => {
         setActiveElement(element);
@@ -31,18 +32,18 @@ const EventInfo: React.FC = () => {
 
     // On eventId change, load the new page
     useEffect(() => {
+        setLoading(true);
         const fetchEventData = async () => {
             try {
                 const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/events/${eventId}`);
                 const data = await response.json();
                 setEventData(data);
             } catch (error) {
-                console.error('Error fetching or parsing JSON:', error);
+                console.error('Error fetching or parsing JSON:');
             } finally {
                 setLoading(false);
             }
         };
-
         fetchEventData();
     }, [eventId]);
 
@@ -61,7 +62,7 @@ const EventInfo: React.FC = () => {
                 <CircularProgress color="inherit" />
             ) : (eventData && eventData.length > 0 ? (
                 <div>
-                    {/* Title and subtitle */}
+                    {/* Events Title */}
                     <div className = "team-info-layout">
                         <div className = "title-team-info">
                             {eventData[0].name && (
