@@ -41,6 +41,7 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
         if (!isFirstUseEffectDone) {
             return;
         }
+
         const fetchMatchesDetails = async () => {
             if (matches && matches.length > 0) {
                 try {
@@ -80,7 +81,7 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
                     setSeasonEventsMap(tempSeasonEventsMap);
                     setSelectedSeason(Math.max(...Object.keys(tempSeasonEventsMap).map(Number)));
                 } catch (error) {
-                    console.error('Error fetching match details:', error);
+                    console.error('Error fetching match details:');
                 } finally {
                     setPosts(false);
                     setLoading(false);

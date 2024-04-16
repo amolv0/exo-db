@@ -70,7 +70,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                     Rank
                     </div>
                     {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                        <div key = {index}className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             {index + 1}
                         </div>
                     ))}
@@ -80,7 +80,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                     Number
                     </div>
                     {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             <div>
                                 <Link className="teamBox" to={`/teams/${rank.team.id}`}>
                                     {rank.team.name}
@@ -94,7 +94,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                     W-L-T
                     </div>
                     {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             {rank.wins}-{rank.losses}-{rank.ties}
                         </div>
                     ))}
@@ -104,7 +104,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                     Avg Points
                     </div>
                     {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             {rank.average_points}
                         </div>
                     ))}
@@ -114,7 +114,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                     OPR
                     </div>
                     {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             {rank.opr}
                         </div>
                     ))}
@@ -124,7 +124,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                     DPR
                     </div>
                     {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             {rank.dpr}
                         </div>
                     ))}
@@ -134,7 +134,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                     CCWM
                     </div>
                     {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             {rank.ccwm}
                         </div>
                     ))}
@@ -144,7 +144,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                     WP
                     </div>
                     {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             {rank.wp}
                         </div>
                     ))}
@@ -154,7 +154,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                     AP
                     </div>
                     {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             {rank.ap}
                         </div>
                     ))}
