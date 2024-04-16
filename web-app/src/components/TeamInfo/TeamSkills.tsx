@@ -72,7 +72,7 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                     setSeasonEventsMap(tempSeasonEventsMap);
                     setSelectedSeason(Math.max(...Object.keys(tempSeasonEventsMap).map(Number)));
                 } catch (error) {
-                    console.error('Error fetching skills details:', error);
+                    console.error('Error fetching skills details:');
                 } finally {
                     setPosts(false);
                     setLoading(false);
@@ -107,13 +107,13 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                     <div>
                         {seasonEventsMap[selectedSeason] && Object.values(seasonEventsMap[selectedSeason]).map((eventSkills, index) => (
                         eventSkills.map((skills, index) => (
-                            <div>
+                            <div key={index}>
                                 {index === 0 && (
                                 <Link to={`/events/${skills.event_id}`}>
                                     {skills.event_name}
                                 </Link>
                                 )}
-                                <div key={index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
                                     <div> 
                                         Type: {skills.type}
                                     </div>

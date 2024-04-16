@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import EventsListQuery from '../components/Lists/EventsListQuery';
+import EventsListQuery from '../components/Lists/EventsList';
 import { useLocation} from 'react-router-dom';
 import RegionDropdown from '../components/Dropdowns/RegionDropDown';
 import ProgramDropdown from '../components/Dropdowns/ProgramDropDown';
