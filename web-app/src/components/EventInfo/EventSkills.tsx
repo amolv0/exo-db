@@ -89,7 +89,7 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
                         Rank
                     </div>
                     {sortedCombinedSkills && Array.isArray(sortedCombinedSkills) && sortedCombinedSkills.map(([teamId, skills], index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             {index + 1}
                         </div>
                     ))}
@@ -99,7 +99,7 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
                         Score
                     </div>
                     {sortedCombinedSkills && Array.isArray(sortedCombinedSkills) && sortedCombinedSkills.map(([teamId, skills], index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
                             <div className = "flex gap-2 items-center justify-center">
                                 <div className = "scoreDisplay">
                                     {skills[0].score + skills[1].score}
@@ -117,7 +117,7 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
                         Number
                     </div>
                     {sortedCombinedSkills && Array.isArray(sortedCombinedSkills) && sortedCombinedSkills.map(([teamId, skills], index, array) => (
-                        <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             <Link className="teamBox" to={`/teams/${teamId}`}>
                                 {skills[0].team.name}
                             </Link>
