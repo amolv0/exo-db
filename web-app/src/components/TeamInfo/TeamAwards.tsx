@@ -72,7 +72,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                         }
                     }
                 } catch (error) {
-                    console.error('Error fetching award details:', error);
+                    console.error('Error fetching award details:');
                 } finally {
                     setLoading(false);
                 }
@@ -178,7 +178,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                                     </Link>
                                 <ul>
                                     {awardData.filter(a => a.event.id === award.event.id && a.season === selectedSeason).map((a, i) => (
-                                        <li>{a.title}</li>
+                                        <li key = {i}>{a.title}</li>
                                     ))}
                                 </ul>
                               </div>

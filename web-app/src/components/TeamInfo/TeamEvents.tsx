@@ -152,7 +152,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                                 PROGRAM
                             </div>
                             {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((event, index, array) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                                     <div className={
                                         `${event.program.code || event.program === 'VRC' ? 'vrc' : 
                                         event.program.code || event.program === 'VEXU' ? 'vexu' : 
@@ -168,7 +168,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                                 EVENT
                             </div>
                             {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((event, index) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
                                     <Link to={`/events/${event.id}`}>
                                         {event.name && event.name}
                                     </Link>
@@ -180,7 +180,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                             LOCATION
                         </div>
                             {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((event, index) => (
-                                <div className={`body-cell location ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                <div key = {index} className={`body-cell location ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
                                     {event.location && (
                                         <div>
                                             {event.location.city && <span>{event.location.city}, </span>}
@@ -196,7 +196,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                             DATE {ascending ? '▲' : '▼'}
                         </div>
                             {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((event, index, array) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-br-lg rounded-b-none' : ''}`}>
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-br-lg rounded-b-none' : ''}`}>
                                     {event.start && (event.start.substring(0, 10) === event.end?.substring(0, 10)
                                     ? event.start.substring(0, 10) : event.start.substring(0, 10) + ' - ' + event.end?.substring(0, 10))}
                                 </div>
