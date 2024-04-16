@@ -6,7 +6,7 @@ import Skills from './pages/Skills';
 import TeamInfo from './pages/TeamInfo';
 import EventInfo from './pages/EventInfo';
 import Rankings from './pages/Rankings';
-import EventsListQuery from './components/Lists/EventsListQuery';
+import EventsListQuery from './components/Lists/EventsList';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './Stylesheets/pageLayout.css';
 
