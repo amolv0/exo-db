@@ -91,14 +91,14 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
 
       const fetchLastPage = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}.com/dev/lastpage/${generateId()}`);
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/lastpage/${generateId()}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch last page');
                 }
                 const data = await response.json();
                 setLastPage(data.lastPage);
             } catch (error) {
-                console.error('Error fetching last page:', error);
+                console.error('Error fetching last page:');
             }
       };
 
@@ -142,7 +142,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
             }
         };
         fetchSkillsRanking();
-    }, [currentPage, grade, post, region, season]);
+    }, [currentPage]);
 
     const calculateRank = (index: number) => {
         return (currentPage - 1) * page + index + 1;
@@ -200,7 +200,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                             Rank
                             </div>
                             {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index, array) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                                     <div className = "flex justify-center items-center">
                                         {calculateRank(index)}
                                     </div>
@@ -212,7 +212,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                                 Score
                             </div>
                             {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
                                     <div className = "flex gap-2 items-center justify-center">
                                         <div className = "scoreDisplay">
                                             {rank.score}
@@ -230,7 +230,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                                 Team
                             </div>
                             {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
                                     <div>
                                         <Link to={`/teams/${rank.team_id}`} className = "hover:text-blue-200 flex gap-2 items-center justify-center">
                                             <div className = "teamBox"> {rank.team_number}</div>
@@ -245,7 +245,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                                 Event
                             </div>
                             {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
                                     <Link to={`/events/${rank.event_id}`} className = "hover:text-blue-200">
                                         {rank.event_name && rank.event_name}
                                     </Link>

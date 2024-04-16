@@ -95,7 +95,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                             Number
                             </div>
                             {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index, array) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                                     <div>
                                         <Link to={`/teams/${team.id}`} className = "teamBox">{team.number}</Link>
                                     </div>
@@ -108,7 +108,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                                     Team Name
                                 </div>
                                 {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
-                                    <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                    <div key = {index}className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
                                         <div>
                                             <Link to={`/teams/${team.id}`}>{team.team_name}</Link>
                                         </div>
@@ -122,7 +122,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                                     Organization
                                 </div>
                                 {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
-                                    <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
                                         <div>
                                             {team.organization}
                                         </div>
@@ -136,7 +136,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                                     Location
                                 </div>
                                 {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
-                                    <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
                                         <div>
                                             {team.location?.city}{team.location?.city && team.location?.region ? ', ' : ''}
                                             {team.location?.region}{team.location?.region && team.location?.country ? ', ' : ''}{team.location?.country}
