@@ -66,7 +66,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                 setError(null);
             } catch (error) {
                 setError("Failed to find valid rankings leaderboard");
-                console.error('Error fetching season ranking:', error);
+                console.error('Error fetching season ranking');
             } finally {
                 setLoading(false); // Set loading to false after fetching data
             }
@@ -92,7 +92,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                 const data = await response.json();
                 setLastPage(data.lastPage);
             } catch (error) {
-                console.error('Error fetching last page:', error);
+                console.error('Error fetching last page');
             }
         };
 
@@ -130,7 +130,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                 setError(null);
             } catch (error) {
                 setError("Failed to find valid rankings leaderboard");
-                console.error('Error fetching season ranking:', error);
+                console.error('Error fetching season ranking:');
             } finally {
                 setLoading(false);
             }
@@ -198,7 +198,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                                 Rank
                             </div>
                             {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index, array) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                                     <div className = "flex justify-center items-center">
                                         {calculateRank(index)}
                                     </div>
@@ -210,7 +210,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                                 Team
                             </div>
                             {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
                                     <div>
                                         <Link to={`/teams/${rank.team_id}`} className = "hover:text-blue-200 flex gap-2 items-center justify-center">
                                             <div className = "teamBox"> {rank.team_number} </div>
@@ -225,7 +225,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                                 W-L-T
                             </div>
                             {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
                                     <div>
                                         {rank.wins} - {rank.losses} - {rank.ties}
                                     </div>
@@ -237,7 +237,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                                 Avg CCWM
                             </div>
                             {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
                                     <div>
                                         {rank.avg_ccwm && rank.avg_ccwm.toFixed(2)}
                                     </div>
@@ -249,7 +249,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                                 mu
                             </div>
                             {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
                                     <div>
                                         {rank.mu.toFixed(2)}
                                     </div>

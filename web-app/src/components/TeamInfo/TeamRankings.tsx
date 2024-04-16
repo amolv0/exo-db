@@ -73,7 +73,7 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                     setSeasonMap(tempSeasonMap);
                     setSelectedSeason(Math.max(...Object.keys(tempSeasonMap).map(Number)));
                 } catch (error) {
-                    console.error('Error fetching award details:', error);
+                    console.error('Error fetching award details:');
                 } finally {
                     setPosts(false);
                     setLoading(false);
@@ -107,7 +107,7 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                     <br />
                     <div>
                         {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((rankings, index) => (
-                            <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
                                 <Link to={`/events/${rankings.event_id}`}>
                                     {rankings.event_name}
                                 </Link>

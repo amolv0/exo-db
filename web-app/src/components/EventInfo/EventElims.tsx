@@ -84,13 +84,11 @@ const parseMatches = (rawMatches: Match[]): Match[] => {
 
 const transformMatchesForBracket = (rawMatches: Match[]): TransformedMatch[] => {
   return parseMatches(rawMatches).map(match => {
-    console.log(match);
     const home = match.alliances[0];
     const away = match.alliances[1];
     const homeScore = home.score;
     const awayScore = away.score;
     const homeWin = homeScore > awayScore;
-    console.log(home.teams[0]);
     const roundName = roundMapping[match.round] || "Unknown Round";
     return {
       id: match.id,
