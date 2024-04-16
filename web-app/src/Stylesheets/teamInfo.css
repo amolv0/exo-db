@@ -26,24 +26,33 @@
     left: calc((100vw - 1540px) / 2); /* Adjust this value to set the maximum leftward expansion */
 }
 
+@media screen and (max-width: 1600px) {
+    .title-team-info {
+        left: calc((100vw - 1300px) / 2);
+    }
+
+    .subtitle-team-info {
+        left: calc((100vw - 1300px) / 2);
+    }
+}
+
 .team-container {
     display: flex;
     justify-content: center;
     background-color: #84202A;
-    border-radius: 4px;
 }
 
 .team-button {
     padding-left: 25px;
     padding-right: 25px;
-    padding-top: 50px;
     padding-bottom: 8px;
+    position: relative;
+    top:-20px;
+    margin-bottom:-20px;
     color: white;
     cursor: pointer;
-    margin: 0 4px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-    margin-top: -60px;
 }
 
 .transition {
