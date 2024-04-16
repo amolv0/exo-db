@@ -79,7 +79,7 @@ const EventsList: React.FC<Events> = ({ eventIdsString }) => {
 
         fetchData();
 
-    }, [currentPage, isFirstUseEffectDone, eventIdsString, groupsOf25]);
+    }, [currentPage, isFirstUseEffectDone]);
 
     // If the user changes the order of events, display the other way
     useEffect(() => {
@@ -91,7 +91,7 @@ const EventsList: React.FC<Events> = ({ eventIdsString }) => {
             }
         });
         setEventsMap(sortedMaps);
-    }, [ascending, eventsMap]);
+    }, [ascending]);
 
     const toggleSortingDirection = () => {
         setAscending((prevAscending) => !prevAscending);
