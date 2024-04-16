@@ -13,13 +13,13 @@ import '../Stylesheets/teamInfo.css';
 // Controls display for individual teams pages
 
 const TeamInfo: React.FC = () => {
-    const location = useLocation();
     const { teamId } = useParams<{ teamId: string }>();
     const [teamData, setTeamData] = useState<any>(null);
     const [eventIdsString, setEventIdsString] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
     const [activeElement, setActiveElement] = useState<string>('TeamInfo');
 
+    const location = useLocation();
     const navigate = useNavigate();
 
     const handleHeaderClick = (element: string) => {
@@ -32,6 +32,7 @@ const TeamInfo: React.FC = () => {
 
     // If the teamId changes, the team updated so we change the event data
     useEffect(() => {
+        setLoading(true);
         const fetchTeamData = async () => {
             try {
                 const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/teams/${teamId}`);
@@ -42,14 +43,14 @@ const TeamInfo: React.FC = () => {
                 }
                 setLoading(false);
             } catch (error) {
-                console.error('Error fetching or parsing JSON:', error);
+                console.error('Error fetching or parsing JSON:');
             }
           };
 
         fetchTeamData();
     }, [teamId]);
 
-    // If the locatino search changes, set it to the new location
+    // If the location search changes, set it to the new location
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const prevActiveElement = searchParams.get('activeElement');
