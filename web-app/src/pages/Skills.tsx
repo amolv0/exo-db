@@ -33,10 +33,10 @@ const Teams: React.FC = () => {
 
     return (
         <div>
-            <h1 className="title leftDisplay mr-16">Skills</h1>
+            <h1 className="title leftDisplay skillsAdjust">Skills</h1>
 
             {/* DropDowns*/}
-            <div className="dropdownDisplay"  style={{left: "-25px" }}>
+            <div className="dropdownDisplay skillsDropdownAdjust">
                 <div>
                     <GradeDropdown setGrade={setGrade} grade={grade}/>
                 </div>
