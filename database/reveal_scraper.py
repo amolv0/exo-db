@@ -70,6 +70,8 @@ def process_video_data(video_id, video_title, description, channel_title, publis
     
     team_numbers.update(re.findall(team_number_general_pattern, video_title))
     team_numbers.update(re.findall(team_number_general_pattern, channel_title))
+    
+    team_numbers.update(re.findall(team_number_description_pattern, description))
 
     youtube_url = f"https://www.youtube.com/watch?v={video_id}"
 
