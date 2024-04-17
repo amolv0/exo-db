@@ -1,31 +1,95 @@
-.leftDisplay {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    left: -28rem;
-    margin-bottom: 20px;
-}
-  
-.title {
-    color: #000;
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    margin-top: 3rem;
-    text-align: left;
-    font-weight: bold;
+@media screen and (min-width: 1024px) {
+
+    .leftDisplay {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .title {
+        color: #000;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        margin-top: 3rem;
+        text-align: left;
+        font-weight: bold;
+        left: -29.5rem;
+    }
+
+    .leftOngoing {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        left: -25.3rem;
+        margin-bottom: 20px;
+    }
+
+    .eventAdjust {
+        left: -29.5rem;
+    }
+
+    .eventOngoingAdjust {
+        left: -30rem;
+    }
+
+    .eventDropdownAdjust {
+        right: 80px;
+    }
+
+    .ratingAdjust {
+        left: -27.4rem;
+    }
+
+    .ratingDropdownAdjust {
+        left: -15px;
+    }
+
+    .skillsAdjust {
+        left: -30rem;
+    }
+
+    .skillsDropdownAdjust {
+        left: -20px;
+    }
+
+    .dropdownDisplay {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    .eventDisplay {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 }
 
-.dropdownDisplay {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
+@media screen and (max-width: 1023px){
+    .dropdownDisplay {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+      
+    .title {
+        color: #000;
+        font-size: 2rem;
+        margin-bottom: 0rem;
+        margin-top: 0rem;
+        text-align: center;
+        font-weight: bold;
+    }
 
-.eventDisplay {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    .eventOngoingAdjust {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
 }
