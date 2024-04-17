@@ -158,19 +158,28 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                 <div>{error}</div>
             ) :  (
                 <div>
-                    <div className = "tableTitleEvent">{region} {programCode} Events</div>
+                    <div className="tableTitle">
+                        {(!region && !programCode) && "All Events"}
+                        {(region && programCode) && `${region} ${programCode} Events`}
+                        {(region && !programCode) && `All ${region}  Events`}
+                        {(!region && programCode) && `All ${programCode} Events`}
+                    </div>
                     {/* Page selector */}
-                    <div style={{ textAlign: 'right' }}>
-                        {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
-                        <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
-                        <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
-                        <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
-                        <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                    <div className = "pageSelector">
+                        <div className = "pageDisplay">
+                            {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
+                        </div>
+                        <div>
+                            <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+                            <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+                            <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+                            <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                        </div>
                     </div>
 
                     {/* Events Table */}
                     <div className="table">
-                        <div className="header col small">
+                        <div className="header col eventProgram">
                             <div className = "header-cell rounded-tl-lg">
                                 PROGRAM
                             </div>
@@ -186,7 +195,7 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                                 </div>
                             ))}
                         </div>
-                        <div className="header col big">
+                        <div className="header col eventName">
                             <div className = "header-cell">
                                 EVENT
                             </div>
@@ -198,7 +207,7 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                                 </div>
                             ))}
                         </div>
-                        <div className="header col normal">
+                        <div className="header col eventLocation">
                             <div className = "header-cell">
                                 LOCATION
                             </div>
@@ -214,7 +223,7 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                                 </div>
                             ))}
                         </div>
-                        <div className="header col small">
+                        <div className="header col date">
                             <div className = "rounded-tr-lg header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
                                 DATE {ascending ? '▲' : '▼'}
                             </div>
@@ -228,12 +237,16 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                     </div>
 
                     {/* EndPage selector */}
-                    <div className = "mb-10" style={{ textAlign: 'right' }}>
-                    {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
-                    <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
-                    <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
-                    <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
-                    <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                    <div className = "pageSelector mb-10">
+                        <div className = "pageDisplay">
+                            {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
+                        </div>
+                        <div>
+                            <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+                            <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+                            <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+                            <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                        </div>
                     </div>
                 </div>
             )}
