@@ -51,15 +51,6 @@ def search_videos(query):
             else:
                 raise  # Re-raise the exception if it's not a quota issue
 
-def find_team_number(title, channel):
-    pattern = r'\b\d+[A-Za-z]\b'
-    for text in (title, channel):
-        match = re.search(pattern, text)
-        if match:
-            return match.group()
-
-    return None
-
 def contains_keywords(text):
     reveal_keywords = ['reveal']
     other_keywords = ['vrc', 'vex', 'itz', 'in the zone', 'robot', 'change up', 'spin up', 'tipping point', 'starstruck', 'nothing but net', 'nbn', 'toss up', 'gateway', 'sack attack']
@@ -72,9 +63,13 @@ def process_video_data(video_id, video_title, description, channel_title, publis
     if not (contains_keywords(video_title) or contains_keywords(description)):
         return 
     
-    team_number_pattern = r'\b\d+[A-Z]\b'
+    team_number_general_pattern = r'\b\d+[A-Z]\b'
+    team_number_description_pattern = r'\b\d{2,}[A-Z]\b'
 
-    team_numbers = set(re.findall(team_number_pattern, video_title + " " + description + " " + channel_title))
+    team_numbers = set()
+    
+    team_numbers.update(re.findall(team_number_general_pattern, video_title))
+    team_numbers.update(re.findall(team_number_general_pattern, channel_title))
 
     youtube_url = f"https://www.youtube.com/watch?v={video_id}"
 
