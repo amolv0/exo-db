@@ -28,15 +28,15 @@
     }
 
     .eventAdjust {
-        left: -29.5rem;
+        left: -28.8rem;
     }
 
     .eventOngoingAdjust {
-        left: -30rem;
+        left: -29.5rem;
     }
 
     .eventDropdownAdjust {
-        right: 80px;
+        right: 65px;
     }
 
     .ratingAdjust {
@@ -44,15 +44,15 @@
     }
 
     .ratingDropdownAdjust {
-        left: -15px;
+        left: -20px;
     }
 
     .skillsAdjust {
-        left: -30rem;
+        left: -29rem;
     }
 
     .skillsDropdownAdjust {
-        left: -20px;
+        left: -10px;
     }
 
     .dropdownDisplay {
