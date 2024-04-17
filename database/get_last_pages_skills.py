@@ -2,7 +2,7 @@ import requests
 import boto3
 import os
 
-API_BASE_URL = os.getenv('EXODB_API_GATEWAY_SKILLSRANKINGS_BASE_URL')
+API_BASE_URL = f"{os.getenv('EXODB_API_GATEWAY_BASE_URL')}/dev/skillsranking"
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('last-page-data')
@@ -10,6 +10,8 @@ table = dynamodb.Table('last-page-data')
 
 
 seasons = [181, 182, 173, 175, 154, 156, 139, 140, 130, 131, 125, 126, 119, 120, 115, 116, 110, 111, 102, 103]
+
+seasons = [92, 93]
 
 grades = ["High School", "Middle School", "College"]
 
