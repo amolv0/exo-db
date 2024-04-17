@@ -176,20 +176,23 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                 <div>Error: {error}</div>
             ) : (
                 <div>
-                  <div className="flex justify-between items-center mt-4">
-                        <div className = "tableTitle">
-                            {region} {getSeasonNameFromId(parseInt(season))} Rankings
-                        </div>
-                        <div className = "page">
-                            {/* Page selector */}
+                    <div className = "tableTitle">
+                        {region} {getSeasonNameFromId(parseInt(season))} Rankings
+                    </div>
+                    {/* Page selector */}
+                    <div className = "pageSelector">
+                        <div className = "pageDisplay">
                             {(currentPage * page) - (page -1)} - {Math.min(currentPage * page, seasonRanking.length + 
                             (currentPage * page) - page)} of {Math.min(lastPage * page, seasonRanking.length + (lastPage * page) - (page))}
+                        </div>
+                        <div>
                             <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
                             <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
                             <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
                             <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
                         </div>
                     </div>
+  
 
                   {/* Table */}
                     <div className = "table">
@@ -232,38 +235,48 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                                 </div>
                             ))}
                         </div>
-                        <div className="header col stat">
-                            <div className = "header-cell">
-                                Avg CCWM
-                            </div>
-                            {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
-                                    <div>
-                                        {rank.avg_ccwm && rank.avg_ccwm.toFixed(2)}
-                                    </div>
+                        <div className = "hide">
+                            <div className="header col stat">
+                                <div className = "header-cell">
+                                    Avg CCWM
                                 </div>
-                            ))}
-                        </div>           
-                        <div className="header col stat">
-                            <div className = "header-cell">
-                                mu
-                            </div>
-                            {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
-                                    <div>
-                                        {rank.mu.toFixed(2)}
+                                {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
+                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                                        <div>
+                                            {rank.avg_ccwm && rank.avg_ccwm.toFixed(2)}
+                                        </div>
                                     </div>
+                                ))}
+                            </div> 
+                        </div>
+                        <div className = "hide">
+                            <div className="header col stat">
+                                <div className = "header-cell">
+                                    mu
                                 </div>
-                            ))}
-                        </div>       
+                                {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
+                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                                        <div>
+                                            {rank.mu.toFixed(2)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>     
+                        </div>
+  
                     </div>
-                    <div className = "flex justify-end items-center mb-10">
-                        {(currentPage * page) - (page -1)} - {Math.min(currentPage * page, seasonRanking.length + 
-                        (currentPage * page) - page)} of {Math.min(lastPage * page, seasonRanking.length + (lastPage * page) - (page))}
-                        <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
-                        <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
-                        <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
-                        <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                    {/* Page selector */}
+                    <div className = "pageSelector mb-10">
+                        <div className = "pageDisplay">
+                            {(currentPage * page) - (page -1)} - {Math.min(currentPage * page, seasonRanking.length + 
+                            (currentPage * page) - page)} of {Math.min(lastPage * page, seasonRanking.length + (lastPage * page) - (page))}
+                        </div>
+                        <div>
+                            <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+                            <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+                            <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+                            <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                        </div>
                     </div>
                 </div>
             )}
