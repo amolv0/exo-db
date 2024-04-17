@@ -88,9 +88,9 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                 <CircularProgress color="inherit" />
             ) : teamDetails.length > 0 ? (
                 <div className = "p-10">
-                    <div className="eventsListsTitle">Teams List</div>
+                    <div className="tableTitleC">Teams List</div>
                     <div className="table">
-                        <div className="header col small">
+                        <div className="header col teamsNumber">
                             <div className = "header-cell rounded-tl-lg">
                             Number
                             </div>
@@ -102,22 +102,20 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                                 </div>
                             ))}
                         </div>
-                        <div>
-                            <div className="header col mid">
-                                <div className = "header-cell">
-                                    Team Name
-                                </div>
-                                {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
-                                    <div key = {index}className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                        <div>
-                                            <Link to={`/teams/${team.id}`}>{team.team_name}</Link>
-                                        </div>
-                                    </div>
-                                ))}
+                        <div className="header col teamsName">
+                            <div className = "header-cell">
+                                Team Name
                             </div>
+                            {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
+                                <div key = {index}className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                    <div>
+                                        <Link to={`/teams/${team.id}`}>{team.team_name}</Link>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        <div>
-                            <div className="header col mid">
+                        <div className = "hide">
+                            <div className="header col teamsOrg">
                                 <div className = "header-cell">
                                     Organization
                                 </div>
@@ -130,20 +128,18 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                                 ))}
                             </div>
                         </div>
-                        <div>
-                            <div className="header col mid">
-                                <div className = "rounded-tr-lg header-cell">
-                                    Location
-                                </div>
-                                {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
-                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                        <div>
-                                            {team.location?.city}{team.location?.city && team.location?.region ? ', ' : ''}
-                                            {team.location?.region}{team.location?.region && team.location?.country ? ', ' : ''}{team.location?.country}
-                                        </div>
-                                    </div>
-                                ))}
+                        <div className="header col teamsLocation">
+                            <div className = "rounded-tr-lg header-cell">
+                                Location
                             </div>
+                            {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                    <div>
+                                        {team.location?.city}{team.location?.city && team.location?.region ? ', ' : ''}
+                                        {team.location?.region}{team.location?.region && team.location?.country ? ', ' : ''}{team.location?.country}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

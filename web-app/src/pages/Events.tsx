@@ -35,7 +35,6 @@ const Events: React.FC = () => {
                 <RegionDropdown onSelect={setRegion} value={region} />
                 <DateDropdown startAfterDate={startAfterDate} setStartAfterDate={setStartAfterDate} />
             </div>
-            <br />
             <div className="eventDisplay">
                 <EventsListQuery
                   numberOfEvents={100000}
