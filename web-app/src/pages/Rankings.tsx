@@ -40,10 +40,10 @@ const Rankings: React.FC = () => {
   
     return (
       <div>
-            <h1 className="title leftDisplay ml-4">Ratings</h1>
+            <h1 className="title leftDisplay ratingAdjust">Ratings</h1>
 
             {/* DropDowns*/}
-            <div className="dropdownDisplay" style={{left: "-23px" }}>
+            <div className="dropdownDisplay ratingDropdownAdjust">
                 <ProgramDropdown setProgram={setProgram} program={program}  all = {false} />
                 <SeasonDropdown setSeasonId={setSeasonId} seasonId={seasonId} type={program} grade='' restrict = {null} />
                 <RegionDropdown onSelect={setSelectedRegion} value = {selectedRegion}/>

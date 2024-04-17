@@ -1,50 +1,95 @@
-import { Link} from 'react-router-dom';
-import Search from '../components/Search'
-
-// TOP nav bar for all pages
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import Search from '../components/Search';
 
 const Navbar: React.FC = () => {
-    return (
-        <div>
-            <nav className="bg-dark_red p-4 text-xl text-white">
-                <div className="container mx-auto flex justify-between items-center">
-                    {/* Powered By */}
-                    <div className="flex items-center space-x-4">
-                        {/* First element */}
-                        <Link to="https://www.igniterobotics.org/" target="_blank" rel="noopener noreferrer">
-                            <div className="flex items-center transition duration-400 hover:scale-110">
-                            <span className="text-xl mr-2 font-bold">ignite.db</span>
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
+
+    const location = useLocation();
+
+    const handleResize = () => {
+        setIsMobile(window.innerWidth < 800);
+    };
+
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    const renderDesktopMenu = () => {
+        return (
+            <div>
+                <nav className="bg-dark_red p-4 text-xl text-white">
+                    <div className="container mx-auto flex justify-between items-center">
+                        {/* Powered By */}
+                        <div className="flex items-center space-x-4">
+                            {/* First element */}
+                            <Link to="https://www.igniterobotics.org/" target="_blank" rel="noopener noreferrer">
+                                <div className="flex items-center transition duration-400 hover:scale-110">
+                                <span className="text-xl mr-2 font-bold">ignite.db</span>
+                                <div>
+                                    <span className="text-xs">pre-release 1.4</span>
+                                </div>
+                            </div>
+                            </Link>
                             <div>
-                                <span className="text-xs">pre-release 1.3</span>
+                                |
+                            </div>
+                            {/* Second element */}
+                            <div className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
+                                <Link to="/">Home</Link>
+                            </div>
+                            <div>
+                                <Search/>
                             </div>
                         </div>
-                        </Link>
-                        <div>
-                            |
-                        </div>
-                        {/* Second element */}
-                        <div className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
-                            <Link to="/">Home</Link>
-                        </div>
-                        <div>
-                            <Search/>
-                        </div>
+    
+                        {/* Navigation Links */}
+                        <ul className="flex space-x-4 ml-auto">
+                            <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
+                                <Link to="/events">Events</Link>
+                            </li>
+                            <li className="text-white transition duration-400 hover:text-gray-200 hover:scale-110">
+                                <Link to="/skills">Skills</Link>
+                            </li>
+                            <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
+                                <Link to="/rankings">Ratings</Link>
+                            </li>
+                        </ul>
                     </div>
+                </nav>
+            </div>
+        )
+    };
 
-                    {/* Navigation Links */}
-                    <ul className="flex space-x-4 ml-auto">
-                        <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
-                            <Link to="/events">Events</Link>
-                        </li>
-                        <li className="text-white transition duration-400 hover:text-gray-200 hover:scale-110">
-                            <Link to="/skills">Skills</Link>
-                        </li>
-                        <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
-                            <Link to="/rankings">Ratings</Link>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+    const renderMobileMenu = () => {
+        return (
+            <div>
+                <nav className="bg-dark_red p-4 text-xl text-white">
+                    <div className="container mx-auto flex justify-between items-center">
+                        <div className="flex items-center space-x-4">
+                            <span className="text-xl mr-2 font-bold">ignite.db</span>
+                            <Search></Search>
+                        </div>
+                        <select className="bg-dark_red text-white ml-10" 
+                            value={location.pathname}
+                            onChange={(e) => window.location.href = e.target.value}>
+                            <option value="/">Home</option>
+                            <option value="/events">Events</option>
+                            <option value="/skills">Skills</option>
+                            <option value="/rankings">Ratings</option>
+                        </select>
+                    </div>
+                </nav>
+            </div>
+        );
+    };
+
+    return (
+        <div>
+            {isMobile ? renderMobileMenu() : renderDesktopMenu()}
         </div>
     );
 };
