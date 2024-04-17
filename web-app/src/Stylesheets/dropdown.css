@@ -1,12 +1,14 @@
-/* Filter */
-.filter {
-  /* Auto layout */
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding-inline: 30px;
-  filter: drop-shadow(1px 0px 5px rgba(114, 20, 29, 0.25));
+@media screen and (min-width: 1024px) {
+  .filter {
+    /* Auto layout */
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding-inline: 30px;
+    filter: drop-shadow(1px 0px 5px rgba(114, 20, 29, 0.25));
+  }
 }
+
 
 .query {
   /* Auto layout */
@@ -82,5 +84,16 @@
   font-weight: 500;
   font-size: 16px;
   color: #84202A;
+}
 
+@media screen and (max-width: 1023px) {
+  .filter {
+    /* Auto layout */
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding-inline: 30px;
+    filter: drop-shadow(1px 0px 5px rgba(114, 20, 29, 0.25));
+    padding: 5px 10px;
+  }
 }

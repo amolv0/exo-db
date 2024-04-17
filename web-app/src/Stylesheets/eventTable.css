@@ -281,3 +281,44 @@ color: #CFA1A4;
   align-items: center;
   margin-bottom: 20px;
 }
+
+@media screen and (max-width: 480px) {
+  .table {
+    max-width: 350px;
+  }
+  
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0px;
+  }
+
+  .small {
+    width: 100px;
+  }
+  
+  .big {
+    width: 90px;
+  }
+  
+  .normal {
+    width: 90px;
+  }
+
+  .header-cell {
+    min-width: 50px; /* Minimum width */
+    height: 50px;
+  }
+
+  .body-cell {
+    height: 200px;
+  }
+
+  .tableTitleEvent {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom:0px;
+  }
+}
