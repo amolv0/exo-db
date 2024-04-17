@@ -51,7 +51,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
 
     return (
         <div className = "p-10">
-            <div className="eventsListsTitle">
+            <div className="tableTitleC">
                 Rankings List
             </div>
             <div className = "eventsDropDown">
@@ -99,65 +99,77 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                         </div>
                     ))}
                 </div>
-                <div className="header col rankings">
-                    <div className = "header-cell">
-                    Avg Points
-                    </div>
-                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                            {rank.average_points}
+                <div className= "hide">
+                    <div className="header col rankings">
+                        <div className = "header-cell">
+                            Avg Points
                         </div>
-                    ))}
+                        {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                {rank.average_points}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div className="header col rankings">
-                    <div className = "header-cell">
-                    OPR
-                    </div>
-                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                            {rank.opr}
+                <div className= "hide">
+                    <div className="header col rankings">
+                        <div className = "header-cell">
+                            OPR
                         </div>
-                    ))}
+                        {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                {rank.opr}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div className="header col rankings">
-                    <div className = "header-cell">
-                    DPR
-                    </div>
-                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                            {rank.dpr}
+                <div className= "hide">
+                    <div className="header col rankings">
+                        <div className = "header-cell">
+                        DPR
                         </div>
-                    ))}
+                        {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                {rank.dpr}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div className="header col rankings">
-                    <div className = "header-cell">
-                    CCWM
-                    </div>
-                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                            {rank.ccwm}
+                <div className= "hide">
+                    <div className="header col rankings">
+                        <div className = "header-cell">
+                        CCWM
                         </div>
-                    ))}
+                        {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                {rank.ccwm}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div className="header col rankings">
-                    <div className = "header-cell">
-                    WP
-                    </div>
-                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                            {rank.wp}
+                <div className= "hide">
+                    <div className="header col rankings">
+                        <div className = "header-cell">
+                        WP
                         </div>
-                    ))}
+                        {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                {rank.wp}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div className="header col rankings">
-                    <div className = "rounded-tr-lg header-cell">
-                    AP
-                    </div>
-                    {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                            {rank.ap}
+                <div>
+                    <div className="header col rankings">
+                        <div className = "rounded-tr-lg header-cell">
+                        AP
                         </div>
-                    ))}
+                        {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                {rank.ap}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
