@@ -25,12 +25,12 @@ const Events: React.FC = () => {
   
     return (
         <div>
-            <h1 className="title leftDisplay mr-12">Events</h1>
+            <h1 className="title leftDisplay eventAdjust">Events</h1>
             {/* DropDowns*/}
-            <div className="leftDisplay mr-16">
+            <div className="eventOngoingAdjust leftDisplay">
                 <OngoingDropdown ongoing={status} setOngoing={setStatus}></OngoingDropdown>
             </div>
-            <div className="dropdownDisplay" style={{ left: "-75px" }}>
+            <div className="dropdownDisplay eventDropdownAdjust">
                 <ProgramDropdown program={program} setProgram={setProgram} all={true} />
                 <RegionDropdown onSelect={setRegion} value={region} />
                 <DateDropdown startAfterDate={startAfterDate} setStartAfterDate={setStartAfterDate} />
