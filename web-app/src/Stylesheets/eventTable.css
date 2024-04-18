@@ -9,7 +9,6 @@
   border: 1px solid #84202A;
   border-radius: 9px;
   overflow: hidden;
-  max-width: 1020px;
   margin: 0 auto;
 }
 
@@ -205,6 +204,9 @@
 }
 
 @media screen and (min-width: 1024px) {
+  .table {
+    max-width: 1020px;
+  }
   .skillsTable {
     box-sizing: border-box;
   
@@ -304,13 +306,13 @@
   }
 }
 
-@media screen and (max-width: 428px) {
+@media screen and (max-width: 666px) {
     .table {
-      max-width: 350px;
+      width: 350px;
     }
     
     .skillsTable {
-      max-width: 350px;
+      width: 350px;
     }
 
     .col {
@@ -325,7 +327,7 @@
     }
 
     .body-cell {
-      height: 100px;
+      height: 120px;
     }
 
     .header {
@@ -361,7 +363,7 @@
     .rank {
       width: 60px;
     }
-    
+  
     .eventSkillsRank {
       width: 60px;
     }
@@ -381,13 +383,9 @@
     .stat {
       width: 140px;
     }
-  
-    .rankings {
-      width: 120px;
-    }
 
     .teamsNumber {
-      width: 100px;
+      width: 80px;
     }
   
     .teamsName {
@@ -395,9 +393,13 @@
     }
 
     .teamsLocation {
-      width: 120px;
+      width: 140px;
     }
 
+    .rankings {
+      width: 105px;
+    }
+    
     .eventLocation {
       display: none;
     }
@@ -407,46 +409,101 @@
     }
 }
 
-@media screen and (max-width: 1023px) and (min-width : 429px) {
+@media screen and (max-width: 1023px) and (min-width : 667px) {
+    .table {
+      width: 660px;
+    }
 
-}
+    .col {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 0px;
+    }
 
-@media screen and (max-width: 1023px) {
-  .col {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0px;
-  }
+    .header-cell {
+      height: 50px;
+    }
 
-  .small {
-    width: 100px;
-  }
-  
-  .big {
-    width: 90px;
-  }
-  
-  .normal {
-    width: 90px;
-  }
+    .body-cell {
+      height: 80px;
+    }
 
-  .header-cell {
-    min-width: 50px; /* Minimum width */
-    height: 50px;
-  }
+    .tableTitle {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    
+    .pageSelector {
+      text-align: center;
+    }
+    
+    .pageDisplay {
+      padding-top:8px;
+    }
+    
+    .eventProgram {
+      width:100px;
+    }
+    
+    .eventName {
+      width: 400px;
+    }
 
-  .body-cell {
-    height: 200px;
-  }
+    .eventLocation {
+      width: 200px;
+    }
 
-  .tableTitle {
-    text-align: center;
-    font-size: 20px;
-    font-weight: bold;
-  }
-  
-  .pageSelector {
-    text-align: center;
-  }
+    .date {
+      width: 310px;
+    }
+
+    .team {
+      width: 180px;
+    }
+
+    .rank {
+      width: 60px;
+    }
+
+    .score {
+      width: 400px;
+    }
+
+    .eventSkillsName {
+      display: 200px;
+    }
+
+    .eventSkillsRank {
+      width: 80px;
+    }
+    
+    .stat {
+      width: 200px;
+    }
+
+    .rankings {
+      width: 71px;
+    }
+
+    .eventSkillsNumber {
+      width: 123px;
+    }
+
+    .teamsNumber {
+      width: 100px;
+    }
+
+    .teamsName {
+      width: 200px;
+    }
+
+    .teamsOrg {
+      width: 200px;
+    }
+
+    .teamsLocation {
+      width: 220px;
+    }
 }
