@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
-import { parseISO, format } from 'date-fns'; 
+import { parseISO, format } from 'date-fns';
 import { LineChart } from '@mui/x-charts/LineChart';
 
 interface RankingItem {
@@ -23,7 +23,7 @@ interface TeamRankingsProps {
 const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
   const groups: number[][] = [];
   for (let i = 0; i < arr.length; i += groupSize) {
-      groups.push(arr.slice(i, i + groupSize));
+    groups.push(arr.slice(i, i + groupSize));
   }
   return groups;
 };
@@ -38,19 +38,19 @@ const TeamRankingsChart: React.FC<TeamRankingsProps> = ({ rankings }) => {
     console.log("rankings:", rankings)
     if (rankings) {
       const uniqueRankings = rankings.filter((value, index, self) => {
-          return self.indexOf(value) === index;
+        return self.indexOf(value) === index;
       });
       // Divide uniqueRankings into groups of 50 :)
       console.log("unique rankings:", uniqueRankings)
       const groupedIds: number[][] = divideIntoGroups(uniqueRankings, 50);
       console.log("grouped ids:", groupedIds)
-      setGroupsOf50(groupedIds); 
+      setGroupsOf50(groupedIds);
       console.log("groupdso fo 50", groupsOf50)
       setIsFirstUseEffectDone(true);
-  }
-}, [rankings]);
+    }
+  }, [rankings]);
   useEffect(() => {
-    if (!isFirstUseEffectDone){
+    if (!isFirstUseEffectDone) {
       return
     }
     const fetchRankingsDetails = async () => {
@@ -63,7 +63,7 @@ const TeamRankingsChart: React.FC<TeamRankingsProps> = ({ rankings }) => {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/rankings/`, {
               method: 'POST',
               headers: {
-                  'Content-Type': 'application/json'
+                'Content-Type': 'application/json'
               },
               body: JSON.stringify(groupsOf50[i])
             });
@@ -73,7 +73,7 @@ const TeamRankingsChart: React.FC<TeamRankingsProps> = ({ rankings }) => {
           }
           rankingsData.sort((a, b) => new Date(a.event_start).toISOString().localeCompare(new Date(b.event_start).toISOString()));
           console.log("rankings data:", rankingsData)
-          
+
           const newChartData = rankingsData.map((data, index) => ({
             x: new Date(rankingsData[index].event_start),
             y: data.rank,
@@ -100,8 +100,8 @@ const TeamRankingsChart: React.FC<TeamRankingsProps> = ({ rankings }) => {
       ) : (
         <LineChart
           xAxis={[{ data: chartData.map(point => point.x), scaleType: 'utc' }]}
-          yAxis={[{ reverse: true, min: 0, tickLabelPlacement: 'tick'}]}
-          series={[{ data: chartData.map(point => point.y)}]}
+          yAxis={[{ reverse: true, min: 0, tickLabelPlacement: 'tick' }]}
+          series={[{ data: chartData.map(point => point.y) }]}
           width={500}
           height={300}
         />
