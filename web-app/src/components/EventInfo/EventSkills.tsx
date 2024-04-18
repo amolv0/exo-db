@@ -81,16 +81,28 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
 
     return (
         <div className = "p-10">
-            <div className="skillsListsTitle">Skills List</div>  
+            <div className="tableTitleC">Skills List</div>  
             
             <div className="skillsTable">
-                <div className="header col x-small">
+                <div className="header col eventSkillsRank">
                     <div className = "header-cell rounded-tl-lg">
                         Rank
                     </div>
                     {sortedCombinedSkills && Array.isArray(sortedCombinedSkills) && sortedCombinedSkills.map(([teamId, skills], index, array) => (
                         <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                             {index + 1}
+                        </div>
+                    ))}
+                </div>
+                <div className="header col eventSkillsNumber">
+                    <div className = "header-cell">
+                        Number
+                    </div>
+                    {sortedCombinedSkills && Array.isArray(sortedCombinedSkills) && sortedCombinedSkills.map(([teamId, skills], index, array) => (
+                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                            <Link className="teamBox" to={`/teams/${teamId}`}>
+                                {skills[0].team.name}
+                            </Link>
                         </div>
                     ))}
                 </div>
@@ -109,18 +121,6 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
                                     (P: {skills[1].score})
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-                <div className="header col rankings-t">
-                    <div className = "header-cell">
-                        Number
-                    </div>
-                    {sortedCombinedSkills && Array.isArray(sortedCombinedSkills) && sortedCombinedSkills.map(([teamId, skills], index, array) => (
-                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                            <Link className="teamBox" to={`/teams/${teamId}`}>
-                                {skills[0].team.name}
-                            </Link>
                         </div>
                     ))}
                 </div>
