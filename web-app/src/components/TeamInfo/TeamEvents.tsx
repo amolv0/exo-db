@@ -34,6 +34,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
     // If the eventId changes, change the events display / split into groups
     useEffect(() => {
         if (eventIdsString) {
+            console.log(eventIdsString);
             const parsedEventIdsArray: number[] = JSON.parse(eventIdsString);
             const groupedIds: number[][] = divideIntoGroups(parsedEventIdsArray, 25);
             setGroupsOf25(groupedIds); 

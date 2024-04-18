@@ -40,6 +40,8 @@ const TeamInfo: React.FC = () => {
                 setTeamData(data);
                 if (data && data.length > 0 && data[0].events) {
                     setEventIdsString(JSON.stringify(data[0].events));
+                } else {
+                    setEventIdsString('');
                 }
                 setLoading(false);
             } catch (error) {
