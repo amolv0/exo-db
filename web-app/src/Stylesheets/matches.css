@@ -1,0 +1,174 @@
+.matchesTitle {
+    font-size: 20px;
+    font-weight: 700;
+    text-align: left;
+    padding: 10px 10px;
+}
+
+.matchContainer {
+    display: flex;
+    height: 80px;
+    margin-bottom: 10px;
+    background-color: white;
+    justify-content: space-between;
+    padding-top: 18px;
+}
+
+.matchInfo {
+    display: flex;
+}
+
+.matchAward {
+    scale:1.3;
+    padding: 9px 0px;
+    width: 28px;
+}
+.matchLocation {
+    width: 200px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.matchTeamDisplay {
+    font-size: 18px;
+    font-weight: 700;
+    width: 90px;
+}
+
+@media screen and (min-width: 1200px) {
+    .matchContainer {
+        width: 1200px;
+    }
+
+    .matchCuteBot {
+        scale: 1.1;
+        padding: 9px 20px;
+    }
+    .matchTime {
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        color: #28191D;
+        width: 200px;
+        padding-left:10px;
+    }
+    
+    .matchStatus {
+        font-style: normal;
+        font-size: 16px;
+        color: #28191D;
+        padding-left:10px;
+    }
+
+    .matchScoreDisplay {
+        font-size: 32px;
+        font-weight: 600;
+        text-align: center;
+        width: 150px;
+    }
+    
+}
+
+@media screen and (max-width: 1200px) {
+    .matchCuteBot {
+        display: none;
+    }
+    .matchAward {
+        scale:1.0;
+        padding: 9px 0px;
+    }
+    .matchTime {
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        color: #28191D;
+        width: 200px;
+        padding-left:10px;
+    }
+    
+    .matchStatus {
+        font-style: normal;
+        font-size: 16px;
+        color: #28191D;
+        padding-left:10px;
+    }
+
+    .matchScoreDisplay {
+        font-size: 32px;
+        font-weight: 600;
+        text-align: center;
+        width: 150px;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .matchCuteBot {
+        display: none;
+    }
+    .matchAward {
+        scale:1.0;
+        padding: 9px 0px;
+    }
+
+    .matchTime {
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        color: #28191D;
+        max-width: 100px;
+        padding-left:10px;
+    }
+    
+    .matchStatus {
+        display:none;
+    }
+
+    .matchScoreDisplay {
+        font-size: 32px;
+        font-weight: 600;
+        text-align: center;
+        max-width: 150px;
+    }
+    
+}
+
+@media screen and (max-width: 428px) {
+    .matchCuteBot {
+        display: none;
+    }
+    .matchAward {
+        scale:1.0;
+    }
+
+    .matchTime {
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        color: #28191D;
+        max-width: 50px;
+        padding-left:10px;
+        margin-right:10px;
+    }
+    
+    .matchStatus {
+        display:none;
+    }
+
+    .matchScoreDisplay {
+        font-size: 32px;
+        font-weight: 600;
+        text-align: left;
+        width: 100px;
+    }
+    
+    .matchTeamDisplay {
+        font-size: 18px;
+        font-weight: 700;
+        width: 80px;
+        padding-right:10px;
+    }
+
+    .matchLocation {
+        display: none;
+    }
+}

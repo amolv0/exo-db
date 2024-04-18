@@ -61,8 +61,8 @@ const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
     });
 
     return (
-        <div className = "p-10">
-            <div className="eventsListsTitle">
+        <div className = "pt-10">
+            <div className="tableTitleC">
                 Matches List
             </div>
             <div className = "eventsDropDown">
