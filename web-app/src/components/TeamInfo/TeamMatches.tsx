@@ -119,8 +119,8 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
                     <div>
                         {seasonEventsMap[selectedSeason] &&
                             Object.entries(seasonEventsMap[selectedSeason]).map(([event_name, matches]) => (
-                                <div className = "mt-10" key={event_name}>
-                                    <div>{event_name}</div>
+                                <div key={event_name}>
+                                    <div className = "matchesTitle">{event_name}</div>
                                     {matches.map((match, index) => (
                                     <MatchBasic key={index} match={match} />
                                     ))}
