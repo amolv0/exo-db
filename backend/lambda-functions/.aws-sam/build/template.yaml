@@ -8,7 +8,7 @@ Resources:
       FunctionName: exodb-eventsGetFunc
       Handler: eventsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/21c2e5663196497e72ed7c9099cb36e5
+      CodeUri: eventsGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventsGet
@@ -18,7 +18,7 @@ Resources:
       FunctionName: exodb-eventIdGetPostFunc
       Handler: eventIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/5d39916c304c36777f61b21337684264
+      CodeUri: eventIdGetPost
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eventIdGetPost
@@ -28,7 +28,7 @@ Resources:
       FunctionName: exodb-eventDivisionsGetFunc
       Handler: divisionsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/ee328f63d507590d6cc38a484cc172fd
+      CodeUri: divisionsGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: divisionsGet
@@ -38,7 +38,7 @@ Resources:
       FunctionName: exodb-eventDivIdGetFunc
       Handler: divIdGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/3b481100498c20a3b2de50ef52c1eac7
+      CodeUri: divIdGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: divIdGet
@@ -48,7 +48,7 @@ Resources:
       FunctionName: exodb-teamsGetFunc
       Handler: teamsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/40f233d870ccf5c0c191621ad95beb66
+      CodeUri: teamsGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: teamsGet
@@ -58,7 +58,7 @@ Resources:
       FunctionName: exodb-teamsIdGetpostFunc
       Handler: teamsIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/93382ec45aad5253cd8e4ad1840524ad
+      CodeUri: teamsIdGetPost
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: teamsIdGetPost
@@ -68,7 +68,7 @@ Resources:
       FunctionName: exodb-matchesIdGetPostFunc
       Handler: matchesIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/d39bfb70bdaa7f1111be67b93d206328
+      CodeUri: matchesIdGetPost
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: matchesIdGetPost
@@ -78,7 +78,7 @@ Resources:
       FunctionName: exodb-rankingsIdGetPostFunc
       Handler: rankingsIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/9f78813e92333896efdf43d093a13025
+      CodeUri: rankingsIdGetPost
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: rankingsIdGetPost
@@ -88,7 +88,7 @@ Resources:
       FunctionName: exodb-awardsIdGetPostFunc
       Handler: awardsIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/6a7b472c22bb8f8897867f2e425bc6aa
+      CodeUri: awardsIdGetPost
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: awardsIdGetPost
@@ -98,7 +98,7 @@ Resources:
       FunctionName: exodb-searchGetFunc
       Handler: searchGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/17de4ab49e9bc875ec418d77797e97a1
+      CodeUri: searchGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: searchGet
@@ -108,7 +108,7 @@ Resources:
       FunctionName: exodb-skillsIdGetPostFunc
       Handler: skillsIdGetPost.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/500d7564c5388c267df15d35ce4493f7
+      CodeUri: skillsIdGetPost
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: skillsIdGetPost
@@ -118,7 +118,7 @@ Resources:
       FunctionName: exodb-skillsRankingGetFunc
       Handler: skillsRankingGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/aeca8582fc09d2b069816fe2191405de
+      CodeUri: skillsRankingGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: skillsRankingGet
@@ -128,7 +128,7 @@ Resources:
       FunctionName: exodb-eloRankingsGet
       Handler: eloRankingsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/40ea71e171bdefe630500aca8782c331
+      CodeUri: eloRankingsGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: eloRankingsGet
@@ -138,7 +138,7 @@ Resources:
       FunctionName: exodb-tsRankingsGet
       Handler: tsRankingsGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/511544951383a7126c522eb05eeb916e
+      CodeUri: tsRankingsGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: tsRankingsGet
@@ -148,7 +148,7 @@ Resources:
       FunctionName: exodb-lastPageIdGet
       Handler: lastPageIdGet.handler
       Runtime: nodejs20.x
-      CodeUri: s3://exodblambdafunctions/7266cf5d3ef04cf4cc30b9dd8f5d69d3
+      CodeUri: lastPageIdGet
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: lastPageIdGet
@@ -158,7 +158,7 @@ Resources:
       FunctionName: exodb-eventsAuditOngoing
       Handler: auditOngoing.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/90808ea0b32500fd98ddde324993b28b
+      CodeUri: auditOngoing
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditOngoing
@@ -168,7 +168,7 @@ Resources:
       FunctionName: exodb-matchSimulatorPost
       Handler: MatchSimulatorPost.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/437a3be203ec51013f4c83f5dbb82679
+      CodeUri: matchSimulatorPost
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: matchSimulatorPost
@@ -178,7 +178,7 @@ Resources:
       FunctionName: exodb-updateTeamFromStream
       Handler: updateTeamFromStream.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/d036b153c2f61a03caa80f544e769614
+      CodeUri: updateTeamFromStream
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateTeamFromStream
@@ -188,7 +188,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
       Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/7340067f541e3cb01827c7cbb7466b66
+      CodeUri: updateFutureEventsDataProcessor
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsDataProcessor
@@ -198,7 +198,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingAttribute
       Handler: updateOngoingAttribute.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/80195a0ba0062d945ba7cfd53a431d7d
+      CodeUri: updateOngoingAttributeFunc
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingAttributeFunc
@@ -208,7 +208,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventProcessor
       Handler: updateOngoingEventProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/eeb6f84daf8b546e560455cd77966793
+      CodeUri: updateOngoingEventProcessor
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventProcessor
@@ -218,7 +218,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventQueue
       Handler: updateOngoingEventQueue.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/7e9cae408e9f260e906113bc15b2f952
+      CodeUri: updateOngoingEventQueue
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventQueue
@@ -228,7 +228,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingLeagueQueue
       Handler: updateOngoingLeagueQueue.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/50712028d46b94ef97f9c1e4f946555c
+      CodeUri: updateOngoingLeagueQueue
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingLeagueQueue
@@ -238,7 +238,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncUrlFinder
       Handler: updateFutureEventsUrlFinder.url_finder_handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/86601c9409fa4262c67fb50d50d35910
+      CodeUri: updateFutureEventsUrlFinder
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsUrlFinder
@@ -248,7 +248,7 @@ Resources:
       FunctionName: exodb-updateOpenSearchFunc
       Handler: updateOpenSearch.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/0b0abc7362ae95ca7afed907d28a0c81
+      CodeUri: updateOpenSearch
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOpenSearch
@@ -258,7 +258,7 @@ Resources:
       FunctionName: exodb-auditTeamDataProcessorFunc
       Handler: auditTeamDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/086a27ea0d53cb4c9a16d97259233e58
+      CodeUri: auditTeamDataProcessor
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditTeamDataProcessor
@@ -268,7 +268,7 @@ Resources:
       FunctionName: exodb-auditTeamDataQueueFunc
       Handler: auditTeamDataQueue.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/6ccfde6027dd50283f774894a375d0cb
+      CodeUri: auditTeamDataQueue
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditTeamDataQueue
@@ -278,7 +278,7 @@ Resources:
       FunctionName: exodb-calculateEloRankingsFunc
       Handler: calculateEloRankings.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/fc5498d53408fa2f7f5969a31c2f7105
+      CodeUri: calculateEloRankings
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: calculateEloRankings
@@ -288,7 +288,7 @@ Resources:
       FunctionName: exodb-calculateTsRankingsFunc
       Handler: calculateTsRankings.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/cea231aa6318db9dc6910c2384279460
+      CodeUri: calculateTsRankings
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: calculateTsRankings
@@ -298,7 +298,7 @@ Resources:
       FunctionName: exodb-calculateSkillsRankingsFunc
       Handler: calculateSkillsRankings.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/d6be89c2e8d8a286f31762e46ad496bd
+      CodeUri: calculateSkillsRankings
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: calculateSkillsRankings
@@ -308,7 +308,7 @@ Resources:
       FunctionName: exodb-updateReveals
       Handler: updateReveals.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/5366ea4335b1eca25960c9a4f2fa1a1c
+      CodeUri: updateReveals
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateReveals
