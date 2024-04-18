@@ -103,4 +103,4 @@ def update_team_match_list(team_id, match_id):
 
 if __name__ == "__main__":
     # update_team_matches()
-    update_team_matches_for_event(36082)
+    update_team_matches_for_event(35176)

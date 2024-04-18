@@ -48,7 +48,7 @@ def handler(event, context):
             current_reveals = team_item.get('reveals', [])
             new_reveal_url = normalize_youtube_url(message['reveal_url'])
             new_reveal = {
-                'reveal_url': new_reveal_url,
+                'reveal_url': message['reveal_url'],
                 'reveal_title': message['reveal_title'],
                 'post_date': message['post_date']
             }
