@@ -308,7 +308,7 @@ Resources:
       FunctionName: exodb-updateReveals
       Handler: updateReveals.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/ac626f84a5e6d133cbdff0d915840d34
+      CodeUri: s3://exodblambdafunctions/de32b0555cddbd6912d0adf0a9917765
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateReveals
