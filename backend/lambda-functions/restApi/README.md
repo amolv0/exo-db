@@ -2,7 +2,7 @@
 
 MAKE SURE TO TURN LAMBDA PROXY INTEGRATION ON
 
-Dev API link: `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev`
+Dev API link: `EXODB_API_GATEWAY_BASE_URL/dev`
 
 ## Events
 
@@ -13,11 +13,11 @@ Purpose: To handle information regarding events
 Operations:
 
 - GET `/events` to list events (with pagination)
-- GET `/events?numberOfEvents={number}` to get n most recent events:  ex `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?numberOfEvents=10`
+- GET `/events?numberOfEvents={number}` to get n most recent events:  ex `EXODB_API_GATEWAY_BASE_URL/dev/events?numberOfEvents=10`
   - `?program={'program_code}` - get n most recent events of a specific program code. (DONE)
   - `?start_after={'start_date'}` - get n events that started after {'start_date'} (DONE)
   - `?start_before={'start_date'}` - get n events that started before {'start_date'} (DONE)
-  - `?status=ongoing` to get all ongoing events: `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev/events?status=ongoing`
+  - `?status=ongoing` to get all ongoing events: `EXODB_API_GATEWAY_BASE_URL/dev/events?status=ongoing`
   - `?region={'region'}` to get events from a specific region. The ?region modifier works with any other modifiers. Can also do a country that has multiple regions within it (ie: China, United States) and it will get events for all regions that country contains.
 - POST `/events/ {body: "[{event_id1}, {event_id2}, {event_id3}...]"}` to get details for a set of specific events.
 
