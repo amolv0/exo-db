@@ -7,7 +7,7 @@ from boto3.dynamodb.types import TypeDeserializer
 # Initialize AWS services
 region = 'us-east-1'
 service = 'es'
-opensearch_endpoint = 'OPENSEARCH_API_ENDPOINT'
+opensearch_endpoint = 'https://search-team-data-search-xaeptdqqk2djjjmer2bq63eetq.us-east-1.es.amazonaws.com'
 index_name = 'search-index'
 
 credentials = boto3.Session().get_credentials()
