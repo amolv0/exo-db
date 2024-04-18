@@ -14,11 +14,10 @@ import os
 sqs = boto3.client('sqs')
 
 
-queue_url = 'REDACTED_SQS_URL/TeamRevealsQueue' # os.getenv('SQS_TEAM_REVEALS_QUEUE_URL')
+QUEUE_URL = f"{os.getenv('EXODB_API_GATEWAY_BASE_URL')}/228049799584/TeamRevealsQueue"
+TOKEN = os.getenv('EXODB_DISCORD_BOT_TOKEN')
 
-TOKEN = 'MTIxNDYyOTg3NzYwMTQwNjk5Ng.GMRKf9.fmfNal4rkPc2DyQzrzaYoO9T9gDN3xA_xqukTc' # os.getenv('BOT_TOKEN')
-
-CHANNEL_ID = 1216114323504758896 # os.getenv('SAMPLE_SERVER_REVEALS_CHANNEL_ID')
+CHANNEL_ID = 785754010769817651 # os.getenv('SAMPLE_SERVER_REVEALS_CHANNEL_ID')
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -46,22 +45,22 @@ async def process_message(message):
     team_names_set = set()
     
     for embed in message.embeds:
-        print(f"Message embed author: {embed.author.name}")
+        # print(f"Message embed author: {embed.author.name}")
         if embed.title:
             team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.title))
             url_name = embed.title
-            print(f"Embed title: {embed.title}")
+            # print(f"Embed title: {embed.title}")
         if embed.description:
-            team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.description))
-            print(f"Embed description: {embed.description}")
+            team_names_set.update(re.findall(r'\b\d{2}[A-Z]\b', embed.description))
+            # print(f"Embed description: {embed.description}")
         if embed.author and embed.author.name:
             team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.author.name))
-            print(f"Embed author name: {embed.author.name}")
-    print(f"Urls: {urls}")
+            # print(f"Embed author name: {embed.author.name}")
+    # print(f"Urls: {urls}")
     
     message_date = message.created_at.strftime('%Y-%m-%dT%H:%M:%S')
     team_names = list(team_names_set)
-    print(f"Team names: {team_names_set}")
+    # print(f"Team names: {team_names_set}")
     if urls and team_names:
         for team_name in team_names:
             msg_body = {
@@ -72,7 +71,7 @@ async def process_message(message):
             }
             message_body_json = json.dumps(msg_body)
 
-            response = sqs.send_message(QueueUrl=queue_url, MessageBody=message_body_json)
+            response = sqs.send_message(QueueUrl=QUEUE_URL, MessageBody=message_body_json)
             print(f"Sent to SQS: {msg_body}")
 
 @client.event
