@@ -65,7 +65,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                 )}
             </div>  
             <div className="table">
-                <div className="header col x-small">
+                <div className="header col rank">
                     <div className = "header-cell rounded-tl-lg">
                     Rank
                     </div>
@@ -75,7 +75,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                         </div>
                     ))}
                 </div>
-                <div className="header col rankings-t">
+                <div className="header col teamsNumber">
                     <div className = "header-cell">
                     Number
                     </div>
