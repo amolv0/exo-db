@@ -242,18 +242,20 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                                 </div>
                             ))}
                         </div>              
-                        <div className="header col eventSkillsName">
-                            <div className = "header-cell">
-                                Event
-                            </div>
-                            {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
-                                    <Link to={`/events/${rank.event_id}`} className = "hover:text-blue-200">
-                                        {rank.event_name && rank.event_name}
-                                    </Link>
+                        <div className = "hide">
+                            <div className="header col eventSkillsName">
+                                <div className = "header-cell">
+                                    Event
                                 </div>
-                            ))}
-                        </div>     
+                                {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
+                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                                        <Link to={`/events/${rank.event_id}`} className = "hover:text-blue-200">
+                                            {rank.event_name && rank.event_name}
+                                        </Link>
+                                    </div>
+                                ))}
+                            </div>   
+                        </div>
                     </div>
                     
                     <div className = "pageSelector mb-10">
