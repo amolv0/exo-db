@@ -180,12 +180,14 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                 <div>Error: {error}</div>
             ) : (
                 <div>
-                    <div className="flex justify-between items-center mt-4">
-                        <div className = "tableTitle">{region} {getSeasonNameFromId(parseInt(season))} {grade} Skills</div>
-                        {/* Page selector */}
-                        <div>
+                    <div className = "tableTitle">{region} {getSeasonNameFromId(parseInt(season))} {grade} Skills</div>
+                    {/* Page selector */}
+                    <div className = "pageSelector">
+                        <div className = "pageDisplay">
                             {(currentPage * page) - (page - 1)} - {Math.min(currentPage * page, skillsRanking.length + 
-                              (currentPage * page) - (page))} of {Math.min(lastPage * page, skillsRanking.length + (lastPage * page) - (page))}
+                            (currentPage * page) - (page))} of {Math.min(lastPage * page, skillsRanking.length + (lastPage * page) - (page))}
+                        </div>
+                        <div>
                             <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
                             <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
                             <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
@@ -207,6 +209,21 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                                 </div>
                             ))}
                         </div>
+                        <div className="header col team">
+                            <div className = "header-cell">
+                                Team
+                            </div>
+                            {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
+                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
+                                    <div>
+                                        <Link to={`/teams/${rank.team_id}`} className = "hover:text-blue-200 flex gap-2 items-center justify-center">
+                                            <div className = "teamBox"> {rank.team_number}</div>
+                                            <div> {rank.team_name} </div>
+                                        </Link>
+                                    </div>
+                                </div>
+                            ))}
+                        </div> 
                         <div className="header col score">
                             <div className = "header-cell">
                                 Score
@@ -224,23 +241,8 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                                     </div>
                                 </div>
                             ))}
-                        </div>      
-                        <div className="header col team">
-                            <div className = "header-cell">
-                                Team
-                            </div>
-                            {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
-                                    <div>
-                                        <Link to={`/teams/${rank.team_id}`} className = "hover:text-blue-200 flex gap-2 items-center justify-center">
-                                            <div className = "teamBox"> {rank.team_number}</div>
-                                            <div> {rank.team_name} </div>
-                                        </Link>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>         
-                        <div className="header col event">
+                        </div>              
+                        <div className="header col eventSkillsName">
                             <div className = "header-cell">
                                 Event
                             </div>
@@ -254,13 +256,17 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                         </div>     
                     </div>
                     
-                    <div className = "flex justify-end items-center mb-10">
-                        {(currentPage * page) - (page - 1)} - {Math.min(currentPage * page, skillsRanking.length + 
-                        (currentPage * page) - (page))} of {Math.min(lastPage * page, skillsRanking.length + (lastPage * page) - (page))}
-                        <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
-                        <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
-                        <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
-                        <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                    <div className = "pageSelector mb-10">
+                        <div className = "pageDisplay">
+                            {(currentPage * page) - (page - 1)} - {Math.min(currentPage * page, skillsRanking.length + 
+                            (currentPage * page) - (page))} of {Math.min(lastPage * page, skillsRanking.length + (lastPage * page) - (page))}
+                        </div>
+                        <div>
+                            <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+                            <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+                            <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+                            <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                        </div>
                     </div>
                 </div>
             )}
