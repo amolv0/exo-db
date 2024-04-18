@@ -147,7 +147,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                     </div>
                     <br />
                     <div className="table">
-                        <div className="header col small">
+                        <div className="header col eventProgram">
                             <div className = "header-cell rounded-tl-lg">
                                 PROGRAM
                             </div>
@@ -163,7 +163,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                                 </div>
                             ))}
                         </div>
-                        <div className="header col big">
+                        <div className="header col eventName">
                             <div className = "header-cell">
                                 EVENT
                             </div>
@@ -175,7 +175,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                                 </div>
                             ))}
                         </div>
-                    <div className="header col normal">
+                    <div className="header col eventLocation">
                         <div className = "header-cell">
                             LOCATION
                         </div>
@@ -191,7 +191,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                                 </div>
                             ))}
                         </div>
-                    <div className="header col small">
+                    <div className="header col date">
                         <div className = "rounded-tr-lg header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
                             DATE {ascending ? '▲' : '▼'}
                         </div>
