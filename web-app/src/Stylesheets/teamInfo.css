@@ -114,7 +114,7 @@
     text-align: center;
 }
 
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 1400px) {
     .team-info-layout {
         background-color: #84202A;
     }
@@ -167,7 +167,7 @@
     }
 }
 
-@media screen and (max-width: 428px) {
+@media screen and (max-width: 666px) {
     .title-team-info {
         text-align: center;
         padding-top: 10px;
@@ -192,6 +192,35 @@
         color: white;
         cursor: pointer;
         top:10px;
+        margin-bottom:10px;
+    }
+}
+
+@media screen and (max-width: 1399px) and (min-width : 667px) {
+    .title-team-info {
+        text-align: center;
+        padding-top: 10px;
+        color: white;
+        font-weight: bold;
+        font-size: 30px;
+    }
+
+    .subtitle-team-info {
+        text-align: center;
+        color: rgb(227, 153, 153);
+        font-weight: bold;
+        font-size: 15px; 
+    }
+
+    .team-button {
+        font-size: 18px;
+        text-align: center;
+        padding-left: 20px;
+        padding-right: 10px;
+        position: relative;
+        color: white;
+        cursor: pointer;
+        top: 10px;
         margin-bottom:10px;
     }
 }
