@@ -1,9 +1,32 @@
 import boto3
+import json
+from decimal import Decimal
 
 dynamodb = boto3.resource('dynamodb')
 event_table = dynamodb.Table('event-data')
 team_table = dynamodb.Table('team-data')
+s3_client = boto3.client('s3')
 
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)  # Convert Decimal to float
+    elif isinstance(obj, dict):
+        return {k: decimal_default(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [decimal_default(v) for v in obj]
+    else:
+        return obj  
+    
+def float_default(obj):
+    if isinstance(obj, float):
+        return Decimal(str(obj))  # Convert float to Decimal
+    elif isinstance(obj, dict):
+        return {k: float_default(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [float_default(v) for v in obj]
+    else:
+        return obj
+    
 def update_team_matches():
     count = 1
     response = event_table.scan()
@@ -33,6 +56,12 @@ def update_team_matches_for_event(event_id):
     
 def process_event(event):
     divisions = event.get('divisions', [])
+    if 'divisions_s3_reference' in divisions:
+        bucket_name, key = divisions['divisions_s3_reference'].replace("s3://", "").split("/", 1)
+        response = s3_client.get_object(Bucket=bucket_name, Key=key)
+        divisions = json.loads(response['Body'].read().decode('utf-8'))
+        in_s3 = True
+        divisions = float_default(divisions)
     for division in divisions:
         matches = division.get('matches', [])
         for match in matches:
@@ -73,5 +102,5 @@ def update_team_match_list(team_id, match_id):
             )
 
 if __name__ == "__main__":
-    update_team_matches()
-    # update_team_matches_for_event(54701)
+    # update_team_matches()
+    update_team_matches_for_event(36082)
