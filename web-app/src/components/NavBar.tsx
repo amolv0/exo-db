@@ -3,12 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import Search from '../components/Search';
 
 const Navbar: React.FC = () => {
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1100);
 
     const location = useLocation();
 
     const handleResize = () => {
-        setIsMobile(window.innerWidth < 800);
+        setIsMobile(window.innerWidth < 1100);
     };
 
     useEffect(() => {
@@ -30,7 +30,7 @@ const Navbar: React.FC = () => {
                                 <div className="flex items-center transition duration-400 hover:scale-110">
                                 <span className="text-xl mr-2 font-bold">ignite.db</span>
                                 <div>
-                                    <span className="text-xs">pre-release 1.41</span>
+                                    <span className="text-xs">pre-release 1.42</span>
                                 </div>
                             </div>
                             </Link>
@@ -57,6 +57,9 @@ const Navbar: React.FC = () => {
                             <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
                                 <Link to="/rankings">Ratings</Link>
                             </li>
+                            <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
+                                <Link to="/about">About</Link>
+                            </li>
                         </ul>
                     </div>
                 </nav>
@@ -80,6 +83,7 @@ const Navbar: React.FC = () => {
                             <option value="/events">Events</option>
                             <option value="/skills">Skills</option>
                             <option value="/rankings">Ratings</option>
+                            <option value="/about">About</option>
                         </select>
                     </div>
                 </nav>
