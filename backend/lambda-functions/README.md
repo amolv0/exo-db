@@ -10,7 +10,7 @@ To deploy, run `sam deploy     --template-file packaged.yaml     --stack-name ex
 
 or use ./deploy-sam.sh
 
-Dev API link: `EXODB_API_GATEWAY_BASE_URL/dev`
+Dev API link: `https://q898umgq45.execute-api.us-east-1.amazonaws.com/dev`
 
 Query to determine the size of a log group in cloudwatch:
 
