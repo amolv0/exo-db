@@ -235,8 +235,12 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                                             {rank.score}
                                         </div> 
                                         <div>
-                                            (D: {rank.driver_component})
-                                            (P: {rank.programming_component})
+                                            <div>
+                                                (D:{rank.driver_component})
+                                            </div>
+                                            <div>
+                                                (P:{rank.programming_component})
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
