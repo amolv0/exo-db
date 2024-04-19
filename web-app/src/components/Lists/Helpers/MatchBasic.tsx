@@ -53,7 +53,7 @@ const MatchDisplay: React.FC<{ match: Match }> = ({ match }) => {
             </div>
             <div className = "matchInfo">
                 <div className = "matchCuteBot"> 
-                    {!isBlueWinning ? (
+                    {isBlueWinning ? (
                         <svg width="30" height="28" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M11.25 17.5C10.5596 17.5 10 18.0596 10 18.75C10 19.4404 10.5596 20 11.25 20C11.9404 20 12.5 19.4404 12.5 18.75C12.5 18.0596 11.9404 17.5 11.25 17.5Z" fill="#FFCCCC"/>
                         <path d="M17.5 18.75C17.5 18.0596 18.0596 17.5 18.75 17.5C19.4404 17.5 20 18.0596 20 18.75C20 19.4404 19.4404 20 18.75 20C18.0596 20 17.5 19.4404 17.5 18.75Z" fill="#FFCCCC"/>
