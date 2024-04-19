@@ -140,7 +140,7 @@
     
 }
 
-@media screen and (max-width: 428px) {
+@media screen and (max-width: 481px) {
     .matchCuteBot {
         display: none;
     }
