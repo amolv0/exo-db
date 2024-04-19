@@ -205,7 +205,7 @@
 
 @media screen and (min-width: 1024px) {
   .table {
-    max-width: 1020px;
+    width: 1020px;
   }
   .skillsTable {
     box-sizing: border-box;
@@ -249,10 +249,6 @@
     width: 500px;
   }
 
-  .eventSkillsName {
-    display: 500px;
-  }
-
   .eventLocation {
     width: 310px;
   }
@@ -269,16 +265,24 @@
     width: 80px;
   }
 
+  .score {
+    width: 220px;
+  }
+
+  .eventSkillsName {
+    display: 310px;
+  }
+
   .eventSkillsRank {
     width: 80px;
   }
   
   .stat {
-    width: 200px;
+    width: 210px;
   }
 
   .rankings {
-    width: 121px;
+    width: 125px;
   }
 
   .eventSkillsNumber {
@@ -299,10 +303,6 @@
 
   .teamsLocation {
     width: 320px;
-  }
-
-  .score {
-      width: 250px;
   }
 }
 
