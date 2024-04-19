@@ -117,8 +117,8 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
                                     {skills[0].score + skills[1].score}
                                 </div> 
                                 <div>
-                                    (D: {skills[0].score})
-                                    (P: {skills[1].score})
+                                    (D: {skills[1].score})
+                                    (P: {skills[0].score})
                                 </div>
                             </div>
                         </div>
