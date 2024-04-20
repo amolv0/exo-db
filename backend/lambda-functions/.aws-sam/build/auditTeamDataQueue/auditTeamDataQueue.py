@@ -45,7 +45,7 @@ def handler(event, context):
 =======
 def handler(event):
     logging.info("Starting process")
-    queue_url = 'REDACTED_SQS_URL/AuditTeamDataQueue'
+    queue_url = 'https://sqs.us-east-1.amazonaws.com/228049799584/AuditTeamDataQueue'
 >>>>>>> a52605512aba88a15333c4fbb3bad94b7fecd67d
     table_name = 'team-data'
     index_name = 'RegisteredIndex'

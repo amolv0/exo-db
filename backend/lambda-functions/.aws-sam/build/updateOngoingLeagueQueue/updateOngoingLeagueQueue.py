@@ -84,7 +84,7 @@ def handler(aws_event, context):
 <<<<<<< HEAD
     queue_url = f"{os.getenv('SQS_BASE_URL')}/OngoingEventsQueue"
 =======
-    queue_url = 'REDACTED_SQS_URL/OngoingEventsQueue'
+    queue_url = 'https://sqs.us-east-1.amazonaws.com/228049799584/OngoingEventsQueue'
 >>>>>>> a52605512aba88a15333c4fbb3bad94b7fecd67d
 
     events = get_ongoing_events(event_data_table)
