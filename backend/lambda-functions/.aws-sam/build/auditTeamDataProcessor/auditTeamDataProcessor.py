@@ -3,17 +3,16 @@ import requests
 import json
 import logging
 import time
+import os
 from decimal import Decimal
 
-# Initialize the DynamoDB client
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('team-data')
 
 logging = logging.getLogger()
 logging.setLevel("INFO")
 
-# Your unique API key and headers
-API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiMjkxYWYyMmZjZWZiMDg3ZjM5MjRjZGQwMzI0OGUxY2RhYzExODU3NzliMDI3ODMxNTJkYjJkZmI4NDViZDZhOTk2ODUyZDAzNDExMTcxODUiLCJpYXQiOjE3MDYwMTA5MzguODk2OTU5MSwibmJmIjoxNzA2MDEwOTM4Ljg5Njk2MjksImV4cCI6MjY1Mjc4MjEzOC44ODMxMzEsInN1YiI6IjkwODM3Iiwic2NvcGVzIjpbXX0.RYqSADg9ONvLCGokyA6ukRs3ibpJ7J7mLNOEW2fpXoUQKLKtCM4WjwuYfkXz7AijwRlZfYOvT10YAWxLHsiGd0Q0_LHZraS_qR0PXmfAUhbMoFjk-TY_SNAeYrK_9BHptqmXvxK8nI3upPEbxKwu9sJ8uRtfP05X27gCp7VHwEK4fvTvH4AAuj56zOAJZWHZ1DPRwMea0ZZGMQgM-IKfRy0W4h8kAuDqmkfn0xQR_6zMQtY2s2qX94WdWt5GsOFtj61twjsZ9IVoIvV61ZXixSC21aydI8diT6WtT6pCh8sQouY0b34WkW-paNeSGV8V59sl_fYeEylDU9O7irRS4LbGzp5Qsq2sygRfznHePGFIOtJPLTWi-ocBGn55QUTjWSQrXnkNRsVo2XG3XwOkw4pZxHN_yO2AL13cW8G0J2baX5xTZOj_3c9hZShpb0GEb3s6wP4W0VmyjUbkF2TS_uCkNVyD_Ju__n2XgYLo2L_c5SC-cwujYZvFFeWGXzusCaIE85mFwW11u38HnOwbrt383qlIOdGNV_FCrOEMYvsIPm1laR4zJv0XZR1GosFOAwO6ROKyH-0TTuvUutyu5Ecvp9-C9DuALwjsJCXG5NMpFMzaM0fcx4OPjd50y-ikdxkBbg0MJ5RAaX9z2qJrgtUGKJJ398b2j7LA6jczF54'
+API_KEY = os.getenv('API_KEY')
 headers = {
     'accept': 'application/json',
     'Authorization': f'Bearer {API_KEY}'
@@ -94,21 +93,15 @@ def handler(event, context):
                         expression_attribute_values = {}
 
                         for idx, (key, value) in enumerate(updates.items(), start=1):
-                            # Use placeholders for attribute names to avoid conflicts with reserved keywords
                             attribute_name_placeholder = f"#attrName{idx}"
                             expression_attribute_names[attribute_name_placeholder] = key
 
-                            # Use placeholders for attribute values
                             attribute_value_placeholder = f":attrValue{idx}"
                             expression_attribute_values[attribute_value_placeholder] = value
 
-                            # Build the update expression using placeholders
                             update_expression += f"{attribute_name_placeholder} = {attribute_value_placeholder}, "
 
-                        # Remove the trailing comma and space from the update expression
                         update_expression = update_expression.rstrip(", ")
-
-                        # Perform the update operation
                         table.update_item(
                             Key={'id': team_id},
                             UpdateExpression=update_expression,
@@ -129,7 +122,7 @@ def handler(event, context):
 #     {
 #       "messageId": "1-7ad6-4c79-903e-049f59b8c1b8",
 #       "receiptHandle": "MessageReceiptHandle",
-#       "body": "[5226]",
+#       "body": "[168459]",
 #       "attributes": {
 #         "ApproximateReceiveCount": "1",
 #         "SentTimestamp": "1641234567890",
