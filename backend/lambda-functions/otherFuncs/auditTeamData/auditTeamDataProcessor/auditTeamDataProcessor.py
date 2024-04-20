@@ -3,17 +3,16 @@ import requests
 import json
 import logging
 import time
+import os
 from decimal import Decimal
 
-# Initialize the DynamoDB client
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('team-data')
 
 logging = logging.getLogger()
 logging.setLevel("INFO")
 
-# Your unique API key and headers
-API_KEY = 'REDACTED_API_KEY'
+API_KEY = os.getenv('API_KEY')
 headers = {
     'accept': 'application/json',
     'Authorization': f'Bearer {API_KEY}'
@@ -94,21 +93,15 @@ def handler(event, context):
                         expression_attribute_values = {}
 
                         for idx, (key, value) in enumerate(updates.items(), start=1):
-                            # Use placeholders for attribute names to avoid conflicts with reserved keywords
                             attribute_name_placeholder = f"#attrName{idx}"
                             expression_attribute_names[attribute_name_placeholder] = key
 
-                            # Use placeholders for attribute values
                             attribute_value_placeholder = f":attrValue{idx}"
                             expression_attribute_values[attribute_value_placeholder] = value
 
-                            # Build the update expression using placeholders
                             update_expression += f"{attribute_name_placeholder} = {attribute_value_placeholder}, "
 
-                        # Remove the trailing comma and space from the update expression
                         update_expression = update_expression.rstrip(", ")
-
-                        # Perform the update operation
                         table.update_item(
                             Key={'id': team_id},
                             UpdateExpression=update_expression,
@@ -129,7 +122,7 @@ def handler(event, context):
 #     {
 #       "messageId": "1-7ad6-4c79-903e-049f59b8c1b8",
 #       "receiptHandle": "MessageReceiptHandle",
-#       "body": "[5226]",
+#       "body": "[168459]",
 #       "attributes": {
 #         "ApproximateReceiveCount": "1",
 #         "SentTimestamp": "1641234567890",

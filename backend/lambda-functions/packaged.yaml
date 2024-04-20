@@ -158,7 +158,7 @@ Resources:
       FunctionName: exodb-eventsAuditOngoing
       Handler: auditOngoing.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/90808ea0b32500fd98ddde324993b28b
+      CodeUri: s3://exodblambdafunctions/819956a5e63293b87444554c8dca5192
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditOngoing
@@ -188,7 +188,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncDataProcessor
       Handler: updateFutureEventsDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/7340067f541e3cb01827c7cbb7466b66
+      CodeUri: s3://exodblambdafunctions/50c0889810c5dd30b4a12fb62e89cf67
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsDataProcessor
@@ -198,7 +198,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingAttribute
       Handler: updateOngoingAttribute.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/80195a0ba0062d945ba7cfd53a431d7d
+      CodeUri: s3://exodblambdafunctions/a82f73dfdc79a8695ef54c9904844ade
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingAttributeFunc
@@ -208,7 +208,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventProcessor
       Handler: updateOngoingEventProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/eeb6f84daf8b546e560455cd77966793
+      CodeUri: s3://exodblambdafunctions/f3f333a25c7c52e3d71e0f9a844a669a
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventProcessor
@@ -258,7 +258,7 @@ Resources:
       FunctionName: exodb-auditTeamDataProcessorFunc
       Handler: auditTeamDataProcessor.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/086a27ea0d53cb4c9a16d97259233e58
+      CodeUri: s3://exodblambdafunctions/3015de2504ddf6d89d6860e3c8fdb26d
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditTeamDataProcessor
@@ -268,7 +268,7 @@ Resources:
       FunctionName: exodb-auditTeamDataQueueFunc
       Handler: auditTeamDataQueue.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/6ccfde6027dd50283f774894a375d0cb
+      CodeUri: s3://exodblambdafunctions/de7d285441499477d69c2a23f4b4c618
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditTeamDataQueue

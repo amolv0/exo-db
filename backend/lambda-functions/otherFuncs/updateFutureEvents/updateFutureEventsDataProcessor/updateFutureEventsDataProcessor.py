@@ -6,6 +6,7 @@ import json
 import requests
 import time
 import boto3
+import os
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
@@ -17,7 +18,7 @@ from botocore.exceptions import ClientError
 # When a user accesses an event page, the event data will also be updated then. 
 
 # Unique API Key
-API_KEY = 'REDACTED_API_KEY'
+API_KEY = os.getenv('API_KEY')
 headers = {
     'accept': 'application/json',
     'Authorization': f'Bearer {API_KEY}'
