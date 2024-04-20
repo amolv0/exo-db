@@ -1,7 +1,11 @@
 import boto3
 import json
 import logging
+<<<<<<< HEAD
 import os
+=======
+
+>>>>>>> a52605512aba88a15333c4fbb3bad94b7fecd67d
 dynamodb = boto3.client('dynamodb')
 sqs_client = boto3.client('sqs')
 
@@ -34,9 +38,15 @@ def scan_for_unregistered_items(table_name, exclusive_start_key=None):
     response = dynamodb.scan(**scan_params)
     return response
 
+<<<<<<< HEAD
 def handler(event, context):
     logging.info("Starting process")
     queue_url = f"{os.getenv('SQS_BASE_URL')}/AuditTeamDataQueue"
+=======
+def handler(event):
+    logging.info("Starting process")
+    queue_url = 'REDACTED_SQS_URL/AuditTeamDataQueue'
+>>>>>>> a52605512aba88a15333c4fbb3bad94b7fecd67d
     table_name = 'team-data'
     index_name = 'RegisteredIndex'
 

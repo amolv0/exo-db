@@ -218,7 +218,11 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventQueue
       Handler: updateOngoingEventQueue.handler
       Runtime: python3.10
+<<<<<<< HEAD
       CodeUri: s3://exodblambdafunctions/dbf7a39ec8dfbfcebc9a3ab6e9241d8e
+=======
+      CodeUri: s3://exodblambdafunctions/7e9cae408e9f260e906113bc15b2f952
+>>>>>>> a52605512aba88a15333c4fbb3bad94b7fecd67d
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventQueue
