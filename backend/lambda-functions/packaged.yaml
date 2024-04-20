@@ -218,7 +218,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingEventQueue
       Handler: updateOngoingEventQueue.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/7e9cae408e9f260e906113bc15b2f952
+      CodeUri: s3://exodblambdafunctions/dbf7a39ec8dfbfcebc9a3ab6e9241d8e
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingEventQueue
@@ -228,7 +228,7 @@ Resources:
       FunctionName: exodb-eventsUpdateOngoingLeagueQueue
       Handler: updateOngoingLeagueQueue.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/50712028d46b94ef97f9c1e4f946555c
+      CodeUri: s3://exodblambdafunctions/43ce6f435373f680ba48fd107de6ae7c
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateOngoingLeagueQueue
@@ -238,7 +238,7 @@ Resources:
       FunctionName: exodb-eventsFutureUpdateFuncUrlFinder
       Handler: updateFutureEventsUrlFinder.url_finder_handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/86601c9409fa4262c67fb50d50d35910
+      CodeUri: s3://exodblambdafunctions/d99d917b06a044d0facf88a7f290095e
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: updateFutureEventsUrlFinder
@@ -268,7 +268,7 @@ Resources:
       FunctionName: exodb-auditTeamDataQueueFunc
       Handler: auditTeamDataQueue.handler
       Runtime: python3.10
-      CodeUri: s3://exodblambdafunctions/de7d285441499477d69c2a23f4b4c618
+      CodeUri: s3://exodblambdafunctions/224465a92026c3d142213fba4c98d410
       Role: arn:aws:iam::228049799584:role/service-role/dynamoDB_crud
     Metadata:
       SamResourceId: auditTeamDataQueue
