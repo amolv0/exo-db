@@ -13,7 +13,6 @@ import os
 # Processing one page of events takes ~10 minutes, meaning processing more than 1 page will go over the Lambda function time limit of 15 minutes
 # When a user accesses an event page, the event data will also be updated then. 
 
-# Unique API Key
 API_KEY = os.getenv('API_KEY')
 headers = {
     'accept': 'application/json',
