@@ -18,7 +18,6 @@ from botocore.exceptions import ClientError
 # All events with the 'ongoing' attribute set to true will be iterated over and their data will be posted to dynamodb, including match data. Whenever the table is updated, through dynamodb streams a subscriber will be notified, if the update
 # includes the eventid of a event a user is viewing, the websocket will issue an update. 
 
-# Unique API Key
 API_KEY = os.getenv('API_KEY')
 headers = {
     'accept': 'application/json',
@@ -38,11 +37,9 @@ def determine_is_league(event):
     end_time = datetime.fromisoformat(event['end'])
     return abs(end_time-start_time).days < 5 or start_time == end_time # return False if the absolute difference between the start and end time is 5 or more days, meaning it is an leage we will add to queue
 
-# Get the set of events with ongoing=="true"
 def get_ongoing_events(table):
     ongoing_events = []
     last_evaluated_key = None
-    # Loop until no more pages
     while True:
         if last_evaluated_key:
             response = table.query(
@@ -63,8 +60,6 @@ def get_ongoing_events(table):
             )
 
         ongoing_events.extend(response['Items'])
-
-        # Check if there's more data to process
         last_evaluated_key = response.get('LastEvaluatedKey')
         if not last_evaluated_key:
             break
