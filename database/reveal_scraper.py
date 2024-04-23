@@ -7,14 +7,12 @@ from datetime import datetime
 import os
 import html
 
-API_KEYS = [os.getenv(f'EXODB_YOUTUBE_API_KEY_{i}') for i in range(1, 20)]
+API_KEYS = [os.getenv(f'EXODB_YOUTUBE_API_KEY_{i}') for i in range(1, 21)]
 current_key_index = 0
 QUEUE_URL = os.getenv('SQS_TEAM_REVEAL_URL')
 
 def get_youtube_client():
     return build('youtube', 'v3', developerKey=API_KEYS[current_key_index])
-
-
 
 def search_videos(query):
     global current_key_index
