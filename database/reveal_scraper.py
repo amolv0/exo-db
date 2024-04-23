@@ -18,6 +18,7 @@ def get_youtube_client():
 
 def search_videos(query):
     global current_key_index
+    global youtube
     total_results = 0
     next_page_token = None
     max_results_per_call = 50
