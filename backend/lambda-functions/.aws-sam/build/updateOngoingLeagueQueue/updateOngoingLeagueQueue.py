@@ -6,10 +6,7 @@ import json
 import requests
 import time
 import boto3
-<<<<<<< HEAD
 import os
-=======
->>>>>>> a52605512aba88a15333c4fbb3bad94b7fecd67d
 from botocore.exceptions import ClientError
 
 # This function, along with updateOngoingEventProcessor, is designed to update any non-league events in real-time.
@@ -21,12 +18,7 @@ from botocore.exceptions import ClientError
 # All events with the 'ongoing' attribute set to true will be iterated over and their data will be posted to dynamodb, including match data. Whenever the table is updated, through dynamodb streams a subscriber will be notified, if the update
 # includes the eventid of a event a user is viewing, the websocket will issue an update. 
 
-# Unique API Key
-<<<<<<< HEAD
 API_KEY = os.getenv('API_KEY')
-=======
-API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiYWMwYTkxMWE4YzFhNGRjZjkyZTIxMDQwYTgzMzE1ZTgxNzcxY2RjYzM3ZjQ3YmU2ZGU1ZmQzODQxNThiYjU0MDdjNzAwZGFlMTBlOWE4YzEiLCJpYXQiOjE3MDYzODEwMTcuNjcwMzUyOSwibmJmIjoxNzA2MzgxMDE3LjY3MDM1NiwiZXhwIjoyNjUzMTUyMjE3LjY2NDQxMTEsInN1YiI6IjkwODM3Iiwic2NvcGVzIjpbXX0.ZuktNdhqYX5SmB0dJkIA0z4DShawWFlhSQwEv2DnQkFoT0FoNuEn-zvVE1IzGq35EB9EbrDe1sTPrSvEvet6q9I80yeX8JHJURbnN2-CFk0kSUK1o75ORcW33n805Fr3qyFz-E_75O3UVTqttFgzlTsS41NO49pTNlKdef0rFdgUQD13DqPKbTqS4vWXPuwWwHblYhU692OW-rRw3xdujTqhQ3MOf8GQYJ08RV79bPM8QrY4OndEbhPjNd0XzSiAFSi3EtLBFciPNglnleyRNV56ykK5kb77I9rwLg2OyjR7zcrNo3qfpD_rieBhOGxcK_irkLd1EHIKt6SHpEU_Lj7FtbCK1ZaQp5ggkg6ily3tj0elvem3eqDmySHfK7GDO6ULIYpApJi_NWVAqlS29rr-BORjruQjLWMg6EYexBipk0Z6Tp084K9TA2OVIHcsoZWNlt4s0ZgtQOSrc0I_Fb1G__Zf0EFcIGyG00UP_lkd60E5mLgHiDP4MdbAck0r69cMY0BZ3kvqYiPsu1QrJceaWZ6GhC5NXfnkIJGdHA7xBIys2cOYLesGBn-yB0atYh4M_IcXTS6Z1oPSsBAQtxwkl2U98cGlJEp6BwxCII5uBH7-gkWiFt47UNieo5_zEIHPRIPtbJkxYnsH7Su87FA_P9HadqkJ7ICTg_wrBCM'
->>>>>>> a52605512aba88a15333c4fbb3bad94b7fecd67d
 headers = {
     'accept': 'application/json',
     'Authorization': f'Bearer {API_KEY}'
@@ -45,11 +37,9 @@ def determine_is_league(event):
     end_time = datetime.fromisoformat(event['end'])
     return abs(end_time-start_time).days < 5 or start_time == end_time # return False if the absolute difference between the start and end time is 5 or more days, meaning it is an leage we will add to queue
 
-# Get the set of events with ongoing=="true"
 def get_ongoing_events(table):
     ongoing_events = []
     last_evaluated_key = None
-    # Loop until no more pages
     while True:
         if last_evaluated_key:
             response = table.query(
@@ -70,8 +60,6 @@ def get_ongoing_events(table):
             )
 
         ongoing_events.extend(response['Items'])
-
-        # Check if there's more data to process
         last_evaluated_key = response.get('LastEvaluatedKey')
         if not last_evaluated_key:
             break
@@ -81,11 +69,7 @@ def get_ongoing_events(table):
 
 def handler(aws_event, context):
     # logging.info("Begining updateOngoingEventQueue function")
-<<<<<<< HEAD
     queue_url = f"{os.getenv('SQS_BASE_URL')}/OngoingEventsQueue"
-=======
-    queue_url = 'https://sqs.us-east-1.amazonaws.com/228049799584/OngoingEventsQueue'
->>>>>>> a52605512aba88a15333c4fbb3bad94b7fecd67d
 
     events = get_ongoing_events(event_data_table)
     count = 0

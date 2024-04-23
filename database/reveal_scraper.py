@@ -7,12 +7,17 @@ from datetime import datetime
 import os
 import html
 
-YOUTUBE_API_KEY = os.getenv('EXODB_YOUTUBE_API_KEY')
+API_KEYS = [os.getenv(f'EXODB_YOUTUBE_API_KEY_{i}') for i in range(1, 20)]
+current_key_index = 0
 QUEUE_URL = os.getenv('SQS_TEAM_REVEAL_URL')
 
-youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
+def get_youtube_client():
+    return build('youtube', 'v3', developerKey=API_KEYS[current_key_index])
+
+
 
 def search_videos(query):
+    global current_key_index
     total_results = 0
     next_page_token = None
     max_results_per_call = 50
@@ -38,15 +43,19 @@ def search_videos(query):
 
             total_results += len(search_response.get('items', []))
             next_page_token = search_response.get('nextPageToken')
-
             if not next_page_token:
                 break 
 
         except HttpError as e:
             error = json.loads(e.content).get('error')
             if error.get('errors')[0].get('reason') in ['quotaExceeded', 'rateLimitExceeded']:
-                print("Quota exceeded! Waiting 2 hours before retrying...")
-                time.sleep(7200)
+                current_key_index = (current_key_index + 1) % len(API_KEYS)
+                if current_key_index == 0:  # All keys have been cycled through
+                    print("All API keys quota exceeded! Waiting 2 hours before retrying...")
+                    time.sleep(7200)
+                else:
+                    print(f"Switching to the next API key: {current_key_index + 1}")
+                youtube = get_youtube_client()  # Refresh the YouTube client with the new key
                 continue
             else:
                 raise  # Re-raise the exception if it's not a quota issue
@@ -127,6 +136,9 @@ queries = [
     "vex sack attack reveal",
     "vex gateway reveal"
 ]
+
+
+youtube = get_youtube_client()
 
 for query in queries:
     search_videos(query)

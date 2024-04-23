@@ -37,7 +37,7 @@ async def process_existing_messages(channel_id):
 
 async def process_message(message):
     if message.author == client.user:
-        print("a")
+        print("Message author == client.user")
         # return
 
     urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', message.content)

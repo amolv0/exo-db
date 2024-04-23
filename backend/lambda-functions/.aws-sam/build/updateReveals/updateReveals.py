@@ -26,8 +26,8 @@ def handler(event, context):
         message_body = record['body']
         logging.info(f"Received message body: {message_body}")
         message = json.loads(message_body)
-        
         team_number = message['team_number']
+        reveal_title=message['reveal_title']
 
         response = table.query(
             IndexName='TeamNumberIndex',
@@ -42,14 +42,26 @@ def handler(event, context):
 
         # Choose the item with the longest 'skills' attribute
         if response['Items']:
-            team_item = max(response['Items'], key=lambda item: len(item.get('skills', [])))
+            program = None
+            if 'VRC' in reveal_title:
+                program = 'VRC'
+            elif 'VIQRC' in reveal_title or 'IQ' in reveal_title:
+                program = 'VIQRC'
+            if program:
+                filtered_items = [item for item in response['Items'] if item.get('program') == program]
+                if not filtered_items:
+                    logging.info(f"No items found with program {program} for team {team_number}")
+                    return
+                team_item = max(filtered_items, key=lambda item: len(item.get('skills', [])))
+            else:
+                team_item = max(response['Items'], key=lambda item: len(item.get('skills', [])))
             item_id = team_item['id']
 
             current_reveals = team_item.get('reveals', [])
             new_reveal_url = normalize_youtube_url(message['reveal_url'])
             new_reveal = {
                 'reveal_url': message['reveal_url'],
-                'reveal_title': message['reveal_title'],
+                'reveal_title': reveal_title,
                 'post_date': message['post_date']
             }
             if not any(normalize_youtube_url(reveal['reveal_url']) == new_reveal_url for reveal in current_reveals):

@@ -17,9 +17,15 @@ import html
 
 stop_words = set(stopwords.words('english'))
 
-YOUTUBE_API_KEY = os.getenv('EXODB_YOUTUBE_API_KEY')
+API_KEYS = [os.getenv(f'EXODB_YOUTUBE_API_KEY_{i}') for i in range(1, 11)]
+current_key_index = 0
 
-youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
+
+def get_youtube_client():
+    global current_key_index
+    return build('youtube', 'v3', developerKey=API_KEYS[current_key_index])
+
+youtube = get_youtube_client()
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('event-data')
 
@@ -62,84 +68,78 @@ def match_event_with_title(event_keywords, title_keywords, event_name, video_tit
     return False
 
 def search_videos(event_name, event_start_date):
-    max_results_per_call = 20
-    max_total_results = 20
-    next_page_token = None
-    total_results = 0
-    while total_results < max_total_results:
-        try:
-            search_response = youtube.search().list(
-                q=event_name,
-                part='snippet',
-                maxResults=max_results_per_call,
-                type='video',
-                pageToken=next_page_token
-            ).execute()
-
-            for item in search_response.get('items', []):
-                video_id = item['id']['videoId']
-                video_title = item['snippet']['title']
-                video_title = html.unescape(video_title)
-                video_post_date = item['snippet']['publishedAt']
-                event_keywords = extract_keywords(event_name)
-                title_keywords = extract_keywords(video_title)
-                # print(event_keywords)
-                # print(title_keywords)
-                
-                # thanks discrete math 1
-                if 'world' in event_keywords and ('worlds' not in title_keywords and 'world' not in title_keywords or 'vex' not in title_keywords):
-                    # print(1)
-                    continue
-                if ('vex' in event_keywords or 'vrc' in event_keywords) and ('vexu' in title_keywords or 'iq' in title_keywords or 'vexiq' in title_keywords or 'viqc' in title_keywords):
-                    # print(2)
-                    continue
-                if 'high' in event_keywords and 'school' in event_keywords and ('vexu' in title_keywords or 'elementary' in title_keywords or 'middle' in title_keywords or 'ms' in title_keywords):
-                    # print(3)
-                    continue
-                if (('middle' in event_keywords and 'school' in event_keywords) or 'ms' in event_keywords) and (('high' in title_keywords or 'vexu' in title_keywords or 'hs' in title_keywords or 'elementary' in title_keywords) or ('middle' not in title_keywords and 'ms' not in title_keywords)):
-                    # print(4)
-                    continue
-                if 'elementary' in event_keywords and ('ms' in title_keywords or 'middle' in title_keywords or 'high' in title_keywords or 'vexu' in title_keywords):
-                    # print(5)
-                    continue
-                if (('vex' and 'u' in event_keywords) or 'vexu' in event_keywords) and (('high' in title_keywords or 'middle' in title_keywords or 'elementary' in title_keywords or 'ms' in title_keywords) or ('vexu' not in title_keywords and ('vex' and 'u' not in title_keywords))):
-                    # print(6)
-                    continue
-                if 'championship' in event_keywords and 'championship' not in title_keywords:
-                    # print(7)
-                    continue
-                if ('iq' in event_keywords or 'viqc' in event_keywords or 'vexiq' in event_keywords) and ('iq' not in title_keywords and 'viqc' not in title_keywords and 'vexiq' not in title_keywords):
-                    # print(8)
-                    continue
-                if ('vexu' in event_keywords or ('vex' in event_keywords and 'u' in event_keywords)) and ('vexu' not in title_keywords and ('vex' not in title_keywords and 'u' not in title_keywords)):
-                    # print(9)
-                    continue
-                
-                event_keywords = event_keywords - less_important_keywords
-                title_keywords = title_keywords - less_important_keywords
-                
-                if len(event_keywords) < 4 or len(title_keywords) < 4 and 'world' not in event_keywords:
-                    # print(10)
-                    continue
-                
-                if match_event_with_title(event_keywords, title_keywords, event_name, video_title, event_start_date, video_post_date):
-                    youtube_url = f"https://www.youtube.com/watch?v={video_id}"
-                    print(f"Found a match: event_name: {event_name}, video_title: {video_title}")
-                    # process_event_data(event_name, youtube_url, video_title, published_at)
-
-            next_page_token = search_response.get('nextPageToken')
-            total_results += len(search_response.get('items', []))
-            if not next_page_token:
-                break
-
-        except HttpError as e:
-            error = json.loads(e.content).get('error')
-            if error.get('errors')[0].get('reason') in ['quotaExceeded', 'rateLimitExceeded']:
-                print("Quota exceeded! Waiting 2 hours before retrying...")
-                time.sleep(7200)
+    global current_key_index
+    try:
+        search_response = youtube.search().list(
+            q=event_name,
+            part='snippet',
+            maxResults=50,
+            type='video',
+        ).execute()
+        for item in search_response.get('items', []):
+            video_id = item['id']['videoId']
+            video_title = item['snippet']['title']
+            video_title = html.unescape(video_title)
+            video_post_date = item['snippet']['publishedAt']
+            event_keywords = extract_keywords(event_name)
+            title_keywords = extract_keywords(video_title)
+            # print(event_keywords)
+            # print(title_keywords)
+            
+            # thanks discrete math 1
+            if 'world' in event_keywords and ('worlds' not in title_keywords and 'world' not in title_keywords or 'vex' not in title_keywords):
+                # print(1)
                 continue
+            if ('vex' in event_keywords or 'vrc' in event_keywords) and ('vexu' in title_keywords or 'iq' in title_keywords or 'vexiq' in title_keywords or 'viqc' in title_keywords):
+                # print(2)
+                continue
+            if 'high' in event_keywords and 'school' in event_keywords and ('vexu' in title_keywords or 'elementary' in title_keywords or 'middle' in title_keywords or 'ms' in title_keywords):
+                # print(3)
+                continue
+            if (('middle' in event_keywords and 'school' in event_keywords) or 'ms' in event_keywords) and (('high' in title_keywords or 'vexu' in title_keywords or 'hs' in title_keywords or 'elementary' in title_keywords) or ('middle' not in title_keywords and 'ms' not in title_keywords)):
+                # print(4)
+                continue
+            if 'elementary' in event_keywords and ('ms' in title_keywords or 'middle' in title_keywords or 'high' in title_keywords or 'vexu' in title_keywords):
+                # print(5)
+                continue
+            if (('vex' and 'u' in event_keywords) or 'vexu' in event_keywords) and (('high' in title_keywords or 'middle' in title_keywords or 'elementary' in title_keywords or 'ms' in title_keywords) or ('vexu' not in title_keywords and ('vex' and 'u' not in title_keywords))):
+                # print(6)
+                continue
+            if 'championship' in event_keywords and 'championship' not in title_keywords:
+                # print(7)
+                continue
+            if ('iq' in event_keywords or 'viqc' in event_keywords or 'vexiq' in event_keywords) and ('iq' not in title_keywords and 'viqc' not in title_keywords and 'vexiq' not in title_keywords):
+                # print(8)
+                continue
+            if ('vexu' in event_keywords or ('vex' in event_keywords and 'u' in event_keywords)) and ('vexu' not in title_keywords and ('vex' not in title_keywords and 'u' not in title_keywords)):
+                # print(9)
+                continue
+            
+            event_keywords = event_keywords - less_important_keywords
+            title_keywords = title_keywords - less_important_keywords
+            
+            if len(event_keywords) < 4 or len(title_keywords) < 4 and 'world' not in event_keywords:
+                # print(10)
+                continue
+            
+            if match_event_with_title(event_keywords, title_keywords, event_name, video_title, event_start_date, video_post_date):
+                youtube_url = f"https://www.youtube.com/watch?v={video_id}"
+                print(f"Found a match: event_name: {event_name}, video_title: {video_title}")
+                # process_event_data(event_name, youtube_url, video_title, published_at)
+            
+    except HttpError as e:
+        error = json.loads(e.content).get('error')
+        if error.get('errors')[0].get('reason') in ['quotaExceeded', 'rateLimitExceeded']:
+            current_key_index = (current_key_index + 1) % len(API_KEYS)
+            if current_key_index == 0:  # All keys have been cycled through
+                print("All API keys quota exceeded! Waiting 2 hours before retrying...")
+                time.sleep(7200)
             else:
-                raise  # Re-raise the exception if it's not a quota issue
+                print(f"Switching to the next API key: {current_key_index + 1}")
+            youtube = get_youtube_client()  # Refresh the YouTube client with the new key
+            return
+        else:
+            raise  # Re-raise the exception if it's not a quota issue
 
 def process_event_data(event_name, youtube_url, video_title, published_at):
     try:
