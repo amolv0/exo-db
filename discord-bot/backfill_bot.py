@@ -50,9 +50,6 @@ async def process_message(message):
             team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.title))
             url_name = embed.title
             # print(f"Embed title: {embed.title}")
-        if embed.description:
-            team_names_set.update(re.findall(r'\b\d{2}[A-Z]\b', embed.description))
-            # print(f"Embed description: {embed.description}")
         if embed.author and embed.author.name:
             team_names_set.update(re.findall(r'\b\d+[A-Z]\b', embed.author.name))
             # print(f"Embed author name: {embed.author.name}")
