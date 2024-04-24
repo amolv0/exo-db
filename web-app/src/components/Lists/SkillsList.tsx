@@ -177,7 +177,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
             {loading ? ( // Render loading indicator if loading state is true
                 <CircularProgress style={{ margin: '20px' }} />
             ) : error ? ( 
-                <div>Error: {error}</div>
+                <div>No skills found</div>
             ) : (
                 <div>
                     <div className = "tableTitle">{region} {getSeasonNameFromId(parseInt(season))} {grade} Skills</div>

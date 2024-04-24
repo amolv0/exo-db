@@ -173,7 +173,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
             {loading ? ( // Render loading indicator if loading state is true
                 <CircularProgress style={{ margin: '20px' }} />
             ) : error ? ( 
-                <div>Error: {error}</div>
+                <div>No Ratings Found</div>
             ) : (
                 <div>
                     <div className = "tableTitle">

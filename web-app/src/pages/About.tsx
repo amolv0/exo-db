@@ -1,6 +1,7 @@
 import React from 'react';
 import '../Stylesheets/teamInfo.css';
 import { Link } from 'react-router-dom';
+import yujinGif from '../Assets/yujin.gif';
 
 const About: React.FC = () => {
     
@@ -34,7 +35,12 @@ const About: React.FC = () => {
             <div className = "text-center mt-14">
                 <div>Hi anyone at worlds rn Washington State VEX robotics is so good we diff people :) (cope)</div>
             </div>
-        </div>
+
+            <div className="flex justify-center items-center h-full">
+                <img className="items-center" src={yujinGif} alt="Your GIF" />
+            </div>
+
+            </div>
 
     );
 };
