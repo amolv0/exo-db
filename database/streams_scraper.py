@@ -18,8 +18,8 @@ import re
 
 stop_words = set(stopwords.words('english'))
 stop_words.remove('s')
-API_KEYS = [os.getenv(f'EXODB_YOUTUBE_API_KEY_{i}') for i in range(1, 22)]
-current_key_index = 0
+API_KEYS = [os.getenv(f'EXODB_YOUTUBE_API_KEY_{i}') for i in range(1, 23)] # api key 22 is only for testing
+current_key_index = 21
 def get_youtube_client():
     global current_key_index
     return build('youtube', 'v3', developerKey=API_KEYS[current_key_index])
@@ -50,20 +50,20 @@ def match_event_with_title(event_keywords, title_keywords, event_name, video_tit
     except ValueError:
         post_date = make_aware(datetime.strptime(video_post_date, '%Y-%m-%dT%H:%M:%SZ'))
         
-    if abs((post_date - event_date).days) > 90:
+    if abs((post_date - event_date).days) > 45:
         # print(11)
         return False
     
     common_keywords = event_keywords.intersection(title_keywords)
     weighted_match_score = len(common_keywords) / len(event_keywords)
-    print(weighted_match_score)
+    # print(weighted_match_score)
     if weighted_match_score < weighted_match_threshold:  # Adjust this threshold based on performance
         # print()
         return False
 
     # Fuzzy matching for additional verification
     similarity_score = fuzz.token_sort_ratio(event_name, video_title)
-    print(similarity_score)
+    # print(similarity_score)
     if similarity_score > similarity_threshold:  # Adjust this threshold based on tolerance
         return True
     # print(12)
@@ -78,7 +78,7 @@ def search_videos(event_name, event_start_date):
         search_response = youtube.search().list(
             q=event_name,
             part='snippet',
-            maxResults=10,
+            maxResults=25,
             type='video',
         ).execute()
         for item in search_response.get('items', []):
@@ -104,7 +104,7 @@ def search_videos(event_name, event_start_date):
             if (('high' in event_keywords and 'school' in event_keywords) or 'hs' in event_keywords) and ('vexu' in title_keywords or 'elementary' in title_keywords or 'middle' in title_keywords or 'ms' in title_keywords or ('u' in title_keywords and 's' not in title_keywords)) and not (('middle' in title_keywords and 'high' in title_keywords) or ('ms' in title_keywords and 'hs' in title_keywords)):
                 # print(3)
                 continue
-            if ((('middle' in event_keywords and 'school' in event_keywords) or 'ms' in event_keywords) and (('high' in title_keywords or 'vexu' in title_keywords or 'hs' in title_keywords or 'elementary' in title_keywords) or ('middle' not in title_keywords and 'ms' not in title_keywords))) and not (('middle' in title_keywords and 'high' in title_keywords) or ('ms' in title_keywords and 'hs' in title_keywords)):
+            if ((('middle' in event_keywords and 'school' in event_keywords) or 'ms' in event_keywords) and (('high' in title_keywords or 'vexu' in title_keywords or 'hs' in title_keywords or 'elementary' in title_keywords) or ('middle' not in title_keywords and 'ms' not in title_keywords))) and not (('middle' in event_keywords and 'high' in event_keywords) or ('ms' in event_keywords and 'hs' in event_keywords)):
                 # print(4)
                 continue
             if 'elementary' in event_keywords and ('ms' in title_keywords or 'middle' in title_keywords or 'high' in title_keywords or 'vexu' in title_keywords):
@@ -140,13 +140,13 @@ def search_videos(event_name, event_start_date):
                 # print(len(event_keywords))
                 # print(len(title_keywords))
                 continue
-            weighted_match_threshold = 0.2 if worlds else 0.3 # 0.2 if worlds else 0.3
+            weighted_match_threshold = 0.2 if worlds else 0.25 # 0.2 if worlds else 0.3
             similarity_threshold = 35 if worlds else 45  # 50 if worlds else 70
                 
             if match_event_with_title(event_keywords, title_keywords, event_name, video_title, event_start_date, video_post_date, weighted_match_threshold, similarity_threshold):
                 youtube_url = f"https://www.youtube.com/watch?v={video_id}"
-                print(f"Found a match: event_name: {event_name}, video_title: {video_title}")
-                # process_event_data(event_name, youtube_url, video_title, video_post_date)
+                # print(f"Found a match: event_name: {event_name}, video_title: {video_title}")
+                process_event_data(event_name, youtube_url, video_title, video_post_date)
             
     except HttpError as e:
         error = json.loads(e.content).get('error')
@@ -235,7 +235,7 @@ def search_videos_for_event_id(event_id):
         
         
 if __name__ == '__main__':
-    # main()
+    main()
     # search_videos_for_event_id(51488)
-    search_videos_for_event_id(31827)
+    # search_videos_for_event_id(51488)
     # search_videos_for_event_id(49316)
