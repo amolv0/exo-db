@@ -19,16 +19,16 @@ import re
 stop_words = set(stopwords.words('english'))
 stop_words.remove('s')
 API_KEYS = [os.getenv(f'EXODB_YOUTUBE_API_KEY_{i}') for i in range(1, 22)]
-current_key_index = 20
+current_key_index = 14
 def get_youtube_client():
     global current_key_index
     return build('youtube', 'v3', developerKey=API_KEYS[current_key_index])
 
 youtube = get_youtube_client()
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('event-data')
 
-less_important_keywords = {'vex', 'vrc', 'robotics', 'competition', 'high', 'middle', 'school', 'turning', 'point'}
+less_important_keywords = {'vex', 'vrc', 'robotics', 'competition', 'high', 'middle', 'school', 'turning', 'point', 'league', 'championship'}
 
 def make_aware(dt):
     """Ensure datetime is timezone-aware."""
@@ -56,13 +56,14 @@ def match_event_with_title(event_keywords, title_keywords, event_name, video_tit
     
     common_keywords = event_keywords.intersection(title_keywords)
     weighted_match_score = len(common_keywords) / len(event_keywords)
-    # print(weighted_match_score)
-    if weighted_match_score > weighted_match_threshold:  # Adjust this threshold based on performance
-        return True
+    print(weighted_match_score)
+    if weighted_match_score < weighted_match_threshold:  # Adjust this threshold based on performance
+        # print()
+        return False
 
     # Fuzzy matching for additional verification
     similarity_score = fuzz.token_sort_ratio(event_name, video_title)
-    # print(similarity_score)
+    print(similarity_score)
     if similarity_score > similarity_threshold:  # Adjust this threshold based on tolerance
         return True
     # print(12)
@@ -77,7 +78,7 @@ def search_videos(event_name, event_start_date):
         search_response = youtube.search().list(
             q=event_name,
             part='snippet',
-            maxResults=25,
+            maxResults=10,
             type='video',
         ).execute()
         for item in search_response.get('items', []):
@@ -124,6 +125,12 @@ def search_videos(event_name, event_start_date):
             if ('vexu' in event_keywords or ('vex' in event_keywords and 'u' in event_keywords)) and ('vexu' not in title_keywords and ('vex' not in title_keywords and ('u' in title_keywords and 's' not in title_keywords))):
                 # print(9)
                 continue
+            if ('spring' in event_keywords and 'fall' in title_keywords) or ('fall' in event_keywords and 'spring' in title_keywords):
+                # print(13)
+                continue
+            if 'ftc' in title_keywords or 'frc' in title_keywords or 'fll' in title_keywords:
+                # print(14)
+                continue
             
             event_keywords = event_keywords - less_important_keywords
             title_keywords = title_keywords - less_important_keywords
@@ -134,19 +141,16 @@ def search_videos(event_name, event_start_date):
                 # print(len(title_keywords))
                 continue
             weighted_match_threshold = 0.2 if worlds else 0.3 # 0.2 if worlds else 0.3
-            similarity_threshold = 50 if worlds else 70  # 50 if worlds else 70
+            similarity_threshold = 35 if worlds else 45  # 50 if worlds else 70
                 
             if match_event_with_title(event_keywords, title_keywords, event_name, video_title, event_start_date, video_post_date, weighted_match_threshold, similarity_threshold):
                 youtube_url = f"https://www.youtube.com/watch?v={video_id}"
                 print(f"Found a match: event_name: {event_name}, video_title: {video_title}")
-                # process_event_data(event_name, youtube_url, video_title, published_at)
+                # process_event_data(event_name, youtube_url, video_title, video_post_date)
             
     except HttpError as e:
         error = json.loads(e.content).get('error')
-        if error.get('errors')[0].get('reason') in ['quotaExceeded', 'rateLimitExceeded']:
-            print("All API keys quota exceeded! Waiting 2 hours before retrying...")
-            return
-        
+        if error.get('errors')[0].get('reason') in ['quotaExceeded', 'rateLimitExceeded']:       
             current_key_index = (current_key_index + 1) % len(API_KEYS)
             if current_key_index == 0:  # All keys have been cycled through
                 print("All API keys quota exceeded! Waiting 2 hours before retrying...")
@@ -164,21 +168,37 @@ def process_event_data(event_name, youtube_url, video_title, published_at):
     except ValueError:
         message_date = datetime.strptime(published_at, '%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%dT%H:%M:%S')
 
-    # Update DynamoDB item
-    # response = table.update_item(
-    #     Key={'event_name': event_name},
-    #     UpdateExpression="SET streams = list_append(if_not_exists(streams, :empty_list), :stream)",
-    #     ExpressionAttributeValues={
-    #         ':stream': [{
-    #             'stream_url': youtube_url,
-    #             'stream_title': video_title,
-    #             'post_date': message_date
-    #         }],
-    #         ':empty_list': []
-    #     },
-    #     ReturnValues="UPDATED_NEW"
-    # )
-    print(f"Updated DynamoDB for event {event_name}")
+    try:
+        response = table.query(
+            IndexName='EventNameIndex',  # The name of the secondary index
+            KeyConditionExpression=Key('name').eq(event_name)
+        )
+        if response['Items']:
+            event_id = response['Items'][0]['id']  # Assuming 'id' is the partition key and items are returned
+        else:
+            print(f"No event found for {event_name}")
+            return
+    except Exception as e:
+        print(f"Failed to query DynamoDB: {str(e)}")
+        return
+    
+    try:
+        update_response = table.update_item(
+            Key={'id': event_id},  # Use event ID as the key
+            UpdateExpression="SET streams = list_append(if_not_exists(streams, :empty_list), :stream)",
+            ExpressionAttributeValues={
+                ':stream': [{
+                    'stream_url': youtube_url,
+                    'stream_title': video_title,
+                    'post_date': message_date
+                }],
+                ':empty_list': []
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+        print(f"Updated DynamoDB for event {event_name} with ID {event_id}")
+    except Exception as e:
+        print(f"Failed to update DynamoDB: {str(e)}")
 
 
 
@@ -197,8 +217,6 @@ def main():
             search_videos(event_name, event_start_date)
         
         if 'LastEvaluatedKey' not in response:
-            break
-        if count == 1:
             break
         response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
         
@@ -219,5 +237,5 @@ def search_videos_for_event_id(event_id):
 if __name__ == '__main__':
     # main()
     # search_videos_for_event_id(51488)
-    search_videos_for_event_id(51847)
+    search_videos_for_event_id(45258)
     # search_videos_for_event_id(49316)
