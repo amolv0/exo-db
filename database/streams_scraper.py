@@ -19,7 +19,7 @@ import re
 stop_words = set(stopwords.words('english'))
 stop_words.remove('s')
 API_KEYS = [os.getenv(f'EXODB_YOUTUBE_API_KEY_{i}') for i in range(1, 22)]
-current_key_index = 14
+current_key_index = 0
 def get_youtube_client():
     global current_key_index
     return build('youtube', 'v3', developerKey=API_KEYS[current_key_index])
@@ -196,7 +196,7 @@ def process_event_data(event_name, youtube_url, video_title, published_at):
             },
             ReturnValues="UPDATED_NEW"
         )
-        print(f"Updated DynamoDB for event {event_name} with ID {event_id}")
+        print(f"Updated DynamoDB for event '{event_name}' with ID {event_id} and video title '{video_title}' and youtube url '{youtube_url}'.")
     except Exception as e:
         print(f"Failed to update DynamoDB: {str(e)}")
 
@@ -237,5 +237,5 @@ def search_videos_for_event_id(event_id):
 if __name__ == '__main__':
     # main()
     # search_videos_for_event_id(51488)
-    search_videos_for_event_id(45258)
+    search_videos_for_event_id(31827)
     # search_videos_for_event_id(49316)
