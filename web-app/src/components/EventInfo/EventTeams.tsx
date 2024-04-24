@@ -22,7 +22,7 @@ interface JSONComponentProps {
 }
 
 const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
-    const [teamDetails] = useState<TeamDetail[]>([]);
+    const [teamDetails, setTeamDetails] = useState<TeamDetail[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
     const [groupsOf100, setGroupsOf100] = useState<number[][]>([]);
@@ -66,11 +66,13 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                             teamDetails.push(...data);
                         }
                     }
+                    
                     teamDetails.sort((a: TeamDetail, b: TeamDetail) => {
                         const numA = parseInt(((a.number && a.number.match(/\d+/)) || ['0'])[0], 10);
                         const numB = parseInt(((b.number && b.number.match(/\d+/)) || ['0'])[0], 10);
                         return numA - numB;
                     });
+
                 } finally {
                     setLoading(false);
                 }
@@ -95,11 +97,13 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                             Number
                             </div>
                             {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index, array) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                                    <div>
-                                        <Link to={`/teams/${team.id}`} className = "teamBox">{team.number}</Link>
+                                (team.number && 
+                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                        <div>
+                                            <Link to={`/teams/${team.id}`} className = "teamBox">{team.number}</Link>
+                                        </div>
                                     </div>
-                                </div>
+                                )
                             ))}
                         </div>
                         <div className="header col teamsName">
@@ -107,11 +111,13 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                                 Team Name
                             </div>
                             {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
-                                <div key = {index}className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                    <div>
-                                        <Link to={`/teams/${team.id}`}>{team.team_name}</Link>
+                                (team.number && 
+                                    <div key = {index}className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                        <div>
+                                            <Link to={`/teams/${team.id}`}>{team.team_name}</Link>
+                                        </div>
                                     </div>
-                                </div>
+                                )
                             ))}
                         </div>
                         <div className = "hide">
@@ -120,11 +126,13 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                                     Organization
                                 </div>
                                 {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
-                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                        <div>
-                                            {team.organization}
+                                    (team.number && 
+                                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                            <div>
+                                                {team.organization}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )
                                 ))}
                             </div>
                         </div>
@@ -133,12 +141,14 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                                 Location
                             </div>
                             {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                    <div>
-                                        {team.location?.city}{team.location?.city && team.location?.region ? ', ' : ''}
-                                        {team.location?.region}{team.location?.region && team.location?.country ? ', ' : ''}{team.location?.country}
+                                (team.number && 
+                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                        <div>
+                                            {team.location?.city}{team.location?.city && team.location?.region ? ', ' : ''}
+                                            {team.location?.region}{team.location?.region && team.location?.country ? ', ' : ''}{team.location?.country}
+                                        </div>
                                     </div>
-                                </div>
+                                )
                             ))}
                         </div>
                     </div>

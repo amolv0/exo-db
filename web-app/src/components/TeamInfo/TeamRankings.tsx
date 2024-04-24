@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
+import '../../Stylesheets/eventTable.css'
 
 // Display the historic rankings for each event for a team
 
@@ -16,6 +17,9 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [groupsOf50, setGroupsOf50] = useState<number[][]>([]);
     const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
+    const [wins, setWins] = useState<number>(0);
+    const [losses, setLosses] = useState<number>(0);
+    const [rank, setRank] = useState<number>(0);
 
     const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
         const groups: number[][] = [];
@@ -61,15 +65,25 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                         allEvents.push(...data);
                     }
                     const tempSeasonMap: { [season: number]: any[] } = {};
-                    
+                    let tempRank = 0;
+                    let tempLosses = 0;
+                    let tempWins = 0;
+                    let size = 0;
                     allEvents.forEach(event => {
                         if (event.season) {
                             if (!tempSeasonMap[event.season]) {
                                 tempSeasonMap[event.season] = [];
                             }
                             tempSeasonMap[event.season].push(event);
+                            tempRank += event.rank;
+                            tempWins += event.wins;
+                            tempLosses += event.losses;
+                            size++;
                         }
                     });
+                    setRank(Math.round(tempRank / size * 10) / 10);
+                    setWins(tempWins);
+                    setLosses(tempLosses);
                     setSeasonMap(tempSeasonMap);
                     setSelectedSeason(Math.max(...Object.keys(tempSeasonMap).map(Number)));
                 } catch (error) {
@@ -86,6 +100,7 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
         fetchrankingsDetails();
     }, [rankings, isFirstUseEffectDone, groupsOf50]);
 
+
     return (
         <div>
             {loading ? ( // Render loading indicator if loading state is true
@@ -94,7 +109,22 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
               <div>No rankings found</div>
             ) : (
                 <div className="text-black">
-                    <br />
+
+                    <div className = "team-profile-info">
+                        <div className="team-profile-row">
+                            <span className="team-profile-rank-label">Historic Average Rank</span>
+                            <span className="team-profile-rank-value">{rank}</span>
+                        </div>
+                        <div className="team-profile-row">
+                            <span className="team-profile-rank-label">Total Wins</span>
+                            <span className="team-profile-rank-value">{wins}</span>
+                        </div>
+                        <div className="team-profile-row">
+                            <span className="team-profile-rank-label">Total Losses</span>
+                            <span className="team-profile-rank-value">{losses}</span>
+                        </div>
+                    </div>
+
                     <div className="flex justify-center"> 
                         <SeasonDropdown
                             seasonId={selectedSeason}
@@ -107,18 +137,31 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                     <br />
                     <div>
                         {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((rankings, index) => (
-                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                            <div key = {index}>
                                 <Link to={`/events/${rankings.event_id}`}>
-                                    {rankings.event_name}
+                                    <div className = 'matchesTitle'>
+                                        {rankings.event_name}
+                                    </div>
                                 </Link>
-                                <div> 
-                                    Event Average: {rankings.average_points}
-                                </div>
-                                <div>
-                                    Total Points: {rankings.total_points}
-                                </div>
-                                <div>
-                                    Dpr: {rankings.dpr}
+                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
+                                    <div> 
+                                        Rank: {rankings.rank}
+                                    </div>
+                                    <div> 
+                                        W-L-T: {rankings.wins}-{rankings.losses}-{rankings.ties}
+                                    </div>
+                                    <div> 
+                                        Avg Points: {rankings.average_points}
+                                    </div>
+                                    <div>
+                                        Total Points: {rankings.total_points}
+                                    </div>
+                                    <div>
+                                        Opr: {rankings.opr}
+                                    </div>
+                                    <div>
+                                        Dpr: {rankings.dpr}
+                                    </div>
                                 </div>
                             </div>
                         ))}

@@ -6,28 +6,33 @@ const About: React.FC = () => {
     
     return (
         <div>
-            <div className = "title leftOngoing">
+            <br></br>
+            <div className = "text-2xl text-center">
                 About Us
             </div>
 
-            <div className="leftOngoing">
-            <Link to={`/teams/93544?activeElement=TeamInfo`} className="text-6xl font-bold text-purple-600 hover:text-red-500 transform hover:scale-110">
-                <div className="bg-yellow-400 rounded-full p-4 shadow-lg border-8 border-blue-500">3<span className="text-pink-500">5</span><span className="text-green-500">3</span>X</div>
+            <div className = "flex justify-center items-center">
+            We are three college students, two of whom were ex-competitors from team&nbsp;
+            <Link to={`/teams/5226?activeElement=TeamInfo`}>
+                <div className = "text-blue-500">
+                    10B
+                </div>
             </Link>
-            </div>
-            <div className="leftOngoing">
-            <Link to={`/teams/5226?activeElement=TeamInfo`} className="text-8xl font-extrabold text-purple-700 hover:text-yellow-500 transform hover:rotate-12">
-                <div className="bg-gradient-to-r from-pink-400 to-purple-600 text-transparent bg-clip-text">1<span className="text-green-500">0</span>B</div>
+            &nbsp;and&nbsp;
+            <Link to={`/teams/93544?activeElement=TeamInfo`}>
+                <div className = "text-blue-500">
+                    353X
+                </div>
             </Link>
+            &nbsp;.
             </div>
 
-            <div className = "text-center">
-                For any bugs please contact Ghijj on discord 
+            <div className = "text-center mt-10">
+                For any bugs or inquries please contact Ghijj or ray02_ on discord
             </div>
 
-            <div className = "leftOngoing">
-                <div>We are a team of three people TWO RUT ONE DUB</div>
-                <div>Washington State VEX robotics is so good we diff people (cope)</div>
+            <div className = "text-center mt-14">
+                <div>Hi anyone at worlds rn Washington State VEX robotics is so good we diff people :) (cope)</div>
             </div>
         </div>
 

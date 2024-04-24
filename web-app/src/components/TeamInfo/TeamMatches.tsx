@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import MatchBasic from '../Lists/Helpers/MatchBasic';
+import { Link } from 'react-router-dom';
 
 // This component gets all of the matches and displays for a team
 
@@ -60,23 +61,17 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
                     }
 
                     const tempSeasonEventsMap: { [season: number]: { [event_name: string]: any[] } } = {};
-                        allEvents.forEach(event => {
-                            if (event.season !== undefined) {
-                                if (!tempSeasonEventsMap[event.season]) {
-                                    tempSeasonEventsMap[event.season] = {};
-                                }
-                                if (!tempSeasonEventsMap[event.season][event.event_name]) {
-                                    tempSeasonEventsMap[event.season][event.event_name] = [];
-                                }
-                                tempSeasonEventsMap[event.season][event.event_name].push(event);
+                    allEvents.forEach(event => {
+                        if (event.season !== undefined) {
+                            if (!tempSeasonEventsMap[event.season]) {
+                                tempSeasonEventsMap[event.season] = {};
                             }
-                      });
-
-                      Object.values(tempSeasonEventsMap).forEach(seasonEvents => {
-                          Object.values(seasonEvents).forEach(events => {
-                              events.sort((a: any, b: any) => new Date(a.started).getTime() - new Date(b.started).getTime());
-                          });
-                      });
+                            if (!tempSeasonEventsMap[event.season][event.event_name]) {
+                                tempSeasonEventsMap[event.season][event.event_name] = [];
+                            }
+                            tempSeasonEventsMap[event.season][event.event_name].push(event);
+                        }
+                    });
 
                     setSeasonEventsMap(tempSeasonEventsMap);
                     setSelectedSeason(Math.max(...Object.keys(tempSeasonEventsMap).map(Number)));
@@ -120,7 +115,9 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
                         {seasonEventsMap[selectedSeason] &&
                             Object.entries(seasonEventsMap[selectedSeason]).map(([event_name, matches]) => (
                                 <div key={event_name}>
-                                    <div className = "matchesTitle">{event_name}</div>
+                                    <Link to={`/events/${matches[0].event_id}`}>
+                                        <div className = "matchesTitle">{event_name}</div>
+                                    </Link>
                                     {matches.map((match, index) => (
                                     <MatchBasic key={index} match={match} />
                                     ))}

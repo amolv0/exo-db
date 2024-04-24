@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
-
+import '../../Stylesheets/eventTable.css'
 // This component gets all of the skills for a team
 
 interface TeamSkillsProps {
@@ -110,7 +110,9 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                             <div key={index}>
                                 {index === 0 && (
                                 <Link to={`/events/${skills.event_id}`}>
-                                    {skills.event_name}
+                                    <div className = 'matchesTitle'>
+                                        {skills.event_name}
+                                    </div>
                                 </Link>
                                 )}
                                 <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
