@@ -6,6 +6,7 @@ import EventMatches from '../components/EventInfo/EventMatches';
 import EventRankings from '../components/EventInfo/EventRankings';
 import EventSkills from '../components/EventInfo/EventSkills';
 import EventElims from '../components/EventInfo/EventElims';
+import EventStreams from '../components/EventInfo/EventStreams';
 import { Typography, CircularProgress} from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import '../Stylesheets/teamInfo.css';
@@ -98,7 +99,20 @@ const EventInfo: React.FC = () => {
 
                     {/* Main content */}
                     <div className = "team-info-display">
-                        {activeElement === 'EventInfo' && <EventAwards location={eventData[0].location} season={eventData[0].season} program={eventData[0].program.code} awards={eventData[0].awards} />}
+                        {activeElement === 'EventInfo' && (
+                            <>
+                                <EventAwards 
+                                    location={eventData[0].location} 
+                                    season={eventData[0].season} 
+                                    program={eventData[0].program.code} 
+                                    awards={eventData[0].awards} 
+                                />
+                                <EventStreams 
+                                    streams={eventData[0].streams || []} 
+                                />
+                            </>
+                        )
+                        }
                         {activeElement === 'TeamsList' && <EventTeams teams={eventData[0].teams} />}
                         {activeElement === 'Matches' && <EventMatches divisions={eventData[0].divisions} />}
                         {activeElement === 'Rankings' && <EventRankings divisions={eventData[0].divisions} />}

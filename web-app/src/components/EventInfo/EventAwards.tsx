@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Link } from '@mui/material';
+import EventStreams from "./EventStreams";
 
 // This class displays the EventAwards, set as the "default" page for events
 
