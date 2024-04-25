@@ -72,8 +72,12 @@ const EventInfo: React.FC = () => {
                         </div>
                         <div className="subtitle-team-info">
                             <span className="mr-1">&#x1F3E0;</span>
-                            {eventData[0].location.address_1 + ', ' || ''}{eventData[0].location.city + ', ' || ''} 
-                            {eventData[0].location.region + ', ' || ''}{eventData[0].location.country || ''}
+                            <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                `${eventData[0].location.address_1}, ${eventData[0].location.city}, ${eventData[0].location.region}, ${eventData[0].location.postcode}, ${eventData[0].location.country}`
+                            )}`} target="_blank" rel="noopener noreferrer">
+                                {eventData[0].location.address_1 + ', ' || ''}{eventData[0].location.city + ', ' || ''}
+                                {eventData[0].location.region + ', ' || ''}{eventData[0].location.postcode + ', ' || ''}{eventData[0].location.country || ''}
+                            </a>
                         </div>
                         <div className="subtitle-team-info">
                             <span className="mr-1">&#x1F55C;</span>
