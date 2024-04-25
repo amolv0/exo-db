@@ -81,7 +81,7 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
 
     return (
         <div className = "p-10">
-            <div className="tableTitleC">Skills List</div>  
+            <div className="tableTitleC">Skills Rankings</div>  
             
             <div className="skillsTable">
                 <div className="header col eventSkillsRank">
