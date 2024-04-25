@@ -16,7 +16,9 @@ from datetime import datetime, timedelta, timezone
 import html
 import re
 
-stop_words = set(stopwords.words('english'))
+english_stopwords = set(stopwords.words('english'))
+spanish_stopwords = set(stopwords.words('spanish'))
+stop_words = english_stopwords.union(spanish_stopwords)
 stop_words.remove('s')
 API_KEYS = [os.getenv(f'EXODB_YOUTUBE_API_KEY_{i}') for i in range(1, 23)] # api key 22 is only for testing
 current_key_index = 21
@@ -28,7 +30,7 @@ youtube = get_youtube_client()
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('event-data')
 
-less_important_keywords = {'vex', 'vrc', 'robotics', 'competition', 'high', 'middle', 'school', 'turning', 'point', 'league', 'championship'}
+less_important_keywords = {'vex', 'vrc', 'robotics', 'competition', 'skills', 'championship', 'championships', 'standard', 'judging', 'person', 'high', 'middle', 'school', 'turning', 'point', 'tipping', 'league', 'tower', 'takeover', 'zone', 'over', 'under', 'starstruck', 'spin', 'nothing', 'net', 'nbn', 'tp', 'tt', 'itz', 'skyrise', 'toss', 'up', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'}
 
 def make_aware(dt):
     """Ensure datetime is timezone-aware."""
@@ -56,18 +58,20 @@ def match_event_with_title(event_keywords, title_keywords, event_name, video_tit
     
     common_keywords = event_keywords.intersection(title_keywords)
     weighted_match_score = len(common_keywords) / len(event_keywords)
-    # print(weighted_match_score)
+    
     if weighted_match_score < weighted_match_threshold:  # Adjust this threshold based on performance
         # print()
         return False
 
     # Fuzzy matching for additional verification
-    similarity_score = fuzz.token_sort_ratio(event_name, video_title)
-    # print(similarity_score)
-    if similarity_score > similarity_threshold:  # Adjust this threshold based on tolerance
-        return True
+    similarity_score = fuzz.token_sort_ratio(event_keywords, title_keywords)
+    if similarity_score < similarity_threshold:  # Adjust this threshold based on tolerance
+        
+        return False
     # print(12)
-    return False
+    # print(weighted_match_score)
+    # print(similarity_score)
+    return True
 
 def search_videos(event_name, event_start_date):
     global current_key_index
@@ -93,7 +97,7 @@ def search_videos(event_name, event_start_date):
             # print(video_title)
             # thanks discrete math 1
             worlds = False
-            if 'world' in event_keywords or 'worlds' in event_keywords:
+            if 'world' in event_keywords or 'worlds' in event_keywords or 'signature' in event_keywords:
                 worlds = True
             if ('world' in event_keywords) and (('worlds' not in title_keywords and 'world' not in title_keywords or 'vex' not in title_keywords) or 'reveal' in title_keywords or bool(team_number_pattern.search(video_title))):
                 # print(1)
@@ -135,18 +139,18 @@ def search_videos(event_name, event_start_date):
             event_keywords = event_keywords - less_important_keywords
             title_keywords = title_keywords - less_important_keywords
             
-            if (len(event_keywords) < 4 or len(title_keywords) < 4) and ('world' not in event_keywords and 'worlds' not in event_keywords):
+            if (len(event_keywords) < 4 or len(title_keywords) < 3) and ('world' not in event_keywords and 'worlds' not in event_keywords):
                 # print(10)
                 # print(len(event_keywords))
                 # print(len(title_keywords))
                 continue
-            weighted_match_threshold = 0.2 if worlds else 0.25 # 0.2 if worlds else 0.3
-            similarity_threshold = 35 if worlds else 45  # 50 if worlds else 70
+            weighted_match_threshold = 0.2 if worlds else 0.3 # 0.2 if worlds else 0.3
+            similarity_threshold = 50 if worlds else 60  # 50 if worlds else 70
                 
             if match_event_with_title(event_keywords, title_keywords, event_name, video_title, event_start_date, video_post_date, weighted_match_threshold, similarity_threshold):
                 youtube_url = f"https://www.youtube.com/watch?v={video_id}"
-                # print(f"Found a match: event_name: {event_name}, video_title: {video_title}")
-                process_event_data(event_name, youtube_url, video_title, video_post_date)
+                print(f"Found a match: event_name: {event_name}, video_title: {video_title}")
+                # process_event_data(event_name, youtube_url, video_title, video_post_date)
             
     except HttpError as e:
         error = json.loads(e.content).get('error')
@@ -235,7 +239,21 @@ def search_videos_for_event_id(event_id):
         
         
 if __name__ == '__main__':
-    main()
-    # search_videos_for_event_id(51488)
-    # search_videos_for_event_id(51488)
-    # search_videos_for_event_id(49316)
+    # main()
+    
+    # sample_events = [51488, 49725, 49726, 36082, 34799]
+    # for event in sample_events:
+    #     search_videos_for_event_id(event)
+    
+    search_videos_for_event_id(45607) # 51488
+    
+    
+'''
+Sample test events:
+
+51488 : Ignite
+49725 : 2023 world hs
+49726 : 2023 world ms
+36082 : 2019 world hs
+34799 : Campeonato Nacional de Robotica VEX-Reeduca 2018
+'''
