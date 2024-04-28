@@ -45,8 +45,17 @@ def decimal_default(obj):
     else:
         return obj
     
+def float_default(obj):
+    if isinstance(obj, float):
+        return Decimal(str(obj))
+    elif isinstance(obj, dict):
+        return {k: float_default(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [float_default(v) for v in obj]
+    else:
+        return obj
+    
 def process_match(match, division_name, division_id, event_name, event_id, event_start, season):
-    update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start, season)
     teams = extract_teams_from_match(match)
     for team in teams:
         team_id = team['team']['id']
@@ -55,6 +64,7 @@ def process_match(match, division_name, division_id, event_name, event_id, event
             update_team_data_with_match(team_id, match_id)
     update_ts_data_with_match(match, season)
     update_elo_data_with_match(match, season)  
+    update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start, season)
             
 
 def remove_match(match, event_id):
@@ -84,7 +94,7 @@ def update_ts_elo_with_ranking(season, ranking):
     tables = [elo_data_table, trueskill_data_table]
     
     for table in tables:
-        response = table.get_item(Key={'season-team': partition_key})
+        response = float_default(table.get_item(Key={'season-team': partition_key}))
         if 'Item' in response:
             item = response['Item']
             ccwms = item.get('ccwms', [])
@@ -103,13 +113,14 @@ def update_ts_elo_with_ranking(season, ranking):
                     },
                     ReturnValues='UPDATED_NEW'
                 )
-                print(f"Updated {table.name} for team ID {team_id} and season {season}.")
+                logging.info(f"Updated {table.name} for team ID {team_id} and season {season}.")
             else:
-                print(f"No 'ccwms' found for team ID {team_id} and season {season} in table {table.name}.")
+                logging.info(f"No 'ccwms' found for team ID {team_id} and season {season} in table {table.name}.")
         else:
-            print(f"No item found for team ID {team_id} and season {season} in table {table.name}.")    
+            logging.info(f"No item found for team ID {team_id} and season {season} in table {table.name}.")    
     
 def update_ts_data_with_match(match, season):
+    # logging.error(f"match: {match}")
     if season == 181 or season == 182:
         teams = extract_teams_from_match(match)
         team_ids = [team['team']['id'] for team in teams]
@@ -124,24 +135,21 @@ def update_ts_data_with_match(match, season):
         
         if draw_team_ids:  # Handle draws
             # Prepare teams and ranks for TrueSkill rating update
-            teams_in_draw = [[team_ratings[team_id]] for team_id in draw_team_ids]  # Each team in its own list
+            teams_in_draw = [[team_ratings[team_id][0]] for team_id in draw_team_ids]  # Each team in its own list
             ranks = [0] * len(teams_in_draw)  # Same rank for all, indicating a draw
             new_ratings = env.rate(teams_in_draw, ranks=ranks)
             flat_new_ratings = [rating for sublist in new_ratings for rating in sublist]            
             for team_id, new_rating in zip(draw_team_ids, flat_new_ratings):
-                logging.error(f"updating trueskill for team {team_id}, match {match['id']}, was a tie")
                 update_team_trueskill(team_id, new_rating.mu, new_rating.sigma, season)
                 updates.append((team_id, new_rating.mu, new_rating.sigma))
         else: # Handle win/lose
-            winners = [team_ratings[team_id] for team_id in winning_team_ids]
-            losers = [team_ratings[team_id] for team_id in losing_team_ids]
+            winners = [team_ratings[team_id][0] for team_id in winning_team_ids]
+            losers = [team_ratings[team_id][0] for team_id in losing_team_ids]
             new_ratings = env.rate([winners, losers], ranks=[0, 1])
             for team_id, rating in zip(winning_team_ids, new_ratings[0]):
-                logging.error(f"updating trueskill for team {team_id}, match {match['id']}")
                 update_team_trueskill(team_id, rating.mu, rating.sigma, season)
                 updates.append((team_id, rating.mu, rating.sigma))
             for team_id, rating in zip(losing_team_ids, new_ratings[1]):
-                logging.error(f"updating trueskill for team {team_id}, match {match['id']}")
                 update_team_trueskill(team_id, rating.mu, rating.sigma, season)
                 updates.append((team_id, rating.mu, rating.sigma))
         
@@ -206,7 +214,7 @@ def update_team_trueskill(team_id, mu, sigma, season):
                 ':rating': {'mu': Decimal(str(mu)), 'sigma': Decimal(str(sigma))}
             }
         )
-        logging.error(f"Updated teamskill for team {team_id} for season {season}")
+        logging.info(f"Updated teamskill for team {team_id} for season {season}")
     except Exception as e:
         try:
             team_data_table.update_item(
@@ -499,7 +507,7 @@ def update_team_data_with_ranking(team_id, ranking_id):
     )
     logging.info(f"Updated team-data for team ID {team_id} with ranking id {ranking_id}.")
 
-def update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start, season):
+def  update_match_data_with_match(match, division_name, division_id, event_name, event_id, event_start, season):
     # Extract the match ID and use it as the primary key
     match_id = match.pop('id')  # This removes the 'id' key and gets its value
 
@@ -586,12 +594,12 @@ def find_match_differences(old_divisions, new_divisions):
                         })
                         logging.info(f"Removed match found: {match_id}")
                         
-    logging.error(f"OLD DIVISIONS IS: {old_divisions}")                                       
+    # logging.error(f"OLD DIVISIONS IS: {old_divisions}")                                       
     if not old_divisions:
-        logging.error("IN IF")
+        # logging.error("IN IF")
         for new_division in new_divisions:
             for match_id, new_match in new_matches_dict[new_division['id']].items():
-                logging.error("IN FOR LOOP")
+                # logging.error("IN FOR LOOP")
                 updated_matches.append({
                     'division_id': new_division['id'],
                     'division_name': new_division.get('name', 'Unknown Division'),
@@ -921,9 +929,9 @@ def fetch_divisions_from_s3(s3_reference):
         except Exception as e:
             logging.error(f"Error unloading previous s3 object, setting to an empty dict")
 
-    logging.error(f"current data: {current_data}")
-    logging.error(f"previous data: {previous_data}")
-    return decimal_default(current_data), decimal_default(previous_data)
+    # logging.error(f"current data: {current_data}")
+    # logging.error(f"previous data: {previous_data}")
+    return float_default(current_data), float_default(previous_data)
 
 
 def handler(aws_event, context):
@@ -949,15 +957,15 @@ def handler(aws_event, context):
             # Process new/removed matches and rankings
             # Check if 'divisions' exist
             if 'divisions' in new_image and 'divisions' in old_image:
-                logging.error(f"new image divisions: {new_image['divisions']}")
                 if 'divisions_s3_reference' in new_image['divisions'] or f's3://exodb-event-data-storage/event-{event_id}/divisions' in new_image['divisions']:
-                    logging.info("LOOKING IN S3")
+                    logging.error("LOOKING IN S3")
                     divisions_reference = f's3://exodb-event-data-storage/event-{event_id}/divisions'
                     new_divisions, old_divisions = fetch_divisions_from_s3(divisions_reference)
                 else:
-                    logging.info("NOT LOOKING IN S3")
+                    logging.error("NOT LOOKING IN S3")
                     new_divisions = new_image['divisions']
                     old_divisions = old_image['divisions']
+                # logging.error(f"old divisions: {old_divisions} new divisions {new_divisions}")
                 updated_rankings, removed_rankings = find_updated_rankings(old_divisions, new_divisions)
                 logging.error(f"{len(updated_rankings)} updated rankings")
                 updated_matches, removed_matches = find_match_differences(old_divisions, new_divisions)
@@ -967,7 +975,7 @@ def handler(aws_event, context):
                 for updated_ranking in updated_rankings:
                     division_id = updated_ranking['division_id']
                     division_name = updated_ranking['division_name']
-                    update_ts_elo_with_ranking(season, updated_ranking)
+                    update_ts_elo_with_ranking(season, float_default(updated_ranking))
                     update_rankings_data(division_name, division_id, event_name, event_id, event_start, program, season, updated_ranking)
                     update_team_data_with_ranking(updated_ranking['team']['id'], updated_ranking['id'])
 

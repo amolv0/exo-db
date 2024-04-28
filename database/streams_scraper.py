@@ -52,7 +52,7 @@ def match_event_with_title(event_keywords, title_keywords, event_name, video_tit
     except ValueError:
         post_date = make_aware(datetime.strptime(video_post_date, '%Y-%m-%dT%H:%M:%SZ'))
         
-    if abs((post_date - event_date).days) > 45:
+    if not (event_date - timedelta(days=2) < post_date < event_date + timedelta(days=30)):
         # print(11)
         return False
     
@@ -208,12 +208,13 @@ def process_event_data(event_name, youtube_url, video_title, published_at):
 
 def main():
     # Scan DynamoDB table for all events
-    response = table.scan()
+    response = table.scan(ProjectionExpression='id, name, start, program')
     count = 0
     while 'Items' in response:
         count += 1
         print(f"Scanning page {count}")
         for event in response['Items']:
+            if 'name' not in event or 'start' not in event or 'program' not in event: continue
             event_name = event['name']
             event_start_date = event['start']
             if event['program'] == 'WORKSHOP':
@@ -222,13 +223,14 @@ def main():
         
         if 'LastEvaluatedKey' not in response:
             break
-        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+        response = table.scan(ProjectionExpression='id, name, start, program', ExclusiveStartKey=response['LastEvaluatedKey'])
         
 def search_videos_for_event_id(event_id):
     try:
         response = table.get_item(Key={'id': event_id})
         event = response.get('Item')
         if event:
+            if 'name' not in event or 'start' not in event or 'program' not in event: return
             event_name = event['name']
             event_start_date = event['start']
             search_videos(event_name, event_start_date)

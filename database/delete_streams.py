@@ -17,7 +17,7 @@ def delete_streams():
                 ExclusiveStartKey=exclusive_start_key
             )
         else:
-            response = table.scan(ProjectionExpression='id')
+            response = table.scan(ProjectionExpression='id, streams')
 
         for item in response['Items']:
             if 'streams' in item:

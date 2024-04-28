@@ -22,6 +22,7 @@ interface RankingData {
     ties: number;
     rank: number;
     wp: number;
+    sp: number;
     high_score: number;
     average_points: number;
 }
@@ -102,11 +103,35 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                 <div className= "hide">
                     <div className="header col rankings">
                         <div className = "header-cell">
+                        WP / AP / SP
+                        </div>
+                        {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                {rank.wp} / {rank.ap} / {rank.sp}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className= "hide">
+                    <div className="header col rankings">
+                        <div className = "header-cell">
                             Avg Points
                         </div>
                         {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
                             <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                                 {rank.average_points}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div>
+                    <div className="header col rankings">
+                        <div className = "rounded-tr-lg header-cell">
+                        High Score
+                        </div>
+                        {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
+                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
+                                {rank.high_score}
                             </div>
                         ))}
                     </div>
@@ -143,30 +168,6 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                         {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
                             <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
                                 {rank.ccwm}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div className= "hide">
-                    <div className="header col rankings">
-                        <div className = "header-cell">
-                        WP
-                        </div>
-                        {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                                {rank.wp}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div>
-                    <div className="header col rankings">
-                        <div className = "rounded-tr-lg header-cell">
-                        AP
-                        </div>
-                        {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map((rank, index, array) => (
-                            <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                                {rank.ap}
                             </div>
                         ))}
                     </div>
