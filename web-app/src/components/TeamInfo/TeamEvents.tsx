@@ -124,16 +124,21 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                 <div>Error: {error}</div>
             ) :  (
                 <div style={{ color: 'black' }}>
-                    <br />
+                    <div className = "team-profile-subtitle">
+                        Team Events
+                    </div>
                     {/* General event info */}
                     <div className = "team-profile-info">
                         <div className="team-profile-row">
-                            <span className="team-profile-rank-label">Total Events: </span>
+                            <span className="team-profile-rank-label">Events Attended</span>
                             <span className="team-profile-rank-value">{total}</span>
+                            <span className="team-profile-rank-label">All Seasons</span>
                         </div>
                         <div className="team-profile-row">
-                            <span className="team-profile-rank-label"> {getSeasonNameFromId(selectedSeason)} Events </span>
+                            <span className="team-profile-rank-label"> Events Attended </span>
                             <span className="team-profile-rank-value">{seasonMap[selectedSeason].length}</span>
+                            <span className="team-profile-rank-label"> {getSeasonNameFromId(selectedSeason)}  </span>
+                            
                         </div>
                     </div>
                     <div className="flex justify-center"> 

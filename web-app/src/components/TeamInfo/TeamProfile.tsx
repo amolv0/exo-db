@@ -146,7 +146,6 @@ const TeamProfile: React.FC<TeamProfileProps> = ({ data }) => {
 
     return (
         <div>
-
             {/* If current info, show current stats, otherwise show highest ever stats */}
             {showCurrentRankings === true ? (
                 <div>
@@ -185,7 +184,7 @@ const TeamProfile: React.FC<TeamProfileProps> = ({ data }) => {
                 </div>
             ) : (    
                 <div>
-                <div className = "team-profile-subtitle">
+                    <div className = "team-profile-subtitle">
                         Highest Rankings 
                         {data.registered === 'true' && (
                             <Switch

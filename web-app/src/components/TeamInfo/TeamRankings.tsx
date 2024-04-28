@@ -109,7 +109,9 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
               <div>No rankings found</div>
             ) : (
                 <div className="text-black">
-
+                    <div className = "team-profile-subtitle">
+                        Team Rankings
+                    </div>  
                     <div className = "team-profile-info">
                         <div className="team-profile-row">
                             <span className="team-profile-rank-label">Historic Average Rank</span>

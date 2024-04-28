@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import '../../Stylesheets/eventTable.css'
-// This component gets all of the skills for a team
+import { getSeasonNameFromId } from '../../SeasonEnum';
 
+// This component gets all of the skills for a team
 interface TeamSkillsProps {
     skills: number[];
 }
@@ -56,8 +57,8 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                         });
                         const data = await response.json();
                         allSkills.push(...data);
-                    }
-
+                    }   
+                    
                     const tempSeasonEventsMap: { [season: number]: { [eventId: number]: any[] } } = {};
                     allSkills.forEach(skill => {
                         if (!tempSeasonEventsMap[skill.season.id]) {
@@ -93,7 +94,22 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                 <div>No skills found</div>
             ) : (
                 <div className="text-black">
-                    <br />
+                    <div className = "team-profile-subtitle">
+                        Team Skills
+                    </div>
+                    {/* General event info */}
+                    <div className = "team-profile-info">
+                        <div className="team-profile-row">
+                            <span className="team-profile-rank-label">Skills Rank</span>
+                            <span className="team-profile-rank-value">{1}</span>
+                            <span className="team-profile-rank-label">TEMP</span>
+                        </div>
+                        <div className="team-profile-row">
+                            <span className="team-profile-rank-label"> IDK </span>
+                            <span className="team-profile-rank-value">{1}</span>
+                            <span className="team-profile-rank-label">TEMP</span>
+                        </div>
+                    </div>
                     <div className="flex justify-center"> 
                         <SeasonDropdown
                             seasonId={selectedSeason}

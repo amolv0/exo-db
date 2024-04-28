@@ -30,7 +30,14 @@ interface TeamInfo {
 const MatchDisplay: React.FC<{ match: Match }> = ({ match }) => {
     const theme = useTheme();
     const { name, field, scheduled, started, alliances } = match;
-
+    if (alliances) {
+        
+    } else {
+        return (
+            <div></div>
+        )
+    }
+    
     const startTime = started ? new Date(started).toLocaleTimeString() : new Date(scheduled).toLocaleTimeString();
 
     const blueAlliance = alliances.find(alliance => alliance.color === 'blue')!;

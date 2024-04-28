@@ -125,6 +125,14 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
         setPosts(false);
     }, [awardData, loading]);
 
+    const countAwardsBySeason = (seasonID: number): number => {
+        return awardData.filter(award => award.season === seasonID).length;
+    };
+
+    const totalAward = (): number => {
+        return awardData.filter(award => award.season).length;
+    };
+
     return (
         <div>
             {loading ? ( // Render loading indicator if loading state is true
@@ -134,13 +142,22 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
             ) : (
               
                 <div className="text-black">
-
+                    <div className = "team-profile-subtitle">
+                        Team Awards
+                    </div>
                     {/*header general award info display*/}
                     <div className = "team-profile-info">
                         <div className="team-profile-row">
                             <span className="team-profile-rank-label">Total Awards </span>
-                            <span className="team-profile-rank-value">{awardData.length}</span>
+                            <span className="team-profile-rank-value">{totalAward()}</span>
+                            <span className="team-profile-rank-label">All Seasons</span>
                         </div>
+                        <div className="team-profile-row">
+                            <span className="team-profile-rank-label">Awards </span>
+                            <span className="team-profile-rank-value">{countAwardsBySeason(selectedSeason)}</span>
+                            <span className="team-profile-rank-label">{getSeasonNameFromId(selectedSeason)} </span>
+                        </div>
+                        {/*}
                         <div className="team-profile-row">
                             <span className="team-profile-rank-label"> Total Tournaments Won </span>
                             <span className="team-profile-rank-value">{champ}</span>
@@ -152,7 +169,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                         <div className="team-profile-row">
                             <span className="team-profile-rank-label"> Total Excellences Won </span>
                             <span className="team-profile-rank-value">{exc}</span>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Dropdown */}

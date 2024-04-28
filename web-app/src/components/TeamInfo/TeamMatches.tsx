@@ -3,6 +3,7 @@ import { CircularProgress } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import MatchBasic from '../Lists/Helpers/MatchBasic';
 import { Link } from 'react-router-dom';
+import { getSeasonNameFromId } from '../../SeasonEnum';
 
 // This component gets all of the matches and displays for a team
 
@@ -72,7 +73,6 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
                             tempSeasonEventsMap[event.season][event.event_name].push(event);
                         }
                     });
-
                     setSeasonEventsMap(tempSeasonEventsMap);
                     setSelectedSeason(Math.max(...Object.keys(tempSeasonEventsMap).map(Number)));
                 } catch (error) {
@@ -89,6 +89,27 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
         fetchMatchesDetails();
     }, [matches, isFirstUseEffectDone, groupsOf100]); 
 
+    const getTotalMatchCountForSeason = (season: number): number => {
+        let totalMatches = 0;
+        if (seasonEventsMap[season]) {
+            Object.values(seasonEventsMap[season]).forEach(matches => {
+                totalMatches += matches.length;
+            });
+        }
+        return totalMatches;
+    };
+
+    
+    const getTotalMatches = (): number => {
+        let totalMatches = 0;
+        Object.values(seasonEventsMap).forEach(season => {
+            Object.values(season).forEach(matches => {
+                totalMatches += matches.length;
+            });
+        });
+        return totalMatches;
+    };
+
     return (
         <div>
             {loading ? (
@@ -97,7 +118,22 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
                 <div>No matches found</div>
             ) : (
                 <div className="text-black">
-                    <br />
+                    <div className = "team-profile-subtitle">
+                        Team Matches
+                    </div>
+                    {/* General event info */}
+                    <div className = "team-profile-info">
+                        <div className="team-profile-row">
+                            <span className="team-profile-rank-label">Match Count</span>
+                            <span className="team-profile-rank-value">{getTotalMatches()}</span>
+                            <span className="team-profile-rank-label">All Seasons</span>
+                        </div>
+                        <div className="team-profile-row">
+                            <span className="team-profile-rank-label"> Match Count </span>
+                            <span className="team-profile-rank-value">{getTotalMatchCountForSeason(selectedSeason)}</span>
+                            <span className="team-profile-rank-label"> {getSeasonNameFromId(selectedSeason)}</span>
+                        </div>
+                    </div>
                     {/* DropDown */}
                     <div className="flex justify-center">
                         <SeasonDropdown
@@ -113,16 +149,16 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
                     {/* Content */}
                     <div>
                         {seasonEventsMap[selectedSeason] &&
-                            Object.entries(seasonEventsMap[selectedSeason]).map(([event_name, matches]) => (
-                                <div key={event_name}>
-                                    <Link to={`/events/${matches[0].event_id}`}>
-                                        <div className = "matchesTitle">{event_name}</div>
-                                    </Link>
-                                    {matches.map((match, index) => (
-                                    <MatchBasic key={index} match={match} />
-                                    ))}
-                                </div>
-                            ))}
+                        Object.entries(seasonEventsMap[selectedSeason]).map(([event_name, matches]) => (
+                            <div key={event_name}>
+                                <Link to={`/events/${matches[0].event_id}`}>
+                                    <div className = "matchesTitle">{event_name}</div>
+                                </Link>
+                                {matches.map((match, index) => (
+                                <MatchBasic key={index} match={match} />
+                                ))}
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}
