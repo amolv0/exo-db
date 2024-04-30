@@ -98,7 +98,6 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
         }
         return totalMatches;
     };
-
     
     const getTotalMatches = (): number => {
         let totalMatches = 0;

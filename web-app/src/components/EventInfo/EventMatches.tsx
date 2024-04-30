@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MatchBasic from '../Lists/Helpers/MatchBasic';
 import DivisionDropDown from '../Dropdowns/DivisionDropDown'
+import TeamsDropDown from '../Dropdowns/TeamsDropDown'
 
 // Display the matches for the event
 
@@ -29,9 +30,13 @@ interface TeamInfo {
     id: number;
 }
 
+interface Rankings {
+    team: TeamInfo;
+}
 interface Division {
     name: string;
     matches: Match[];
+    rankings: Rankings[];
 }
 
 interface Divisions {
@@ -41,23 +46,51 @@ interface Divisions {
 const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
 
     const [selectedDivisionIndex, setSelectedDivisionIndex] = useState(0);
+    const [selectedTeam, setSelectedTeam] = useState("");
+    const [filteredMatches, setFilteredMatches] = useState<Match[]>([]);
+    const customOrder = [1, 2, 6, 3, 4, 5];
+
+    useEffect(() => {
+        // Loop through each division
+        divisions.forEach((division) => {
+            // Sort matches for each division
+            division.matches.sort((a, b) => {
+                let indexA = customOrder.indexOf(a.round);
+                let indexB = customOrder.indexOf(b.round);
+    
+                if (indexA === -1) indexA = customOrder.length;
+                if (indexB === -1) indexB = customOrder.length;
+    
+                return indexA - indexB;
+            });
+        });
+    }, [divisions]);
+
+    useEffect(() => {
+        if (selectedTeam === "") {
+            setFilteredMatches(divisions[selectedDivisionIndex].matches);
+        } else {
+            const matchesWithSelectedTeam = divisions[selectedDivisionIndex].matches.filter(match =>
+                match.alliances.some(alliance =>
+                    alliance.teams.some(team => team.team.name === selectedTeam)
+                )
+            );
+            setFilteredMatches(matchesWithSelectedTeam);
+        }
+    }, [selectedTeam]);
+
+    useEffect(() => {
+        setFilteredMatches(divisions[selectedDivisionIndex].matches);
+    }, [selectedDivisionIndex]);
 
     if (!divisions[selectedDivisionIndex] || !divisions[selectedDivisionIndex].matches || divisions[selectedDivisionIndex].matches.length === 0) {
         return <p>No matches</p>;
     }
 
-    const division = divisions[selectedDivisionIndex];
-    const customOrder = [1, 2, 6, 3, 4, 5];
-
-    // Sort the matches according to the custom order
-    const sortedMatches = division.matches.sort((a, b) => {
-        let indexA = customOrder.indexOf(a.round);
-        let indexB = customOrder.indexOf(b.round);
-
-        if (indexA === -1) indexA = customOrder.length;
-        if (indexB === -1) indexB = customOrder.length;
-
-        return indexA - indexB;
+    const teamsByDivision: { [divisionIndex: number]: string[] } = {};
+    
+    divisions.forEach((division, index) => {
+        teamsByDivision[index] = division.rankings.map((ranking) => ranking.team.name);
     });
 
     return (
@@ -73,8 +106,14 @@ const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
                         divisions={divisions}
                     />  
                 )}
-            </div> 
-            {sortedMatches.map((match, index) => (
+                <TeamsDropDown 
+                    selectedTeam={selectedTeam} 
+                    setSelectedTeam={setSelectedTeam}
+                    teams = {teamsByDivision[selectedDivisionIndex]}
+                />  
+            </div>
+            
+            {filteredMatches.map((match, index) => (
                 <MatchBasic key={index} match={match} />
             ))}
         </div>
