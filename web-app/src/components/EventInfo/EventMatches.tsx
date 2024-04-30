@@ -49,6 +49,25 @@ const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
     const [selectedTeam, setSelectedTeam] = useState("");
     const [filteredMatches, setFilteredMatches] = useState<Match[]>([]);
     const customOrder = [1, 2, 6, 3, 4, 5];
+    const teamsByDivision: { [divisionIndex: number]: string[] } = {};
+
+    divisions.forEach((division, index) => {
+        if (division.rankings && division.rankings.length > 0) {
+            // If there are rankings, add teams from rankings
+            teamsByDivision[index] = division.rankings.map((ranking) => ranking.team.name);
+        } else {
+            // If there are no rankings, add each unique team name from matches
+            const uniqueTeams = new Set<string>();
+            division.matches.forEach((match) => {
+                match.alliances.forEach((alliance) => {
+                    alliance.teams.forEach((team) => {
+                        uniqueTeams.add(team.team.name);
+                    });
+                });
+            });
+            teamsByDivision[index] = Array.from(uniqueTeams);
+        }
+    });
 
     useEffect(() => {
         // Loop through each division
@@ -86,12 +105,6 @@ const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
     if (!divisions[selectedDivisionIndex] || !divisions[selectedDivisionIndex].matches || divisions[selectedDivisionIndex].matches.length === 0) {
         return <p>No matches</p>;
     }
-
-    const teamsByDivision: { [divisionIndex: number]: string[] } = {};
-    
-    divisions.forEach((division, index) => {
-        teamsByDivision[index] = division.rankings.map((ranking) => ranking.team.name);
-    });
 
     return (
         <div className = "pt-10">
