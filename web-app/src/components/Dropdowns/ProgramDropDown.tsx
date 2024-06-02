@@ -1,6 +1,8 @@
 import React from 'react';
 import '../../Stylesheets/dropdown.css';
+import theme from '../../Stylesheets/theme';
 import { Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 
 // This represents the dropdown to select the VEX program
 
@@ -19,38 +21,26 @@ const ProgramDropDown: React.FC<ProgramDropdownProps> = ({ setProgram, program, 
     };
 
     return (
-        <FormControl variant="outlined" style={{ minWidth: 120, borderColor: 'white' } }>
-            <InputLabel id="program-label" style = {{color:'white'}}>Program</InputLabel>
-            <Select
-                labelId="program-label"
-                id="program"
-                value={program}
-                onChange={handleProgramChange}
-                label="Program"
-                style={{ width: 'auto', height: '40px', color:'white' }}
-                sx={{
-                    '& .MuiSelect-icon': {
-                        color: 'white',
-                     },
-                    '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'white',
-                     },
-                     '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'white',
-                        border: 'display',
-                     },
-                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'white',
-                     }
-                  }}
-            >
-                {all && <MenuItem value="">All</MenuItem>}
-                <MenuItem value="VRC">VRC</MenuItem>
-                <MenuItem value="VEXU">VEXU</MenuItem>
-                {all && <MenuItem value="VIQRC">VIQRC</MenuItem>}
-                {/* Add more options if needed */}
-            </Select>
-        </FormControl>
+        <ThemeProvider theme={theme}>
+            <FormControl variant="outlined" style={{ minWidth: 120, borderColor: 'white' } }>
+                <InputLabel id="program-label" style = {{color:'white'}}>Program</InputLabel>
+                <Select
+                    labelId="program-label"
+                    id="program"
+                    value={program}
+                    onChange={handleProgramChange}
+                    label="Program"
+                    style={{ width: 'auto', height: '40px', color:'white' }}
+                >
+                    {all && <MenuItem value="">All</MenuItem>}
+                    <MenuItem value="VRC">VRC</MenuItem>
+                    <MenuItem value="VEXU">VEXU</MenuItem>
+                    {all && <MenuItem value="VIQRC">VIQRC</MenuItem>}
+                    {/* Add more options if needed */}
+                </Select>
+            </FormControl>
+        </ThemeProvider>
+
     );
 }
 

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import '../../Stylesheets/dropdown.css'
+import '../../Stylesheets/dropdown.css';
+import theme from '../../Stylesheets/theme';
 import { Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 
 // This represents the dropdown to select a region
 
@@ -212,39 +214,26 @@ const RegionDropDown: React.FC<RegionDropdownProps> = ({ onSelect, value }) => {
     };
 
     return (
-        <FormControl variant="outlined" style={{ minWidth: 120, borderColor: 'white' }}>
-            <InputLabel id="region-label" style={{ color: 'white' }}>Region</InputLabel>
-            <Select
-                labelId="region-label"
-                id="region"
-                value={selectedRegion || 'All'}
-                onChange={handleChange}
-                label="Region"
-                style={{ width: 'auto', height: '40px', color: 'white' }}
-                sx={{
-                    '& .MuiSelect-icon': {
-                        color: 'white',
-                    },
-                    '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'white',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'white',
-                        border: 'display',
-                    },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'white',
-                    }
-                }}
-            >
-                <MenuItem value="">All</MenuItem>
-                {Object.entries(regions).map(([country, states]) => (
-                    states.map(state => (
-                        <MenuItem key={state} value={state}>{state}</MenuItem>
-                    ))
-                ))}
-            </Select>
-        </FormControl>
+        <ThemeProvider theme={theme}>
+            <FormControl variant="outlined" style={{ minWidth: 120, borderColor: 'white' }}>
+                <InputLabel id="region-label" style={{ color: 'white' }}>Region</InputLabel>
+                <Select
+                    labelId="region-label"
+                    id="region"
+                    value={selectedRegion}
+                    onChange={handleChange}
+                    label="Region"
+                    style={{ width: 'auto', height: '40px', color: 'white' }}
+                >
+                    <MenuItem value="">All</MenuItem>
+                    {Object.entries(regions).map(([country, states]) => (
+                        states.map(state => (
+                            <MenuItem key={state} value={state}>{state}</MenuItem>
+                        ))
+                    ))}
+                </Select>
+            </FormControl>
+        </ThemeProvider>
     );
 };
 
