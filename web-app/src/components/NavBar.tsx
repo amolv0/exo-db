@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
     const renderDesktopMenu = () => {
         return (
             <div>
-                <nav className="bg-dark_red p-4 text-xl text-white">
+                <nav style={{ backgroundColor: '#273746'}} className="p-2 text-xl text-white">
                     <div className="container mx-auto flex justify-between items-center">
                         {/* Powered By */}
                         <div className="flex items-center space-x-4">
@@ -70,7 +70,7 @@ const Navbar: React.FC = () => {
     const renderMobileMenu = () => {
         return (
             <div>
-                <nav className="bg-dark_red p-4 text-xl text-white">
+                <nav style={{ backgroundColor: '#162733'}} className="p-4 text-xl text-white">
                     <div className="container mx-auto flex justify-between items-center">
                         <div className="flex items-center space-x-4">
                             <span className="text-xl mr-2 font-bold">ignite.db</span>

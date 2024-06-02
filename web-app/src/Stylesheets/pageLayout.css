@@ -1,5 +1,12 @@
 @media screen and (min-width: 1024px) {
 
+    .page-container {
+        justify-content: center;
+        background-color: #1b1f23;
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
     .leftDisplay {
         display: flex;
         justify-content: center;
@@ -9,10 +16,9 @@
     }
     
     .title {
-        color: #000;
+        color: white;
         font-size: 2rem;
         margin-bottom: 1rem;
-        margin-top: 3rem;
         text-align: left;
         font-weight: bold;
         left: -29.5rem;

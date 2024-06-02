@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../../Stylesheets/dropdown.css'
+import { Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
 
 // This represents the dropdown to select a region
 
@@ -204,30 +205,46 @@ const RegionDropDown: React.FC<RegionDropdownProps> = ({ onSelect, value }) => {
           ]
     };
 
-    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleChange = (event: SelectChangeEvent<string>) => {
         const region = event.target.value;
         setSelectedRegion(region);
         onSelect(region);
     };
 
     return (
-        <div className = "filter">
-            <div className = "query">
-                Region
-            </div>
-            <div className = "search-filter">
-                <select value={selectedRegion} onChange={handleChange} style={{ width: 'auto', height: '30px' }}>
-                    <option value="">All</option>
-                        {Object.entries(regions).map(([country, states]) => (
-                              <optgroup key={country} label={country}>
-                                {states.map(state => (
-                                  <option key={state} value={state}>{state}</option>
-                                ))}
-                            </optgroup>
-                        ))}
-                </select>
-            </div>
-        </div>
+        <FormControl variant="outlined" style={{ minWidth: 120, borderColor: 'white' }}>
+            <InputLabel id="region-label" style={{ color: 'white' }}>Region</InputLabel>
+            <Select
+                labelId="region-label"
+                id="region"
+                value={selectedRegion || 'All'}
+                onChange={handleChange}
+                label="Region"
+                style={{ width: 'auto', height: '40px', color: 'white' }}
+                sx={{
+                    '& .MuiSelect-icon': {
+                        color: 'white',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'white',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'white',
+                        border: 'display',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'white',
+                    }
+                }}
+            >
+                <MenuItem value="">All</MenuItem>
+                {Object.entries(regions).map(([country, states]) => (
+                    states.map(state => (
+                        <MenuItem key={state} value={state}>{state}</MenuItem>
+                    ))
+                ))}
+            </Select>
+        </FormControl>
     );
 };
 
