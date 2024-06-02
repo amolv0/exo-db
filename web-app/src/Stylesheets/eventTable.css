@@ -5,8 +5,8 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  background-color: #E5DCD7;
-  border: 1px solid #84202A;
+  background-color: #505050;
+  border: 1px solid #000000;
   border-radius: 9px;
   overflow: hidden;
   margin: 0 auto;
@@ -19,8 +19,8 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  background-color: #E5DCD7;
-  border: 1px solid #84202A;
+  background-color: #505050;
+  border: 1px solid #000000;
   border-radius: 9px;
   overflow: hidden;
   max-width: 400px;
@@ -49,14 +49,14 @@
     gap: 12px;
     height: 64px;
 
-    border: 0px solid #CFA1A4;
+    border: 0px solid #FFFFFF;
 
     /* Inside auto layout */
     flex: none;
     order: 1;
     align-self: stretch;
     flex-grow: 0;
-    color: #28191D;
+    color: #FFFFFF;
 }
 
 /* Program Tag */
@@ -69,7 +69,7 @@
     gap: 10px;
     width: 45px;
     height: 25px;
-    background: #84202A;
+    background: #000000;
     border-radius: 1px;
 }
 
@@ -81,7 +81,7 @@
     align-items: center;
     padding: 5px;
     gap: 10px;
-    background: #84202A;
+    background: #000000;
     border-radius: 3px;
 
     /* Font */
@@ -97,7 +97,7 @@
     align-items: center;
     padding: 5px;
     gap: 10px;
-    background: #CFA1A4;
+    background: #FFFFFF;
     border-radius: 3px;
     /* Font */
     color: #E5D5D1;
@@ -113,7 +113,7 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 14px;
-    color: #84202A;
+    color: #000000;
 }
 
 /* VRC */
@@ -124,7 +124,7 @@
     align-items: center;
     padding: 5px;
     gap: 10px;
-    background: #28191D;
+    background: #273746;
     border-radius: 3px;
 
 /* Font */
@@ -140,14 +140,14 @@
     align-items: center;
     padding: 5px;
     gap: 10px;
-    background: #CFA1A4;
+    background: #FFFFFF;
     border-radius: 3px;
     color: #E5D5D1;
     font-weight: normal;
 }
 
 .bg-opacity-65 {
-    background-color: rgba(255, 255, 255, .5); /* Alternate color row settings */
+    background-color: rgba(255, 255, 255, .1); /* Alternate color row settings */
 }
 
 
@@ -156,7 +156,7 @@
     font-weight: 700;
     font-size: 12px;
     line-height: 14px;
-    color: #CFA1A4;
+    color: #FFFFFF;
 }
 
 .teamBox {
@@ -165,7 +165,7 @@
     align-items: center;
     padding: 5px;
     gap: 10px;
-    background: #84202A;
+    background: #000000;
     border-radius: 3px;
     font-weight: normal;
     color: #E5D5D1;
@@ -180,8 +180,7 @@
     width: auto; /* Adjusted to fit content */
     min-width: 132.75px; /* Minimum width */
     height: 44px;
-    background: #28191D;
-    border-bottom: 1px solid #CFA1A4;
+    background: #273746;
 }
 
 .scoreDisplay {
@@ -191,7 +190,7 @@
 }
 
 .location {
-    color: #CFA1A4;
+    color: #FFFFFF;
 }
 
 .eventsDropDown {
@@ -212,8 +211,8 @@
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    background-color: #E5DCD7;
-    border: 1px solid #84202A;
+    background-color: #505050;
+    border: 1px solid #000000;
     border-radius: 9px;
     overflow: hidden;
     max-width: 400px;
