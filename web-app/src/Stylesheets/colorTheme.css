@@ -17,3 +17,7 @@
 .colorPrimary {
     background: var(--primary-color);
 }
+
+.colorSecondary {
+    background: var(--secondary-color);
+}

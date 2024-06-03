@@ -28,7 +28,7 @@ interface SkillsListItem {
     team_org: string | null;
 }
 
-const SkillsList: React.FC<{ season: string; grade: string; region?: string }> = ({ season, grade, region }) => {
+const SkillsList: React.FC<{ season: string; grade: string; region?: string; short?: boolean }> = ({ season, grade, region, short }) => {
     const [skillsRanking, setSkillsRanking] = useState<SkillsListItem[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [lastPage, setLastPage] = useState<number>(1);
@@ -64,7 +64,11 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                     throw new Error('Failed to fetch skills ranking');
                 }
                 const data = await response.json();
-                setSkillsRanking(data);
+                if(short === true) {
+                    setSkillsRanking(data.slice(0, 5));
+                } else{
+                    setSkillsRanking(data);
+                }
                 setError(null);
             } catch (error) {
                 setError("Failed to find valid skills leaderboard");
@@ -77,7 +81,10 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
     
     // Find the last Page number
     useEffect(() => {
-      const generateId = (): string => {
+        if (short === true) {
+            return;
+        }
+        const generateId = (): string => {
             let gradeCode = '';
             if (grade.toLowerCase() === 'high school') {
                 gradeCode = 'hs';
@@ -87,9 +94,9 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                 gradeCode = 'college';
             }
             return `skills-${season}-robot-${gradeCode}${region !== 'All' ? `-${region}` : ''}`;
-      };
+        };
 
-      const fetchLastPage = async () => {
+        const fetchLastPage = async () => {
             try {
                 const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/lastpage/${generateId()}`);
                 if (!response.ok) {
@@ -100,7 +107,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
             } catch (error) {
                 console.error('Error fetching last page:');
             }
-      };
+        };
 
       fetchLastPage();
     }, [season, region, grade]);
@@ -133,7 +140,11 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                     throw new Error('Failed to fetch skills ranking');
                 }
                 const data = await response.json();
-                setSkillsRanking(data);
+                if(short === true) {
+                    setSkillsRanking(data.slice(0, 5));
+                } else{
+                    setSkillsRanking(data);
+                }
                 setError(null);
             } catch (error) {
                 setError("Failed to find valid skills leaderboard");
@@ -182,6 +193,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                 <div>
                     <div className = "tableTitle">{region} {getSeasonNameFromId(parseInt(season))} {grade} Skills</div>
                     {/* Page selector */} 
+                    {!short && (
                     <div className = "pageSelector">
                         <div className = "pageDisplay">
                             {(currentPage * page) - (page - 1)} - {Math.min(currentPage * page, skillsRanking.length + 
@@ -194,9 +206,9 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                             <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
                         </div>
                     </div>
-                    
+                    )}
                     {/* Table */}
-                    <div className = "table">
+                    <div className={` table  ${short === true ? 'max-w-shortSkillspx' : ''} `}>
                         <div className="header col rank">
                             <div className = "header-cell rounded-tl-lg">
                             Rank
@@ -261,7 +273,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                             </div>   
                         </div>
                     </div>
-                    
+                    {!short && (
                     <div className = "pageSelector mb-10">
                         <div className = "pageDisplay">
                             {(currentPage * page) - (page - 1)} - {Math.min(currentPage * page, skillsRanking.length + 
@@ -274,6 +286,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
                             <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
                         </div>
                     </div>
+                    )}
                 </div>
             )}
         </div>

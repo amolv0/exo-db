@@ -12,39 +12,66 @@ import RatingsList from './components/Lists/RatingsList';
 import SkillsList from './components/Lists/SkillsList';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './Stylesheets/pageLayout.css';
-
+import igniteLogo from './Assets/ignite.png';
 const Home: React.FC = () => {
-  return (
-    <div className = "pageBackground">
-      <div className="flex flex-col items-center">
-        <h1 className="title leftOngoing">Ongoing Events</h1>
-        <EventsListQuery status = 'ongoing'/>
-        <h1 className="title leftOngoing">Vex Rankings</h1>
-        <RatingsList program={"VEX"} season={"181"} region={""} />
-        <h1 className="title leftOngoing">Vex Skills</h1>
-        <SkillsList season={"181"} grade={"High School"} region={""}/>
-      </div>
-    </div>
-  );
+    const today = new Date();
+    const oneWeekAgo = new Date(today);
+    oneWeekAgo.setDate(today.getDate() - 7);
+    const formattedOneWeekAgo = oneWeekAgo.toISOString().split('T')[0];
+    return (
+        <div className = "pageBackground">
+            <div className="flex flex-col items-center px-20">
+              <div>
+                  <img src={igniteLogo} className="w-64 h-auto" alt="Ignite Logo" />
+              </div>
+              <h1 className="text-center mt-10 text-xl font-bold">
+                  Welcome to IgniteDB! IgniteDB is a comprehensive database of all teams within the VEX circuit,
+                  including detailed information on skills, match statistics, reveals, and team rankings based on Elo ratings.
+              </h1>
+              <div className="title">
+                  Featured Events
+                  <EventsListQuery 
+                    numberOfEvents = {5}
+                    startAfter={formattedOneWeekAgo}
+                    status={''}
+                    region={'All'}
+                    programCode={'VRC'}
+                    display={true}
+                />
+              </div>
+              <div className = "flex flex-wrap items-center mb-10">
+                <div className="title mx-20">
+                  Top 5 ELO
+                  <RatingsList program={"VEX"} season={"181"} region={""} short={true} />
+                </div>
+                <div className="title mx-20">
+                  Top 5 Skills
+                  <SkillsList season={"181"} grade={"High School"} region={""} short={true}/>
+                </div>
+              </div>
+
+          </div>
+        </div>
+    );
 };
 
 const App: React.FC = () => {
-  return (
-    <Router>
-      <div>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/teams/:teamId" element={<TeamInfo />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/skills" element={<Skills />} />
-          <Route path="/rankings" element={<Rankings />} />
-          <Route path="/events/:eventId" element={<EventInfo />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
-      </div>
-    </Router>
-  );
+    return (
+        <Router>
+            <div>
+                <NavBar />
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/teams/:teamId" element={<TeamInfo />} />
+                    <Route path="/events" element={<Events />} />
+                    <Route path="/skills" element={<Skills />} />
+                    <Route path="/rankings" element={<Rankings />} />
+                    <Route path="/events/:eventId" element={<EventInfo />} />
+                    <Route path="/about" element={<About />} />
+                </Routes>
+            </div>
+        </Router>
+    );
 };
 
 export default App;

@@ -13,7 +13,7 @@ const About: React.FC = () => {
             </div>
 
             <div className = "flex justify-center items-center">
-            We are a team of three college students, two of whom were ex-competitors from team&nbsp;
+            We are a team of three college students, two of whom were ex-competitors (2017 - 2021) from team&nbsp; 
             <Link to={`/teams/5226?activeElement=TeamInfo`}>
                 <div className = "text-blue-500">
                     10B
@@ -30,6 +30,17 @@ const About: React.FC = () => {
 
             <div className = "text-center mt-10">
                 For any bugs or inquries please contact @ghijj or @ray02_ on discord
+            </div>
+
+
+            <div className="w-full max-w-4xl mx-auto text-center">
+                <h2 className="text-center mt-8 mb-4 text-xl font-semibold">Version Notes</h2>
+                <div className="colorSecondary shadow-md rounded p-4 mb-4 mx-auto max-w-3xl">
+                    <h3 className="font-bold text-lg">Version 1.0.0 - TBD</h3>
+                    <ul className="list-disc list-inside text-left">
+                        <li>Launch</li>
+                    </ul>
+                </div>
             </div>
 
             <div className="flex justify-center items-center h-full">

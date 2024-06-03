@@ -99,23 +99,6 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
         fetchSkillsDetails();
     }, [skills, isFirstUseEffectDone, groupsOf50]);
 
-    const highestScore = (selectedSeason: number) => {
-        let rankTotal = 0;
-        let totalSkills = 0;
-        if (seasonEventsMap[selectedSeason]) {
-            Object.values(seasonEventsMap[selectedSeason]).forEach(eventSkills => {
-                eventSkills.forEach(skills => {
-                    rankTotal += skills.rank;
-                    totalSkills++;
-                });
-            });
-        }
-    
-        if (totalSkills === 0) return 0;
-    
-        return Math.round((rankTotal / totalSkills) * 10) / 10;
-    };
-
     const averageRank = (selectedSeason: number) => {
         let rankTotal = 0;
         let totalSkills = 0;
@@ -141,7 +124,7 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
             Object.values(seasonEventsMap[selectedSeason]).forEach(eventSkills => {
                 eventSkills.forEach((skills, index) => {
                     tempScore += skills.score;
-                    if(index == 1) {
+                    if(index === 1) {
                         maxScore = Math.max(tempScore, maxScore);
                         tempScore = 0;
                     }

@@ -26,7 +26,7 @@ interface RankingsListItem {
     ties:number;
 }
 
-const RankingsList: React.FC<{ program:string; season: string; region?: string }> = ({ program, season, region }) => {
+const RankingsList: React.FC<{ program:string; season: string; region?: string; short?: boolean }> = ({ program, season, region, short }) => {
     const [seasonRanking, setSeasonRanking] = useState<RankingsListItem[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [lastPage, setLastPage] = useState<number>(1);
@@ -62,7 +62,11 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                     throw new Error('Failed to fetch season ranking');
                 }
                 const data = await response.json();
-                setSeasonRanking(data.data);
+                if(short === true) {
+                    setSeasonRanking(data.data.slice(0, 5));
+                } else {
+                    setSeasonRanking(data.data);
+                }
                 setError(null);
             } catch (error) {
                 setError("Failed to find valid rankings leaderboard");
@@ -77,7 +81,9 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
 
     // Find the last Page number
     useEffect(() => {
-
+        if (short === true) {
+            return;
+        }
         // Generate the id to determine the last page ***
         const generateId = (): string => {
             return `elo-${season}${region !== 'All' ? `-${region}` : ''}`;
@@ -126,7 +132,11 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                     throw new Error('Failed to fetch season ranking');
                 }
                 const data = await response.json();
-                setSeasonRanking(data.data);
+                if(short === true) {
+                    setSeasonRanking(data.data.slice(0, 5));
+                } else {
+                    setSeasonRanking(data.data);
+                }
                 setError(null);
             } catch (error) {
                 setError("Failed to find valid rankings leaderboard");
@@ -180,6 +190,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                         {region} {getSeasonNameFromId(parseInt(season))} Rankings
                     </div>
                     {/* Page selector */}
+                    {!short && (
                     <div className = "pageSelector">
                         <div className = "pageDisplay">
                             {(currentPage * page) - (page -1)} - {Math.min(currentPage * page, seasonRanking.length + 
@@ -192,10 +203,10 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                             <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
                         </div>
                     </div>
-  
+                    )}
 
-                  {/* Table */}
-                    <div className = "table">
+                    {/* Table */}
+                    <div className={` table  ${short === true ? 'max-w-shortRatingspx' : ''} `}>
                         <div className="header col rank">
                             <div className = "header-cell rounded-tl-lg">
                                 Rank
@@ -266,6 +277,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
   
                     </div>
                     {/* Page selector */}
+                    {!short && (
                     <div className = "pageSelector mb-10">
                         <div className = "pageDisplay">
                             {(currentPage * page) - (page -1)} - {Math.min(currentPage * page, seasonRanking.length + 
@@ -278,6 +290,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
                             <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
                         </div>
                     </div>
+                    )}
                 </div>
             )}
         </div>

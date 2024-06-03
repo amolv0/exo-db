@@ -16,9 +16,10 @@ interface EventFilter {
     startBefore?: string | null;
     status?: string | null;
     region?: string | null;
+    display?: boolean;
 }
 
-const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startAfter, startBefore, status = 'ongoing', region}) => {
+const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startAfter, startBefore, status = 'ongoing', region, display}) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [eventsMap, setEventsMap] = useState<any[]>([]);
@@ -164,6 +165,7 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                         {(region !== 'All' && programCode === 'All') && `All ${region}  Events`}
                     </div>
                     {/* Page selector */}
+                    {!display && ( 
                     <div className = "pageSelector">
                         <div className = "pageDisplay">
                             {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
@@ -175,6 +177,8 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                             <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
                         </div>
                     </div>
+                    )}
+
 
                     {/* Events Table */}
                     <div className="table">
@@ -234,8 +238,8 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                             ))}
                         </div>
                     </div>
-
                     {/* EndPage selector */}
+                    {!display && ( 
                     <div className = "pageSelector mb-10">
                         <div className = "pageDisplay">
                             {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
@@ -247,6 +251,7 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                             <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
                         </div>
                     </div>
+                    )}
                 </div>
             )}
         </div>

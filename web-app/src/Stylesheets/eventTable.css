@@ -9,6 +9,15 @@
   }
 }
 
+.max-w-shortRatingspx {
+  max-width: 380px;
+}
+
+.max-w-shortSkillspx {
+  max-width: 380px;
+}
+
+
 .query {
   /* Auto layout */
   display: flex;
