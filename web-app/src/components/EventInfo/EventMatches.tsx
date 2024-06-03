@@ -46,7 +46,7 @@ interface Divisions {
 const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
 
     const [selectedDivisionIndex, setSelectedDivisionIndex] = useState(0);
-    const [selectedTeam, setSelectedTeam] = useState("");
+    const [selectedTeam, setSelectedTeam] = useState("All");
     const [filteredMatches, setFilteredMatches] = useState<Match[]>([]);
     const customOrder = [1, 2, 6, 3, 4, 5];
     const teamsByDivision: { [divisionIndex: number]: string[] } = {};
@@ -86,7 +86,7 @@ const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
     }, [divisions]);
 
     useEffect(() => {
-        if (selectedTeam === "") {
+        if (selectedTeam === "All") {
             setFilteredMatches(divisions[selectedDivisionIndex].matches);
         } else {
             const matchesWithSelectedTeam = divisions[selectedDivisionIndex].matches.filter(match =>
@@ -123,7 +123,7 @@ const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
                     selectedTeam={selectedTeam} 
                     setSelectedTeam={setSelectedTeam}
                     teams = {teamsByDivision[selectedDivisionIndex]}
-                />  
+                /> 
             </div>
             
             {filteredMatches.map((match, index) => (

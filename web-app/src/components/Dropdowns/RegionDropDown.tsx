@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import '../../Stylesheets/dropdown.css'
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
+import { Select, MenuItem, FormControl, SelectChangeEvent, ListSubheader } from '@mui/material';
 
 // This represents the dropdown to select a region
 
@@ -204,7 +207,7 @@ const RegionDropDown: React.FC<RegionDropdownProps> = ({ onSelect, value }) => {
           ]
     };
 
-    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleChange = (event: SelectChangeEvent<string>) => {
         const region = event.target.value;
         setSelectedRegion(region);
         onSelect(region);
@@ -216,16 +219,27 @@ const RegionDropDown: React.FC<RegionDropdownProps> = ({ onSelect, value }) => {
                 Region
             </div>
             <div className = "search-filter">
-                <select value={selectedRegion} onChange={handleChange} style={{ width: 'auto', height: '30px' }}>
-                    <option value="">All</option>
+                <ThemeProvider theme={theme}>
+                    <FormControl style={{ minWidth: 120 }}>
+                    <Select
+                        labelId="program-label"
+                        id="program"
+                        value={selectedRegion}
+                        onChange={handleChange}
+                        style={{ width: 'auto', height: '30px' }}
+                        >
+                        <MenuItem value="All">All</MenuItem>
                         {Object.entries(regions).map(([country, states]) => (
-                              <optgroup key={country} label={country}>
-                                {states.map(state => (
-                                  <option key={state} value={state}>{state}</option>
-                                ))}
-                            </optgroup>
+                            [
+                            <ListSubheader key={country}>{country}</ListSubheader>,
+                            states.map((state) => (
+                                <MenuItem key={state} value={state}>{state}</MenuItem>
+                            ))
+                            ]
                         ))}
-                </select>
+                        </Select>
+                    </FormControl>
+                </ThemeProvider>
             </div>
         </div>
     );

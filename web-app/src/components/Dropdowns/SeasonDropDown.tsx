@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import '../../Stylesheets/dropdown.css';
 import { getSeasonNameFromId } from '../../SeasonEnum';
+import { Select, MenuItem, FormControl, SelectChangeEvent } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
 
 // This dropdown shows the current seasons
 
@@ -36,7 +39,7 @@ const SeasonDropDown: React.FC<SeasonDropdownProps> = ({ setSeasonId, seasonId, 
         setSeasons(filteredSeasons);
     }, [restrict]);
 
-    const handleSeasonChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleSeasonChange = (event: SelectChangeEvent<string>) => {
         setSeasonId(parseInt(event.target.value));
     };
 
@@ -46,23 +49,32 @@ const SeasonDropDown: React.FC<SeasonDropdownProps> = ({ setSeasonId, seasonId, 
                 Season
             </div>
             <div className="search-filter">
-                <select id="season" value={seasonId} onChange={handleSeasonChange}>
-                    {/* Display based on restrictions */}
-                    {seasons
-                        .filter(s => {
-                            if (type === 'VEXU' || grade === 'College') {
-                                return getSeasonNameFromId(s).includes('VEXU');
-                            } else if (type === 'VEX') {
-                                return !getSeasonNameFromId(s).includes('VEXU') && getSeasonNameFromId(s).includes('VEX');
-                            } else if (grade !== 'College') {
-                                return !getSeasonNameFromId(s).includes('VEXU') && getSeasonNameFromId(s).includes('VEX');
-                            }
-                            return true;
-                        })
-                        .map(s => (
-                            <option key={s} value={s}>{getSeasonNameFromId(s)}</option>
-                        ))}
-                </select>
+                <ThemeProvider theme={theme}>
+                    <FormControl style={{ minWidth: 120 }}>
+                        <Select
+                            labelId="season-label"
+                            id="season"
+                            value={seasonId.toString()}
+                            onChange={handleSeasonChange}
+                            style={{ width: 'auto', height: '30px' }}
+                        >
+                            {seasons
+                            .filter(s => {
+                                if (type === 'VEXU' || grade === 'College') {
+                                    return getSeasonNameFromId(s).includes('VEXU');
+                                } else if (type === 'VEX') {
+                                    return !getSeasonNameFromId(s).includes('VEXU') && getSeasonNameFromId(s).includes('VEX');
+                                } else if (grade !== 'College') {
+                                    return !getSeasonNameFromId(s).includes('VEXU') && getSeasonNameFromId(s).includes('VEX');
+                                }
+                                return true;
+                            })
+                            .map(s => (
+                                <MenuItem key={s} value={s}>{getSeasonNameFromId(s)}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </ThemeProvider>
             </div>
         </div>
     );

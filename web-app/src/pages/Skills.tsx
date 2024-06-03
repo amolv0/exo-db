@@ -13,7 +13,7 @@ const Teams: React.FC = () => {
     const searchParams = new URLSearchParams(location.search);
     const [seasonId, setSeasonId] = useState<number>(parseInt(searchParams.get('seasonId') || '181'));
     const [grade, setGrade] = useState<string>(searchParams.get('grade') || 'High School');
-    const [selectedRegion, setSelectedRegion] = useState<string>(searchParams.get('region') || '');
+    const [selectedRegion, setSelectedRegion] = useState<string>(searchParams.get('region') || 'All');
 
     // Change the url based upon changes in the query
     useEffect(() => {

@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
     const renderDesktopMenu = () => {
         return (
             <div>
-                <nav className="colorPrimary p-4 text-xl text-white">
+                <nav className="colorPrimary p-2 text-xl text-white">
                     <div className="container mx-auto flex justify-between items-center">
                         {/* Powered By */}
                         <div className="flex items-center space-x-4">

@@ -14,7 +14,7 @@ const Rankings: React.FC = () => {
     const searchParams = new URLSearchParams(location.search);
     const [seasonId, setSeasonId] = useState<number>(parseInt(searchParams.get('seasonId') || '181'));
     const [program, setProgram] = useState<string>(searchParams.get('program')  || 'VRC'); 
-    const [selectedRegion, setSelectedRegion] = useState<string>(searchParams.get('region') || '');
+    const [selectedRegion, setSelectedRegion] = useState<string>(searchParams.get('region') || 'All');
     
     const initialRender = useRef(true);
 

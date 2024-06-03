@@ -55,7 +55,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
             try {
                 setLoading(true);
                 let apiUrl = `${process.env.REACT_APP_API_URL}/dev/skillsranking?season=${season}&grade=${grade}&page=${1}`;
-                if (region) {
+                if (region !== 'All') {
                     apiUrl += `&region=${region}`;
                 }
                 const response = await fetch(apiUrl);
@@ -86,7 +86,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
             } else {
                 gradeCode = 'college';
             }
-            return `skills-${season}-robot-${gradeCode}${region ? `-${region}` : ''}`;
+            return `skills-${season}-robot-${gradeCode}${region !== 'All' ? `-${region}` : ''}`;
       };
 
       const fetchLastPage = async () => {
@@ -124,7 +124,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
             try {
                 setLoading(true);
                 let apiUrl = `${process.env.REACT_APP_API_URL}/dev/skillsranking?season=${season}&grade=${grade}&page=${currentPage}`;
-                if (region) {
+                if (region != 'All') {
                     apiUrl += `&region=${region}`;
                 }
                 const response = await fetch(apiUrl);
@@ -181,7 +181,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
             ) : (
                 <div>
                     <div className = "tableTitle">{region} {getSeasonNameFromId(parseInt(season))} {grade} Skills</div>
-                    {/* Page selector */}
+                    {/* Page selector */} 
                     <div className = "pageSelector">
                         <div className = "pageDisplay">
                             {(currentPage * page) - (page - 1)} - {Math.min(currentPage * page, skillsRanking.length + 

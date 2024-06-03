@@ -47,10 +47,10 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                 // Insert the filter quries
                 if (numberOfEvents !== null && numberOfEvents !== undefined) queryParams.push(`numberOfEvents=${numberOfEvents}`);
                 if (status) queryParams.push(`status=${status}`);
-                if (programCode) queryParams.push(`program=${programCode}`);
+                if (programCode != 'All') queryParams.push(`program=${programCode}`);
                 if (startAfter) queryParams.push(`start_after=${startAfter}`);
                 if (startBefore) queryParams.push(`start_before=${startBefore}`);
-                if (region) queryParams.push(`region=${region}`);
+                if (region !== 'All') queryParams.push(`region=${region}`);
 
                 apiUrl += queryParams.join('&')
                 // Fetch data using constructed URL
@@ -159,10 +159,9 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
             ) :  (
                 <div>
                     <div className="tableTitle">
-                        {(!region && !programCode) && "All Events"}
-                        {(region && programCode) && `${region} ${programCode} Events`}
-                        {(region && !programCode) && `All ${region}  Events`}
-                        {(!region && programCode) && `All ${programCode} Events`}
+                        {(region === 'All' && programCode === 'All') && "All Events"}
+                        {(region && programCode !== 'All') && `${region} ${programCode} Events`}
+                        {(region !== 'All' && programCode === 'All') && `All ${region}  Events`}
                     </div>
                     {/* Page selector */}
                     <div className = "pageSelector">

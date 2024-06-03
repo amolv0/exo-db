@@ -14,7 +14,7 @@ const Events: React.FC = () => {
     const searchParams = new URLSearchParams(location.search);
     const [status, setStatus] = useState<string>(searchParams.get('status') || ''); 
     const [startAfterDate, setStartAfterDate] = useState<string>(searchParams.get('startAfterDate') || ''); 
-    const [region, setRegion] = useState<string>(searchParams.get('region') || '');
+    const [region, setRegion] = useState<string>(searchParams.get('region') || 'All');
     const [program, setProgram] = useState<string>(searchParams.get('program') || 'VRC');
 
     // Change the url based upon changes in the query

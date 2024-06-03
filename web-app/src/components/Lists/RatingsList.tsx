@@ -53,7 +53,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
             try {
                 setLoading(true);
                 let apiUrl = `${process.env.REACT_APP_API_URL}/dev/tsranking?season=${season}&page=${1}`;
-                if (region) {
+                if (region !== 'All') {
                     apiUrl += `&region=${region}`;
                 }
                 const response = await fetch(apiUrl);
@@ -80,7 +80,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
 
         // Generate the id to determine the last page ***
         const generateId = (): string => {
-            return `elo-${season}${region ? `-${region}` : ''}`;
+            return `elo-${season}${region !== 'All' ? `-${region}` : ''}`;
         };
 
         const fetchLastPage = async () => {
@@ -117,7 +117,7 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string }
             try {
                 setLoading(true); // Set loading to true when fetching data
                 let apiUrl = `${process.env.REACT_APP_API_URL}/dev/tsranking?season=${season}&page=${currentPage}`;
-                if (region) {
+                if (region !== 'All') {
                     apiUrl += `&region=${region}`; // Add region to the API URL if it's provided
                 }
                 const response = await fetch(apiUrl);

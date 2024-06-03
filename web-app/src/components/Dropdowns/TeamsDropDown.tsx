@@ -1,5 +1,8 @@
 import React from 'react';
 import '../../Stylesheets/dropdown.css'
+import { Select, MenuItem, FormControl, SelectChangeEvent } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
 
 // This represents the dropdown to select the date
 
@@ -34,12 +37,22 @@ const TeamsDropDown: React.FC<TeamsDropDownProps> = ({ selectedTeam, setSelected
               Teams
             </div>
             <div className = "search-filter">
-                <select value={selectedTeam} onChange={(e) => setSelectedTeam(e.target.value)} style={{ width: 'auto', height: '30px' }}>
-                    <option value="">All</option>
-                    {sortedTeams.map((team, index) => (
-                        <option key={index} value={team}>{team}</option>
-                    ))}
-                </select>
+                <ThemeProvider theme={theme}>
+                    <FormControl style={{ minWidth: 120 }}>
+                        <Select
+                            labelId="season-label"
+                            id="season"
+                            value={selectedTeam || "All"}
+                            onChange={(e) => setSelectedTeam(e.target.value)}
+                            style={{ width: 'auto', height: '30px' }}
+                        >
+                            <MenuItem value="All">All</MenuItem>
+                            {sortedTeams.map((team, index) => (
+                                <MenuItem key={index} value={team}>{team}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </ThemeProvider>
             </div>
         </div>
     );
