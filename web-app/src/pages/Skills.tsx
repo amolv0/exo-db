@@ -32,7 +32,7 @@ const Teams: React.FC = () => {
     }, [grade]);
 
     return (
-        <div>
+        <div className = "pageBackground">
             <h1 className="title leftDisplay skillsAdjust">Skills</h1>
 
             {/* DropDowns*/}

@@ -39,7 +39,7 @@ const Rankings: React.FC = () => {
     }, [program, seasonId, selectedRegion]);
   
     return (
-      <div>
+      <div className = "pageBackground">
             <h1 className="title leftDisplay ratingAdjust">Ratings</h1>
 
             {/* DropDowns*/}

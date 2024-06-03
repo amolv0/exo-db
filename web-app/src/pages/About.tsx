@@ -6,7 +6,7 @@ import yujinGif from '../Assets/yujin.gif';
 const About: React.FC = () => {
     
     return (
-        <div>
+        <div className = "pageBackground">
             <br></br>
             <div className = "text-2xl text-center">
                 About Us
@@ -30,10 +30,6 @@ const About: React.FC = () => {
 
             <div className = "text-center mt-10">
                 For any bugs or inquries please contact @ghijj or @ray02_ on discord
-            </div>
-
-            <div className = "text-center mt-14">
-                <div>Hi anyone at worlds rn Washington State VEX robotics is so good we diff people :) (cope)</div>
             </div>
 
             <div className="flex justify-center items-center h-full">

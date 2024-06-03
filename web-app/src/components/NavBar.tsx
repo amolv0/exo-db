@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Search from '../components/Search';
+import '../Stylesheets/colorTheme.css'
 
 const Navbar: React.FC = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1100);
@@ -21,7 +22,7 @@ const Navbar: React.FC = () => {
     const renderDesktopMenu = () => {
         return (
             <div>
-                <nav className="bg-dark_red p-4 text-xl text-white">
+                <nav className="colorPrimary p-4 text-xl text-white">
                     <div className="container mx-auto flex justify-between items-center">
                         {/* Powered By */}
                         <div className="flex items-center space-x-4">

@@ -1,0 +1,17 @@
+:root {
+    --primary-color: #28191D;
+    --secondary-color: #E5D5D1;
+    --banner-color: #84202A;
+    --accent-color: #84202A;
+    --text-color: #28191D; /*not working for now, go to index.css to change more font colors*/
+    --background-color: #FFFFFF;
+    --shadow-color: rgba(114, 20, 29, 0.25);
+    --highlight-color: rgb(47, 182, 255);
+    --subtitle-color: rgb(227, 153, 153);
+    --transition-duration: 0.2s;
+    --font-family-primary: 'Proxima Nova', sans-serif;
+}
+
+.colorPrimary {
+    background: var(--primary-color);
+}

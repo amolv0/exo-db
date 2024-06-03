@@ -9,7 +9,7 @@
     display: flex;
     height: 80px;
     margin-bottom: 10px;
-    background-color: white;
+    background-color: var(--secondary-color);
     justify-content: space-between;
     padding-top: 18px;
 }

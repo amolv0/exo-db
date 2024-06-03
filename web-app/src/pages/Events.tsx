@@ -24,7 +24,7 @@ const Events: React.FC = () => {
     }, [status, startAfterDate, region, program]);
   
     return (
-        <div>
+        <div className = "pageBackground">
             <h1 className="title leftDisplay eventAdjust">Events</h1>
             {/* DropDowns*/}
             <div className="eventOngoingAdjust leftDisplay">
