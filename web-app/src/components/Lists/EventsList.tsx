@@ -47,7 +47,7 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                 // Insert the filter quries
                 if (numberOfEvents !== null && numberOfEvents !== undefined) queryParams.push(`numberOfEvents=${numberOfEvents}`);
                 if (status) queryParams.push(`status=${status}`);
-                if (programCode != 'All') queryParams.push(`program=${programCode}`);
+                if (programCode !== 'All') queryParams.push(`program=${programCode}`);
                 if (startAfter) queryParams.push(`start_after=${startAfter}`);
                 if (startBefore) queryParams.push(`start_before=${startBefore}`);
                 if (region !== 'All') queryParams.push(`region=${region}`);

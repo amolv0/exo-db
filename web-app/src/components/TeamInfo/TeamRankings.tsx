@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress , Switch } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import '../../Stylesheets/eventTable.css'
+import { getSeasonNameFromId } from '../../SeasonEnum';
 
 // Display the historic rankings for each event for a team
 
@@ -20,6 +21,11 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
     const [wins, setWins] = useState<number>(0);
     const [losses, setLosses] = useState<number>(0);
     const [rank, setRank] = useState<number>(0);
+    const [showCurrentRankings, setShowCurrentRankings] = useState(true);
+
+    const toggleRankingsDisplay = () => {
+      setShowCurrentRankings(prevState => !prevState);
+    };
 
     const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
         const groups: number[][] = [];
@@ -101,6 +107,44 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
     }, [rankings, isFirstUseEffectDone, groupsOf50]);
 
 
+    const calculateWins = (selectedSeason: number) => {
+        let totalWins = 0;
+    
+        if (seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason])) {
+            seasonMap[selectedSeason].forEach(rankings => {
+                totalWins += rankings.wins;
+            });
+        }
+    
+        return totalWins;
+    };
+    
+    const calculateLosses = (selectedSeason: number) => {
+        let totalLosses = 0;
+    
+        if (seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason])) {
+            seasonMap[selectedSeason].forEach(rankings => {
+                totalLosses += rankings.losses;
+            });
+        }
+    
+        return totalLosses;
+    };
+
+    const averageRank = (selectedSeason: number) => {
+        let rank = 0;
+        let size = 0;
+        if (seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason])) {
+            seasonMap[selectedSeason].forEach(rankings => {
+                rank += rankings.rank;
+                size++;
+            });
+        }
+    
+        return Math.round(rank / size * 10) / 10;
+    };
+
+
     return (
         <div>
             {loading ? ( // Render loading indicator if loading state is true
@@ -109,24 +153,60 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
               <div>No rankings found</div>
             ) : (
                 <div className="text-black">
-                    <div className = "team-profile-subtitle">
-                        Team Rankings
-                    </div>  
-                    <div className = "team-profile-info">
-                        <div className="team-profile-row">
-                            <span className="team-profile-rank-label">Historic Average Rank</span>
-                            <span className="team-profile-rank-value">{rank}</span>
+                    {showCurrentRankings === true ? (
+                        <div>
+                            <div className = "team-profile-subtitle"> 
+                                {getSeasonNameFromId(selectedSeason)} Rankings 
+                            </div>
+                            <div className = "team-profile-info">
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label">Average Rank</span>
+                                    <span className="team-profile-rank-value">{averageRank(selectedSeason)}</span>
+                                    <span className="team-profile-rank-label">{getSeasonNameFromId(selectedSeason)}</span>
+                                </div>
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label">Match Wins</span>
+                                    <span className="team-profile-rank-value">{calculateWins(selectedSeason)}</span>
+                                    <span className="team-profile-rank-label">{getSeasonNameFromId(selectedSeason)}</span>
+                                </div>
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label">Match Losses</span>
+                                    <span className="team-profile-rank-value">{calculateLosses(selectedSeason)}</span>
+                                    <span className="team-profile-rank-label">{getSeasonNameFromId(selectedSeason)}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div className="team-profile-row">
-                            <span className="team-profile-rank-label">Total Wins</span>
-                            <span className="team-profile-rank-value">{wins}</span>
+                    ) : (
+                        <div>
+                            <div className = "team-profile-subtitle"> 
+                                All-time Rankings   
+                            </div>
+                            <div className = "team-profile-info">
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label">Average Rank</span>
+                                    <span className="team-profile-rank-value">{rank}</span>
+                                    <span className="team-profile-rank-label">All Seasons</span>
+                                </div>
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label">Match Wins</span>
+                                    <span className="team-profile-rank-value">{wins}</span>
+                                    <span className="team-profile-rank-label">All Seasons</span>
+                                </div>
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label">Match Losses</span>
+                                    <span className="team-profile-rank-value">{losses}</span>
+                                    <span className="team-profile-rank-label">All Seasons</span>
+                                </div>
+                            </div>
                         </div>
-                        <div className="team-profile-row">
-                            <span className="team-profile-rank-label">Total Losses</span>
-                            <span className="team-profile-rank-value">{losses}</span>
-                        </div>
+                    )}
+                    <div className="flex justify-center items-center h-full">
+                        <Switch
+                            checked={!showCurrentRankings}
+                            onChange={toggleRankingsDisplay}
+                        />
                     </div>
-
+                    <br />
                     <div className="flex justify-center"> 
                         <SeasonDropdown
                             seasonId={selectedSeason}

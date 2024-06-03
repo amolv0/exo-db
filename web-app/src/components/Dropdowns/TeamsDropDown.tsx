@@ -1,6 +1,6 @@
 import React from 'react';
 import '../../Stylesheets/dropdown.css'
-import { Select, MenuItem, FormControl, SelectChangeEvent } from '@mui/material';
+import { Select, MenuItem, FormControl} from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
 

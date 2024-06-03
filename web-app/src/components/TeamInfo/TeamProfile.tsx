@@ -50,16 +50,6 @@ interface TeamProfileProps {
 
 const TeamProfile: React.FC<TeamProfileProps> = ({ data }) => {
     const [showCurrentRankings, setShowCurrentRankings] = useState(true);
-    
-    /*
-    useEffect(() => {
-    }, [showCurrentRankings]);
-
-    useEffect(() => {
-      if (data) {
-      
-      }
-    }, [data]); */
 
     const toggleRankingsDisplay = () => {
       setShowCurrentRankings(prevState => !prevState);
@@ -148,15 +138,8 @@ const TeamProfile: React.FC<TeamProfileProps> = ({ data }) => {
         <div>
             {/* If current info, show current stats, otherwise show highest ever stats */}
             {showCurrentRankings === true ? (
-                <div>
+                <div >
                     <div className = "team-profile-subtitle"> {registered === "true" ? "Current Rankings" : "Highest Rankings"}    
-                    {data.registered === 'true' && (
-                        <Switch
-                            checked={!showCurrentRankings}
-                            onChange={toggleRankingsDisplay}
-                            className="smooth-switch"
-                        />
-                    )}
                     </div>
                     {/* Team profile basic info */}
                     <div className = "team-profile-info">
@@ -186,12 +169,6 @@ const TeamProfile: React.FC<TeamProfileProps> = ({ data }) => {
                 <div>
                     <div className = "team-profile-subtitle">
                         Highest Rankings 
-                        {data.registered === 'true' && (
-                            <Switch
-                                checked={!showCurrentRankings}
-                                onChange={toggleRankingsDisplay}
-                            />
-                        )}
                     </div>
                     <div className = "team-profile-info">
                         <div className="team-profile-row">
@@ -217,7 +194,15 @@ const TeamProfile: React.FC<TeamProfileProps> = ({ data }) => {
                     </div>
                 </div>
             )}
-
+            {data.registered === 'true' && (
+                <div className="flex justify-center items-center h-full">
+                    <Switch
+                        checked={!showCurrentRankings}
+                        onChange={toggleRankingsDisplay}
+                        className="smooth-switch"
+                    />
+                </div>
+            )}
             {/* Reveals Section */}
             {reveals && (
                 <Box mt={3}>

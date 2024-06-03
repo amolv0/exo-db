@@ -124,7 +124,7 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string }> =
             try {
                 setLoading(true);
                 let apiUrl = `${process.env.REACT_APP_API_URL}/dev/skillsranking?season=${season}&grade=${grade}&page=${currentPage}`;
-                if (region != 'All') {
+                if (region !== 'All') {
                     apiUrl += `&region=${region}`;
                 }
                 const response = await fetch(apiUrl);
