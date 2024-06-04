@@ -82,9 +82,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                     tempSeasonMap[season].sort((a, b) =>  new Date(b.start).getTime() - new Date(a.start).getTime());
                 }
             }
-
             setMapsBySeason(tempSeasonMap);
-
             setSelectedSeason(Math.max(...Object.keys(tempSeasonMap).map(Number)));
             setError(null);
             } catch (error) {
@@ -136,7 +134,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                         </div>
                         <div className="team-profile-row">
                             <span className="team-profile-rank-label"> Events Attended </span>
-                            <span className="team-profile-rank-value">{seasonMap[selectedSeason].length}</span>
+                            <span className="team-profile-rank-value">{seasonMap[selectedSeason] ? seasonMap[selectedSeason].length : 0}</span>
                             <span className="team-profile-rank-label"> {getSeasonNameFromId(selectedSeason)}  </span>
                             
                         </div>

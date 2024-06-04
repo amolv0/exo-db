@@ -4,6 +4,9 @@ import { CircularProgress , Switch } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import '../../Stylesheets/eventTable.css'
 import { getSeasonNameFromId } from '../../SeasonEnum';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
 
 // Display the historic rankings for each event for a team
 
@@ -217,36 +220,45 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                         />      
                     </div>
                     <br />
-                    <div>
-                        {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((rankings, index) => (
-                            <div key = {index}>
-                                <Link to={`/events/${rankings.event_id}`}>
-                                    <div className = 'matchesTitle'>
-                                        {rankings.event_name}
-                                    </div>
-                                </Link>
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                    <div> 
-                                        Rank: {rankings.rank}
-                                    </div>
-                                    <div> 
-                                        W-L-T: {rankings.wins}-{rankings.losses}-{rankings.ties}
-                                    </div>
-                                    <div> 
-                                        Avg Points: {rankings.average_points}
-                                    </div>
-                                    <div>
-                                        Total Points: {rankings.total_points}
-                                    </div>
-                                    <div>
-                                        Opr: {rankings.opr}
-                                    </div>
-                                    <div>
-                                        Dpr: {rankings.dpr}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                    <div className="flex justify-center">
+                        {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && (
+                            <ThemeProvider theme={theme}>
+                                <TableContainer component={Paper} style={{ width: '1000px', overflowX: 'auto' }}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Event</TableCell>
+                                                <TableCell>Rank</TableCell>
+                                                <TableCell>W-L-T</TableCell>
+                                                <TableCell>Avg Points</TableCell>
+                                                <TableCell>Total Points</TableCell>
+                                                <TableCell>Opr</TableCell>
+                                                <TableCell>Dpr</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {seasonMap[selectedSeason].map((rankings, index) => (
+                                                <TableRow
+                                                    key={index}
+                                                >
+                                                    <TableCell>
+                                                        <Link to={`/events/${rankings.event_id}`}>
+                                                            {rankings.event_name}
+                                                        </Link>
+                                                    </TableCell>
+                                                    <TableCell>{rankings.rank}</TableCell>
+                                                    <TableCell>{rankings.wins}-{rankings.losses}-{rankings.ties}</TableCell>
+                                                    <TableCell>{rankings.average_points}</TableCell>
+                                                    <TableCell>{rankings.total_points}</TableCell>
+                                                    <TableCell>{rankings.opr}</TableCell>
+                                                    <TableCell>{rankings.dpr}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </ThemeProvider>
+                        )}
                     </div>
                 </div>
             )}

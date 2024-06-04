@@ -2,9 +2,11 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 @import url('https://fonts.googleapis.com/css2?family=Proxima+Nova:wght@400;700&display=swap');
+@import './Stylesheets/colorTheme.css';
 
 body {
     background-color: #E5DCD7;
+    color: var(--text-color);
     font-family: 'Proxima Nova', sans-serif;
     font-weight: 700;
     font-size: 16px;

@@ -179,7 +179,6 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                     </div>
                     )}
 
-
                     {/* Events Table */}
                     <div className="table">
                         <div className="header col eventProgram">

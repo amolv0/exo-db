@@ -29,6 +29,33 @@ const theme = createTheme({
         },
       },
     },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          fontWeight: 'bold',
+          backgroundColor: 'var(--primary-color)',
+          color: 'white',
+        },
+        body: {
+          minWidth: '100px',
+        }
+      },
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          '&:nth-of-type(even)': {
+            backgroundColor: 'rgba(0, 0, 0, 0.065)', // Background color for even rows
+          },
+          '&:nth-of-type(odd)': {
+            backgroundColor: 'var(--secondary-color)', // Background color for even rows
+          },
+          '&:hover': {
+            backgroundColor: 'var(--shadow-color)', // Hover color for all rows
+          },
+        },
+      },
+    },
   },
   typography: {
     fontFamily: 'Proxima Nova, sans-serif',

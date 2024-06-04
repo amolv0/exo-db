@@ -1,7 +1,7 @@
 export function getSeasonNameFromId(id: number): string {
     switch (id) {
         case 190:
-        return 'High Stakes';
+        return 'VEX High Stakes';
         case 191:
         return 'VEXU High Stakes';
 
