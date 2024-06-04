@@ -155,7 +155,7 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
             ) : posts ? (  // no rankings :)
               <div>No rankings found</div>
             ) : (
-                <div className="text-black">
+                <div>
                     {showCurrentRankings === true ? (
                         <div>
                             <div className = "team-profile-subtitle"> 
@@ -220,10 +220,10 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                         />      
                     </div>
                     <br />
-                    <div className="flex justify-center">
+                    <div className="flex justify-center mx-10">
                         {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && (
                             <ThemeProvider theme={theme}>
-                                <TableContainer component={Paper} style={{ width: '1000px', overflowX: 'auto' }}>
+                                <TableContainer component={Paper} style={{ width: '1000px', overflowX: 'auto', marginBottom: '20px'}}>
                                     <Table>
                                         <TableHead>
                                             <TableRow>

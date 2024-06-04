@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 import { getSeasonNameFromId } from '../../SeasonEnum';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
+import { Box, Typography, Link as MuiLink } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
 
 // The component displays all the team awards
 
@@ -157,19 +160,6 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                             <span className="team-profile-rank-value">{countAwardsBySeason(selectedSeason)}</span>
                             <span className="team-profile-rank-label">{getSeasonNameFromId(selectedSeason)} </span>
                         </div>
-                        {/*}
-                        <div className="team-profile-row">
-                            <span className="team-profile-rank-label"> Total Tournaments Won </span>
-                            <span className="team-profile-rank-value">{champ}</span>
-                        </div>
-                        <div className="team-profile-row">
-                            <span className="team-profile-rank-label">Total Skills Won </span>
-                            <span className="team-profile-rank-value">{skills}</span>
-                        </div>
-                        <div className="team-profile-row">
-                            <span className="team-profile-rank-label"> Total Excellences Won </span>
-                            <span className="team-profile-rank-value">{exc}</span>
-                        </div> */}
                     </div>
 
                     {/* Dropdown */}
@@ -185,23 +175,49 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                     <br />
             
                     {/* Display awards and events for selected season */}
-                    {selectedSeason && seasonMap[selectedSeason] && (
-                        <div className="border border-gray-300 rounded-md p-4 mb-4">
-                          <h3 className="text-lg font-semibold mb-2">{getSeasonNameFromId(selectedSeason)}</h3>
-                          {seasonMap[selectedSeason].map((award, index) => (
-                                <div key={index} className="border border-gray-300 rounded-md p-4 mb-4">
-                                    <Link to={`/events/${award.event.id}`}>
-                                        <h4 className="text-md font-semibold mb-2">{award.event.name}</h4>
-                                    </Link>
-                                <ul>
+                    <ThemeProvider theme={theme}>
+                        <Box 
+                            display="flex" 
+                            justifyContent="center" 
+                            alignItems="center"
+                            bgcolor="background.paper"
+                            >
+                            <Box 
+                                border={1} 
+                                borderColor="grey.300" 
+                                borderRadius={2} 
+                                p={4} 
+                                mb={4}
+                                maxWidth="800px"
+                                width="100%"
+                            >
+                                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                                {getSeasonNameFromId(selectedSeason)}
+                                </Typography>
+                                {seasonMap[selectedSeason].map((award, index) => (
+                                <Box 
+                                    key={index} 
+                                    border={1} 
+                                    borderColor="grey.300" 
+                                    borderRadius={2} 
+                                    p={4} 
+                                    mb={4}
+                                >
+                                    <MuiLink component={Link} to={`/events/${award.event.id}`} underline="hover">
+                                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                        {award.event.name}
+                                    </Typography>
+                                    </MuiLink>
+                                    <ul>
                                     {awardData.filter(a => a.event.id === award.event.id && a.season === selectedSeason).map((a, i) => (
-                                        <li key = {i}>{a.title}</li>
+                                        <li key={i}>{a.title}</li>
                                     ))}
-                                </ul>
-                              </div>
-                          ))}
-                        </div>
-                    )}
+                                    </ul>
+                                </Box>
+                                ))}
+                            </Box>
+                        </Box>
+                    </ThemeProvider>
                 </div>
             )}
         </div>

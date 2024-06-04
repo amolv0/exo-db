@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import MatchBasic from '../Lists/Helpers/MatchBasic';
+import MatchBasic2 from '../Lists/Helpers/MatchBasic2';
 import { Link } from 'react-router-dom';
 import { getSeasonNameFromId } from '../../SeasonEnum';
 
@@ -9,9 +10,10 @@ import { getSeasonNameFromId } from '../../SeasonEnum';
 
 interface TeamMatchesProps {
     matches: number[];
+    currTeam?: string;
 }
 
-const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
+const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
     const [seasonEventsMap, setSeasonEventsMap] = useState<{ [season: number]: { [event_id: number]: any[] } }>({});
     const [selectedSeason, setSelectedSeason] = useState<number>(181);
     const [groupsOf100, setGroupsOf100] = useState<number[][]>([]);
@@ -60,7 +62,6 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
                         const data = await response.json();
                         allEvents.push(...data);
                     }
-
                     const tempSeasonEventsMap: { [season: number]: { [event_name: string]: any[] } } = {};
                     allEvents.forEach(event => {
                         if (event.season !== undefined) {
@@ -147,17 +148,35 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches }) => {
 
                     {/* Content */}
                     <div>
-                        {seasonEventsMap[selectedSeason] &&
-                        Object.entries(seasonEventsMap[selectedSeason]).map(([event_name, matches]) => (
-                            <div key={event_name}>
-                                <Link to={`/events/${matches[0].event_id}`}>
-                                    <div className = "matchesTitle">{event_name}</div>
-                                </Link>
-                                {matches.map((match, index) => (
-                                <MatchBasic key={index} match={match} />
-                                ))}
-                            </div>
-                        ))}
+                    {seasonEventsMap[selectedSeason] &&
+                        Object.entries(seasonEventsMap[selectedSeason])
+                            .sort(([, matches1], [, matches2]) => {
+                                const startTime1 = matches1[0].started ? new Date(matches1[0].started).getTime() : new Date(matches1[0].scheduled).getTime();
+                                const startTime2 = matches2[0].started ? new Date(matches2[0].started).getTime() : new Date(matches2[0].scheduled).getTime();
+                                return startTime1 - startTime2;
+                            })
+                            .map(([event_name, matches]) => (
+                                <div key={event_name}>
+                                    <Link to={`/events/${matches[0].event_id}`}>
+                                        <div className="matchesTitle">{event_name}</div>
+                                    </Link>
+                                    {matches
+                                        .sort((match1, match2) => {
+                                            const time1 = match1.started ? new Date(match1.started).getTime() : new Date(match1.scheduled).getTime();
+                                            const time2 = match2.started ? new Date(match2.started).getTime() : new Date(match2.scheduled).getTime();
+                                            return time1 - time2;
+                                        })
+                                        .map((match, index) => (
+                                            <MatchBasic key={index} match={match} />
+                                            /*{                                            currTeam ? (
+                                                <MatchBasic key={index} match={match} currTeam={currTeam} />
+                                            ) : (
+                                                <MatchBasic key={index} match={match} />
+                                            ) }*/
+
+                                        ))}
+                                </div>
+                            ))}
                     </div>
                 </div>
             )}

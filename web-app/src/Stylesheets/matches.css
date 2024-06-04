@@ -7,15 +7,16 @@
 
 .matchContainer {
     display: flex;
-    height: 80px;
+    height: 50px;
     margin-bottom: 10px;
     background-color: var(--secondary-color);
     justify-content: space-between;
-    padding-top: 18px;
 }
 
 .matchInfo {
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .matchAward {
@@ -26,18 +27,16 @@
 .matchLocation {
     width: 200px;
     text-align: right;
-    padding-right: 10px;
 }
 
 .matchTeamDisplay {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
-    width: 90px;
+    width: 100px;
 }
 
 @media screen and (min-width: 1200px) {
     .matchContainer {
-        width: 1200px;
     }
 
     .matchCuteBot {
@@ -49,7 +48,6 @@
         font-weight: 700;
         font-size: 16px;
         color: #28191D;
-        width: 200px;
         padding-left:10px;
     }
     
@@ -61,10 +59,12 @@
     }
 
     .matchScoreDisplay {
-        font-size: 32px;
+        font-size: 26px;
         font-weight: 600;
         text-align: center;
-        width: 150px;
+        width:120px;
+        margin-left:10px;
+        margin-right:10px;
     }
     
 }

@@ -42,10 +42,11 @@ const About: React.FC = () => {
                     </ul>
                 </div>
             </div>
-
+            {/*
             <div className="flex justify-center items-center h-full">
                 <img className="items-center" src={yujinGif} alt="Your GIF" />
             </div>
+            */}
 
             </div>
 

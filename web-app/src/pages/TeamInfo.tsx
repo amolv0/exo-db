@@ -109,7 +109,8 @@ const TeamInfo: React.FC = () => {
                                 <TeamEvents eventIdsString={eventIdsString}></TeamEvents>
                             }
                             {activeElement === 'Matches' && 
-                                <TeamMatches matches={teamData[0].matches}></TeamMatches>
+                                teamId
+                                && <TeamMatches matches={teamData[0].matches} currTeam={teamId}></TeamMatches>
                             }
                             {activeElement === 'Skills' && 
                                 <TeamSkills skills={teamData[0].skills}></TeamSkills>

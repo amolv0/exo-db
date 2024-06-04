@@ -51,7 +51,7 @@ const theme = createTheme({
             backgroundColor: 'var(--secondary-color)', // Background color for even rows
           },
           '&:hover': {
-            backgroundColor: 'var(--shadow-color)', // Hover color for all rows
+            backgroundColor: 'var(--highlight-color)', // Hover color for all rows
           },
         },
       },
