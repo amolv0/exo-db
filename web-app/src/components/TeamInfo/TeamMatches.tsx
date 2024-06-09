@@ -32,7 +32,8 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
     // On matches change, split it up into groups of 100
     useEffect(() => {
         if (matches) {
-            const groupedIds: number[][] = divideIntoGroups(matches, 100);
+            const uniqueMatches: number[] = Array.from(new Set(matches));
+            const groupedIds: number[][] = divideIntoGroups(uniqueMatches, 100);
             setGroupsOf100(groupedIds); 
             setIsFirstUseEffectDone(true);
         } else {
@@ -52,6 +53,7 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
                     setLoading(true);
                     const allEvents: any[] = [];
                     for (let i = 0; i < groupsOf100.length; i++) {
+                        await new Promise(resolve => setTimeout(resolve, 10));
                         const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/matches/`, {
                             method: 'POST',
                             headers: {

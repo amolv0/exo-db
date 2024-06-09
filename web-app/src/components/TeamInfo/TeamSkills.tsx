@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CircularProgress , Switch } from '@mui/material';
+import { CircularProgress , Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import '../../Stylesheets/eventTable.css'
 import { getSeasonNameFromId } from '../../SeasonEnum';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
 
 // This component gets all of the skills for a team
 interface TeamSkillsProps {
@@ -81,6 +83,25 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                         attemptsTotal += skill.attempts;
                         size++;
                     });
+
+                    // Temp fix since skills api recoridng every attempt
+                    for (const season in tempSeasonEventsMap) {
+                        for (const eventId in tempSeasonEventsMap[season]) {
+                            const entries = tempSeasonEventsMap[season][eventId];
+                            if (entries.length > 2) {
+                                const highestDriverEntry = entries
+                                    .filter(entry => entry.type === 'driver')
+                                    .sort((a, b) => b.score - a.score || a.rank - b.rank)[0];
+                                const highestProgrammingEntry = entries
+                                    .filter(entry => entry.type === 'programming')
+                                    .sort((a, b) => b.score - a.score || a.rank - b.rank)[0];
+                                tempSeasonEventsMap[season][eventId] = [
+                                    highestDriverEntry,
+                                    highestProgrammingEntry,
+                                ];
+                            }
+                        }
+                    }
                     setAttempts(attemptsTotal)
                     setRank(Math.round(tempRank / size * 10) / 10);
                     setSeasonEventsMap(tempSeasonEventsMap);
@@ -198,34 +219,58 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                         />      
                     </div>
                     <br />
-                    <div>
-                        {seasonEventsMap[selectedSeason] && Object.values(seasonEventsMap[selectedSeason]).map((eventSkills, index) => (
-                        eventSkills.map((skills, index) => (
-                            <div key={index}>
-                                {index === 0 && (
-                                <Link to={`/events/${skills.event_id}`}>
-                                    <div className = 'matchesTitle'>
-                                        {skills.event_name}
-                                    </div>
-                                </Link>
-                                )}
-                                <div className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                    <div> 
-                                        Type: {skills.type}
-                                    </div>
-                                    <div> 
-                                        Skills Score: {skills.score}
-                                    </div>
-                                    <div>
-                                        Skills Rank: {skills.rank}
-                                    </div>
-                                    <div>
-                                        Attempts: {skills.attempts}
-                                    </div>
-                                </div>
-                            </div>
-                            ))
-                        ))}
+                    <div className="flex justify-center mx-10">
+                        <ThemeProvider theme={theme}>
+                            <TableContainer component={Paper} style={{ width: '1000px', overflowX: 'auto', marginBottom: '20px'}}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Event</TableCell>
+                                            <TableCell>Rank</TableCell>
+                                            <TableCell>Combined Score</TableCell>
+                                            <TableCell>Driver Score</TableCell>
+                                            <TableCell>Programming Score</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {seasonEventsMap[selectedSeason] && Object.entries(seasonEventsMap[selectedSeason])
+                                            .map(([eventId, eventSkills]) => {
+                                                // Combine driver and programming scores manually
+                                                const combinedSkills: { [key: string]: any }[] = [];
+                                                eventSkills.forEach(skills => {
+                                                    const existingCombinedSkillIndex = combinedSkills.findIndex(skill => skill.event_id === skills.event_id);
+                                                    if (existingCombinedSkillIndex !== -1) {
+                                                        combinedSkills[existingCombinedSkillIndex].scores[skills.type] = skills.score;
+                                                    } else {
+                                                        combinedSkills.push({ ...skills, scores: { [skills.type]: skills.score } });
+                                                    }
+                                                });
+
+                                                // Sort combinedSkills based on type: driver, programming
+                                                const sortedSkills = combinedSkills.sort((a, b) => {
+                                                    const typeOrder: { [key: string]: number } = { 'driver': 0, 'programming': 1 };
+                                                    return typeOrder[a.type] - typeOrder[b.type];
+                                                });
+
+                                                return sortedSkills.map((skills, index) => (
+                                                    <TableRow key={index}>
+                                                        <TableCell>
+                                                            <Link to={`/events/${skills.event_id}`}>
+                                                                <div>{skills.event_name}</div>
+                                                            </Link>
+                                                        </TableCell>
+                                                        <TableCell>{skills.rank}</TableCell>
+                                                        <TableCell>{skills.scores['driver'] + skills.scores['programming']}</TableCell>
+                                                        <TableCell>{skills.scores['driver']}</TableCell>
+                                                        <TableCell>{skills.scores['programming']}</TableCell>
+                                                    </TableRow>
+                                                ));
+                                            })
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </ThemeProvider>
                     </div>
                 </div>
             )}
