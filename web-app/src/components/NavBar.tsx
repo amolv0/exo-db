@@ -31,7 +31,7 @@ const Navbar: React.FC = () => {
                                 <div className="flex items-center transition duration-400 hover:scale-110">
                                 <span className="text-xl mr-2 font-bold">ignite.db</span>
                                 <div>
-                                    <span className="text-xs">pre-release 1.9</span>
+                                    <span className="text-xs">pre-release 1.10</span>
                                 </div>
                             </div>
                             </Link>

@@ -56,17 +56,20 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                 try {
                     setLoading(true);
                     const allSkills: any[] = [];
+                    //console.log(JSON.stringify(groupsOf50[6])); "[46584492,46584493,46584493]" the first two is middle school skills? Skills post error 4610Z
                     for (let i = 0; i < groupsOf50.length; i++) {
+                        await new Promise(resolve => setTimeout(resolve, 10));
                         const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/skills/`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify(groupsOf50[i])
+                        body: (JSON.stringify(groupsOf50[i]))
                         });
                         const data = await response.json();
                         allSkills.push(...data);
                     }   
+
                     let tempRank = 0;
                     let size = 0;
                     let attemptsTotal = 0;
@@ -160,8 +163,8 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
         <div>
             {loading ? ( // Render loading indicator if loading state is true
                 <CircularProgress style={{ margin: '20px' }} />
-            ) : posts ? (  // no skills :)
-                <div>No skills found</div>
+            ) : (posts || Object.keys(seasonEventsMap).length === 0) ? (  // no skills :)
+                <div>No skills found :I</div>
             ) : (
                 <div className="text-black">
                     {/* General event info */}

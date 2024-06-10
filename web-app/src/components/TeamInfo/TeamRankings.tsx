@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CircularProgress , Switch } from '@mui/material';
+import { CircularProgress, Switch, TableSortLabel } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
-import '../../Stylesheets/eventTable.css'
+import '../../Stylesheets/eventTable.css';
 import { getSeasonNameFromId } from '../../SeasonEnum';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
-
-// Display the historic rankings for each event for a team
 
 interface TeamrankingsProps {
     rankings: number[];
@@ -26,8 +24,11 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
     const [rank, setRank] = useState<number>(0);
     const [showCurrentRankings, setShowCurrentRankings] = useState(true);
 
+    const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+    const [orderBy, setOrderBy] = useState<string>('rank');
+
     const toggleRankingsDisplay = () => {
-      setShowCurrentRankings(prevState => !prevState);
+        setShowCurrentRankings(prevState => !prevState);
     };
 
     const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
@@ -38,7 +39,6 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
         return groups;
     };
 
-    // On rankings change, split it up into groups of 50
     useEffect(() => {
         if (rankings) {
             const uniqueRankings = rankings.filter((value, index, self) => {
@@ -52,7 +52,6 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
         }
     }, [rankings]);
 
-    // Once first effect is done, query for all the rankings
     useEffect(() => {
         if (!isFirstUseEffectDone) {
             return;
@@ -102,35 +101,30 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                     setLoading(false);
                 }
             } else {
-              setLoading(false);
+                setLoading(false);
             }
         };
 
         fetchrankingsDetails();
     }, [rankings, isFirstUseEffectDone, groupsOf50]);
 
-
     const calculateWins = (selectedSeason: number) => {
         let totalWins = 0;
-    
         if (seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason])) {
             seasonMap[selectedSeason].forEach(rankings => {
                 totalWins += rankings.wins;
             });
         }
-    
         return totalWins;
     };
-    
+
     const calculateLosses = (selectedSeason: number) => {
         let totalLosses = 0;
-    
         if (seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason])) {
             seasonMap[selectedSeason].forEach(rankings => {
                 totalLosses += rankings.losses;
             });
         }
-    
         return totalLosses;
     };
 
@@ -143,25 +137,36 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                 size++;
             });
         }
-    
         return Math.round(rank / size * 10) / 10;
     };
 
+    const handleRequestSort = (property: string) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
+
+    const sortedRankings = seasonMap[selectedSeason]?.slice().sort((a, b) => {
+        if (orderBy === 'rank' || orderBy === 'wins' || orderBy === 'losses' || orderBy === 'average_points' || orderBy === 'total_points' || orderBy === 'opr' || orderBy === 'dpr') {
+            return order === 'asc' ? a[orderBy] - b[orderBy] : b[orderBy] - a[orderBy];
+        }
+        return 0;
+    });
 
     return (
         <div>
-            {loading ? ( // Render loading indicator if loading state is true
-              <CircularProgress style={{ margin: '20px' }} />
-            ) : posts ? (  // no rankings :)
-              <div>No rankings found</div>
+            {loading ? (
+                <CircularProgress style={{ margin: '20px' }} />
+            ) : posts ? (
+                <div>No rankings found</div>
             ) : (
                 <div>
-                    {showCurrentRankings === true ? (
+                    {showCurrentRankings ? (
                         <div>
-                            <div className = "team-profile-subtitle"> 
-                                {getSeasonNameFromId(selectedSeason)} Rankings 
+                            <div className="team-profile-subtitle">
+                                {getSeasonNameFromId(selectedSeason)} Rankings
                             </div>
-                            <div className = "team-profile-info">
+                            <div className="team-profile-info">
                                 <div className="team-profile-row">
                                     <span className="team-profile-rank-label">Average Rank</span>
                                     <span className="team-profile-rank-value">{averageRank(selectedSeason)}</span>
@@ -181,10 +186,10 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                         </div>
                     ) : (
                         <div>
-                            <div className = "team-profile-subtitle"> 
-                                All-time Rankings   
+                            <div className="team-profile-subtitle">
+                                All-time Rankings
                             </div>
-                            <div className = "team-profile-info">
+                            <div className="team-profile-info">
                                 <div className="team-profile-row">
                                     <span className="team-profile-rank-label">Average Rank</span>
                                     <span className="team-profile-rank-value">{rank}</span>
@@ -210,37 +215,83 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                         />
                     </div>
                     <br />
-                    <div className="flex justify-center"> 
+                    <div className="flex justify-center">
                         <SeasonDropdown
                             seasonId={selectedSeason}
                             setSeasonId={setSelectedSeason}
                             type=''
                             grade=''
                             restrict={Object.keys(seasonMap)}
-                        />      
+                        />
                     </div>
                     <br />
                     <div className="flex justify-center mx-10">
                         {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && (
                             <ThemeProvider theme={theme}>
-                                <TableContainer component={Paper} style={{ width: '1000px', overflowX: 'auto', marginBottom: '20px'}}>
+                                <TableContainer component={Paper} style={{ width: '1000px', overflowX: 'auto', marginBottom: '20px' }}>
                                     <Table>
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell>Event</TableCell>
-                                                <TableCell>Rank</TableCell>
-                                                <TableCell>W-L-T</TableCell>
-                                                <TableCell>Avg Points</TableCell>
-                                                <TableCell>Total Points</TableCell>
-                                                <TableCell>Opr</TableCell>
-                                                <TableCell>Dpr</TableCell>
+                                                <TableCell>
+                                                    <TableSortLabel
+                                                        active={orderBy === 'rank'}
+                                                        direction={orderBy === 'rank' ? order : 'asc'}
+                                                        onClick={() => handleRequestSort('rank')}
+                                                    >
+                                                        Rank
+                                                    </TableSortLabel>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TableSortLabel
+                                                        active={orderBy === 'wins'}
+                                                        direction={orderBy === 'wins' ? order : 'asc'}
+                                                        onClick={() => handleRequestSort('wins')}
+                                                    >
+                                                        W-L-T
+                                                    </TableSortLabel>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TableSortLabel
+                                                        active={orderBy === 'average_points'}
+                                                        direction={orderBy === 'average_points' ? order : 'asc'}
+                                                        onClick={() => handleRequestSort('average_points')}
+                                                    >
+                                                        Avg Points
+                                                    </TableSortLabel>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TableSortLabel
+                                                        active={orderBy === 'total_points'}
+                                                        direction={orderBy === 'total_points' ? order : 'asc'}
+                                                        onClick={() => handleRequestSort('total_points')}
+                                                    >
+                                                        Total Points
+                                                    </TableSortLabel>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TableSortLabel
+                                                        active={orderBy === 'opr'}
+                                                        direction={orderBy === 'opr' ? order : 'asc'}
+                                                        onClick={() => handleRequestSort('opr')}
+                                                    >
+                                                        Opr
+                                                    </TableSortLabel>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TableSortLabel
+                                                        active={orderBy === 'dpr'}
+                                                        direction={orderBy === 'dpr' ? order : 'asc'}
+                                                        onClick={() => handleRequestSort('dpr')}
+                                                    >
+                                                        Dpr
+                                                    </TableSortLabel>
+                                                </TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {seasonMap[selectedSeason].map((rankings, index) => (
-                                                <TableRow
-                                                    key={index}
-                                                >
+                                            {sortedRankings.map((rankings, index) => (
+                                                <TableRow key={index}>
                                                     <TableCell>
                                                         <Link to={`/events/${rankings.event_id}`}>
                                                             {rankings.event_name}

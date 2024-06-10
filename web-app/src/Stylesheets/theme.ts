@@ -35,9 +35,24 @@ const theme = createTheme({
           fontWeight: 'bold',
           backgroundColor: 'var(--primary-color)',
           color: 'white',
+          '& .MuiTableSortLabel-root': {
+            color: 'inherit', // Maintain the header color by default
+            '&.Mui-active': {
+              color: 'var(--highlight-color)', // Color when header is active (clicked for sorting)
+              '& .MuiTableSortLabel-icon': {
+                color: 'var(--highlight-color)', // Color for active arrow
+              },
+            },
+            '&:hover': {
+              color: 'var(--highlight-color)', // Color when header is hovered
+              '& .MuiTableSortLabel-icon': {
+                color: 'var(--highlight-color)', // Color for active arrow
+              },
+            },
+          },
         },
         body: {
-          minWidth: '100px',
+          minWidth: '120px',
         }
       },
     },

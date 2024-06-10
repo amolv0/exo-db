@@ -140,7 +140,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
         <div>
             {loading ? ( // Render loading indicator if loading state is true
                 <CircularProgress style={{ margin: '20px' }} />
-            ) : posts ? ( 
+            ) : (posts || totalAward() === 0)? ( 
                 <div>No awards found</div>
             ) : (
               

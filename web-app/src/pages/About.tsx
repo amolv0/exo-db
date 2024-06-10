@@ -13,7 +13,7 @@ const About: React.FC = () => {
             </div>
 
             <div className = "flex justify-center items-center">
-            We are a team of three college students, two of whom were ex-competitors (2017 - 2021) from team&nbsp; 
+            We are a team of three college students, two of whom were ex-competitors (2017 - 2021) from&nbsp; 
             <Link to={`/teams/5226?activeElement=TeamInfo`}>
                 <div className = "text-blue-500">
                     10B
@@ -25,7 +25,6 @@ const About: React.FC = () => {
                     353X
                 </div>
             </Link>
-            &nbsp;.
             </div>
 
             <div className = "text-center mt-10">

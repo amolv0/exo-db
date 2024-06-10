@@ -13,6 +13,8 @@ import SkillsList from './components/Lists/SkillsList';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './Stylesheets/pageLayout.css';
 import igniteLogo from './Assets/ignite.png';
+import Search from './components/Search';
+
 const Home: React.FC = () => {
     const today = new Date();
     const oneWeekAgo = new Date(today);
@@ -28,6 +30,10 @@ const Home: React.FC = () => {
                   Welcome to IgniteDB! IgniteDB is a comprehensive database of all teams within the VEX circuit,
                   including detailed information on skills, match statistics, reveals, and team rankings based on Elo ratings.
               </h1>
+              <h1 className="text-center mt-10 text-xl font-bold">
+                  Feel free to search for any team or event:
+              </h1>
+              <Search></Search>
               <div className="title">
                   Featured Events
                   <EventsListQuery 
