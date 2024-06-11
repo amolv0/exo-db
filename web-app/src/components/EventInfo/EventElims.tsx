@@ -1,214 +1,244 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
+import DivisionDropDown from '../Dropdowns/DivisionDropDown';
 
 // Current Bracket code -> Subject to change ***
 
 interface Team {
-  sitting: boolean,
-  team: {
-    id: string,
-    name: string
-  }
+    sitting: boolean,
+    team: {
+        id: string,
+        name: string
+    }
 }
 
 interface Alliance {
-  color: 'red' | 'blue';
-  score: number;
-  teams: Team[];
+    color: 'red' | 'blue';
+    score: number;
+    teams: Team[];
 }
 
 interface Match {
-  id: string;
-  round: number;
-  name: string;
-  alliances: Alliance[];
+    id: string;
+    round: number;
+    name: string;
+    alliances: Alliance[];
 }
 
 interface Division {
-  matches: Match[];
+    name: string;
+    matches: Match[];
 }
 
 interface Participant {
-  id: string;
-  resultText: string;
-  isWinner: boolean;
-  status: string | null;
-  name: string;
-  color: 'red' | 'blue'; // Add this line
+    id: string;
+    resultText: string;
+    isWinner: boolean;
+    status: string | null;
+    name: string;
+    color: 'red' | 'blue'; // Add this line
 }
 
 interface TransformedMatch {
-  id: string;
-  name: string;
-  nextMatchId: string | null;
-  tournamentRoundText: string;
-  startTime: string;
-  state: string;
-  participants: Participant[]; 
+    homeScore: number;
+    awayScore: number;
+    id: string;
+    name: string;
+    nextMatchId: string | null;
+    tournamentRoundText: string;
+    startTime: string;
+    state: string;
+    participants: Participant[];
 }
 
 interface MatchComponentProps {
-  match: TransformedMatch;
+    match: TransformedMatch;
 }
 
-/*
-interface MatchProps {
-  match: Match;
-}
-
-interface BracketProps {
-  matches: Match[];
-}*/
-
-interface EventElimsProps {
-  division: Division;
+interface Divisions {
+    division: Division[];
 }
 
 const roundMapping: Record<number, string> = {
-  6: "R16",
-  3: "Quarterfinals",
-  4: "Semifinals",
-  5: "Finals",
+    6: "R16",
+    3: "Quarterfinals",
+    4: "Semifinals",
+    5: "Finals",
 };
 
-/*
-const sortRounds = (a: string, b: string) => {
-  const roundOrder = ["R16", "Quarterfinals", "Semifinals", "Finals"];
-  return roundOrder.indexOf(a) - roundOrder.indexOf(b);
-}; */
-
 const parseMatches = (rawMatches: Match[]): Match[] => {
-  // Filter and format matches for elimination rounds
-  return rawMatches.filter(match => match.round >= 3);
+    // Filter and format matches for elimination rounds
+    return rawMatches.filter(match => match.round >= 3);
 };
 
 const transformMatchesForBracket = (rawMatches: Match[]): TransformedMatch[] => {
-  return parseMatches(rawMatches).map(match => {
-    const home = match.alliances[0];
-    const away = match.alliances[1];
-    const homeScore = home.score;
-    const awayScore = away.score;
-    const homeWin = homeScore > awayScore;
-    const roundName = roundMapping[match.round] || "Unknown Round";
-    return {
-      id: match.id,
-      name: match.name,
-      nextMatchId: null, // Adjust based on your data
-      tournamentRoundText: roundName,
-      startTime: "Unknown", // Provide a default or extract from your data
-      state: "DONE", // Adjust based on your match state logic
-      participants: home.teams.map(team => ({
-        id: team.team.id,
-        resultText: homeWin ? "WON" : "LOST",
-        isWinner: homeWin,
-        status: null,
-        name: team.team.name,
-        color: home.color, // Assign the color here
-      })).concat(away.teams.map(team => ({
-        id: team.team.id,
-        resultText: !homeWin ? "WON" : "LOST",
-        isWinner: !homeWin,
-        status: null,
-        name: team.team.name,
-        color: away.color, // And here
-      })))
-    };
-  });
+    return parseMatches(rawMatches).map(match => {
+        const home = match.alliances[0];
+        const away = match.alliances[1];
+        const homeScore = home.score;
+        const awayScore = away.score;
+        const homeWin = homeScore > awayScore;
+        const roundName = roundMapping[match.round] || "Unknown Round";
+        return {
+            homeScore: homeScore,
+            awayScore: awayScore,
+            id: match.id,
+            name: match.name,
+            nextMatchId: null, // Adjust based on your data
+            tournamentRoundText: roundName,
+            startTime: "Unknown", // Provide a default or extract from your data
+            state: "DONE", // Adjust based on your match state logic
+            participants: home.teams.map(team => ({
+                id: team.team.id,
+                resultText: homeWin ? "WON" : "LOST",
+                isWinner: homeWin,
+                status: null,
+                name: team.team.name,
+                color: home.color, // Assign the color here
+            })).concat(away.teams.map(team => ({
+                id: team.team.id,
+                resultText: !homeWin ? "WON" : "LOST",
+                isWinner: !homeWin,
+                status: null,
+                name: team.team.name,
+                color: away.color, // And here
+            })))
+        };
+    });
 };
-
-
 
 const MatchComponent: React.FC<MatchComponentProps> = ({ match }) => {
-  const colorMap: Record<'red' | 'blue', string> = {
-      red: 'pink', // Color for the red alliance
-      blue: 'lightblue', // Color for the blue alliance
-  };
+    const colorMap: Record<'red' | 'blue', string> = {
+        red: 'pink',
+        blue: 'lightblue',
+    };
 
-  // Function to create the content for each alliance box with static width
-  const renderAlliance = (allianceColor: 'red' | 'blue') => {
-      const teams = match.participants.filter(participant => participant.color === allianceColor).map(p => p.name);
-      const isWinner = match.participants.some(participant => participant.color === allianceColor && participant.isWinner);
+    const renderTeams = (allianceColor: 'red' | 'blue') => {
+        const teams = match.participants.filter(participant => participant.color === allianceColor).map(p => p.name);
+        const isHome = allianceColor === 'blue';
+        return (
+            <ThemeProvider theme={theme}>
+                <Box
+                    bgcolor={colorMap[allianceColor]}
+                    p={1}
+                    sx={{
+                        opacity: match.participants.some(participant => participant.color === allianceColor && participant.isWinner) ? 1 : 0.5,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: 200, // Adjust width as needed
+                    }}
+                >
 
-      return (
-          <Box
-              bgcolor={colorMap[allianceColor]}
-              p={1}
-              m={1}
-              sx={{
-                  width: 200, // Static width for each box
-                  opacity: isWinner ? 1 : 0.5,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-              }}
-          >
-              {/* Team names aligned to the left and right margins */}
-              <Typography variant="body1" sx={{ textAlign: 'left', width: '50%' }}>
-                  {teams[0]}
-              </Typography>
-              <Typography variant="body1" sx={{ textAlign: 'right', width: '50%' }}>
-                  {teams[1]}
-              </Typography>
-          </Box>
-      );
-  };
+                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: 3 }}>
+                        {teams.map((team, index) => (
+                            <Typography key={index} variant="body1" sx={{ textAlign: 'center' }}>
+                                {team}
+                            </Typography>
+                        ))}
+                    </Box>
+                    <Typography variant="body1" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                        {isHome ? match.homeScore : match.awayScore}
+                    </Typography>
+                    {/* Render scores underneath teams */}
+                </Box>
+            </ThemeProvider>
+        );
+    };
 
-  return (
-      <Box display="flex" flexDirection="column" alignItems="center" marginBottom={4}>
-          <Typography variant="h6" component="h2" gutterBottom>
-
-          </Typography>
-          <Box display="flex" flexDirection="column" alignItems="center"> {/* Centering the boxes */}
-              {renderAlliance('red')}
-              {renderAlliance('blue')}
-          </Box>
-      </Box>
-  );
+    return (
+        <Box display="flex" flexDirection="column" alignItems="center" marginBottom={4}>
+            <Typography variant="body1" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                {match.name}
+            </Typography>
+            {renderTeams('red')}
+            {renderTeams('blue')}
+        </Box>
+    );
 };
+
+interface TransformedMatch {
+    name: string;
+    tournamentRoundText: string;
+}
 
 const groupMatchesByRound = (matches: TransformedMatch[]): Record<string, TransformedMatch[]> => {
-  return matches.reduce((acc, match) => {
-    const round = match.tournamentRoundText;
-    if (!acc[round]) {
-      acc[round] = [];
-    }
-    acc[round].push(match);
-    return acc;
-  }, {} as Record<string, TransformedMatch[]>);
+    return matches.reduce((acc, match) => {
+        const round = match.tournamentRoundText;
+        const matchNameParts = match.name.split('-');
+        const rootNumber = matchNameParts[0];
+        const endingNumber = matchNameParts[1];
+
+        if (!acc[round]) {
+            acc[round] = [match];
+        } else {
+            const existingMatches = acc[round].filter(existingMatch => {
+                const existingRootNumber = existingMatch.name.split('-')[0];
+                return existingRootNumber === rootNumber && !existingMatch.name.startsWith("Fi");
+            });
+            const highestEndingNumber = Math.max(...existingMatches.map(existingMatch => parseInt(existingMatch.name.split('-')[1])));
+
+            if (parseInt(endingNumber) > highestEndingNumber) {
+                acc[round] = acc[round].filter(existingMatch => !existingMatch.name.startsWith(rootNumber) || parseInt(existingMatch.name.split('-')[1]) !== highestEndingNumber);
+                acc[round].push(match);
+            }
+        }
+
+        return acc;
+    }, {} as Record<string, TransformedMatch[]>);
 };
 
+const EventElims: React.FC<Divisions> = ({ division }) => {
+    const [selectedDivisionIndex, setSelectedDivisionIndex] = useState(0);
+    const selectedDivision = division[selectedDivisionIndex];
+    const transformedMatches = transformMatchesForBracket(selectedDivision.matches);
+    const matchesByRound = groupMatchesByRound(transformedMatches);
 
-
-const EventElims: React.FC<EventElimsProps> = ({ division }) => {
-  const transformedMatches = transformMatchesForBracket(division.matches);
-  const matchesByRound = groupMatchesByRound(transformedMatches);
-
-  return (
-    // Outer Box for horizontal scrolling
-    <Box sx={{ width: '100%', overflowX: 'auto' }}>
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          flexDirection: 'row', 
-          justifyContent: 'center', 
-          minWidth: 'max-content', // Ensure the inner content dictates the size
-          gap: 4 
-        }}
-      >
-        {["R16", "Quarterfinals", "Semifinals", "Finals"].map((round) => (
-          <Box key={round} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h6" sx={{ marginTop: 2, marginBottom: 2 }}>{round}</Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', flex: 1, width: '100%' }}>
-              {matchesByRound[round]?.map((match) => (
-                <MatchComponent key={match.id} match={match} />
-              ))}
-            </Box>
-          </Box>
-        ))}
-      </Box>
-    </Box>
-  );
+    return (
+        <div className="p-10">
+            <div className="tableTitleC">
+                Rankings List
+            </div>
+            <div className="eventsDropDown">
+                {/* Display divisions dropdown only if there are multiple divisions */}
+                {division.length > 1 && (
+                    <DivisionDropDown
+                        setSelectedDivision={setSelectedDivisionIndex}
+                        division={selectedDivisionIndex}
+                        divisions={division}
+                    />
+                )}
+            </div>
+            <ThemeProvider theme={theme}>
+                <Box sx={{ width: '100%', overflowX: 'auto' }}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            minWidth: 'max-content',
+                            gap: 4
+                        }}
+                    >
+                        {["R16", "Quarterfinals", "Semifinals", "Finals"].map((round) => (
+                            <Box key={round} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', flex: 1, width: '100%', gap: round === 'Quarterfinals' ? 17 : (round === 'Semifinals' ? 50 : 0) }}>
+                                    {matchesByRound[round]?.map((match) => (
+                                        <Box key={match.id}>
+                                            <MatchComponent match={match} />
+                                        </Box>
+                                    ))}
+                                </Box>
+                            </Box>
+                        ))}
+                    </Box>
+                </Box>
+            </ThemeProvider>
+        </div>
+    );
 };
-
 
 export default EventElims;
