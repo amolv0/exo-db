@@ -248,7 +248,7 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                                                         direction={orderBy === 'wins' ? order : 'asc'}
                                                         onClick={() => handleRequestSort('wins')}
                                                     >
-                                                        W-L-T
+                                                        W/L/T
                                                     </TableSortLabel>
                                                 </TableCell>
                                                 <TableCell>
@@ -257,7 +257,7 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                                                         direction={orderBy === 'average_points' ? order : 'asc'}
                                                         onClick={() => handleRequestSort('average_points')}
                                                     >
-                                                        Avg Points
+                                                        Avg
                                                     </TableSortLabel>
                                                 </TableCell>
                                                 <TableCell>
@@ -266,7 +266,7 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                                                         direction={orderBy === 'total_points' ? order : 'asc'}
                                                         onClick={() => handleRequestSort('total_points')}
                                                     >
-                                                        Total Points
+                                                        Total
                                                     </TableSortLabel>
                                                 </TableCell>
                                                 <TableCell>

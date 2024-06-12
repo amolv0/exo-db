@@ -6,6 +6,7 @@ import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import { Box, Typography, Link as MuiLink } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
+import '../../Stylesheets/eventTable.css'
 
 // The component displays all the team awards
 
@@ -144,7 +145,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                 <div>No awards found</div>
             ) : (
               
-                <div className="text-black">
+                <div>
                     <div className = "team-profile-subtitle">
                         Team Awards
                     </div>
@@ -161,7 +162,6 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                             <span className="team-profile-rank-label">{getSeasonNameFromId(selectedSeason)} </span>
                         </div>
                     </div>
-
                     {/* Dropdown */}
                     <div className="flex justify-center"> 
                         <SeasonDropdown
@@ -173,18 +173,15 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                         />      
                     </div>
                     <br />
-            
-                    {/* Display awards and events for selected season */}
                     <ThemeProvider theme={theme}>
                         <Box 
                             display="flex" 
                             justifyContent="center" 
                             alignItems="center"
-                            bgcolor="background.paper"
                             >
                             <Box 
                                 border={1} 
-                                borderColor="grey.300" 
+                                borderColor="grey.800" 
                                 borderRadius={2} 
                                 p={4} 
                                 mb={4}
@@ -198,10 +195,11 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                                 <Box 
                                     key={index} 
                                     border={1} 
-                                    borderColor="grey.300" 
+                                    borderColor="grey.800" 
                                     borderRadius={2} 
                                     p={4} 
                                     mb={4}
+                                    bgcolor="var(--secondary-color)"
                                 >
                                     <MuiLink component={Link} to={`/events/${award.event.id}`} underline="hover">
                                     <Typography variant="h6" fontWeight="bold" gutterBottom>

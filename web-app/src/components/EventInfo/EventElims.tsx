@@ -200,7 +200,7 @@ const EventElims: React.FC<Divisions> = ({ division }) => {
     return (
         <div className="p-10">
             <div className="tableTitleC">
-                Rankings List
+                Elimination Bracket
             </div>
             <div className="eventsDropDown">
                 {/* Display divisions dropdown only if there are multiple divisions */}

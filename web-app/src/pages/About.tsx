@@ -46,7 +46,7 @@ const About: React.FC = () => {
                 <img className="items-center" src={yujinGif} alt="Your GIF" />
             </div>
             */}
-
+            <br></br>
             </div>
 
     );

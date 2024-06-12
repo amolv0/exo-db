@@ -52,7 +52,7 @@ const theme = createTheme({
           },
         },
         body: {
-          minWidth: '120px',
+          minWidth: '80px',
         }
       },
     },

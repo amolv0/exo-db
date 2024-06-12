@@ -230,9 +230,9 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                                         <TableRow>
                                             <TableCell>Event</TableCell>
                                             <TableCell>Rank</TableCell>
-                                            <TableCell>Combined Score</TableCell>
-                                            <TableCell>Driver Score</TableCell>
-                                            <TableCell>Programming Score</TableCell>
+                                            <TableCell>Combined</TableCell>
+                                            <TableCell>Driver</TableCell>
+                                            <TableCell>Programming</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
