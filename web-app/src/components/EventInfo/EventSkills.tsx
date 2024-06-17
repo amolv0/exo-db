@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../../Stylesheets/eventTable.css';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
 
 // Displays the skills Rankings for the event
 
@@ -82,48 +84,55 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
     return (
         <div className = "p-10">
             <div className="tableTitleC">Skills Rankings</div>  
-            
-            <div className="skillsTable">
-                <div className="header col eventSkillsRank">
-                    <div className = "header-cell rounded-tl-lg">
-                        Rank
-                    </div>
-                    {sortedCombinedSkills && Array.isArray(sortedCombinedSkills) && sortedCombinedSkills.map(([teamId, skills], index, array) => (
-                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                            {index + 1}
-                        </div>
-                    ))}
-                </div>
-                <div className="header col eventSkillsNumber">
-                    <div className = "header-cell">
-                        Number
-                    </div>
-                    {sortedCombinedSkills && Array.isArray(sortedCombinedSkills) && sortedCombinedSkills.map(([teamId, skills], index, array) => (
-                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                            <Link className="teamBox" to={`/teams/${teamId}`}>
-                                {skills[0].team.name}
-                            </Link>
-                        </div>
-                    ))}
-                </div>
-                <div className="header col score">
-                    <div className = "header-cell">
-                        Score
-                    </div>
-                    {sortedCombinedSkills && Array.isArray(sortedCombinedSkills) && sortedCombinedSkills.map(([teamId, skills], index, array) => (
-                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                            <div className = "flex gap-2 items-center justify-center">
-                                <div className = "scoreDisplay">
-                                    {skills[0].score + skills[1].score}
-                                </div> 
-                                <div>
-                                    (D: {skills[1].score})
-                                    (P: {skills[0].score})
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+            <div className="flex justify-center mx-10">
+                <ThemeProvider theme={theme}>
+                    <TableContainer component={Paper} style={{ width: '700px', overflowX: 'auto', marginBottom: '20px' }}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>
+                                        Rank
+                                    </TableCell>
+                                    <TableCell>
+                                        Number
+                                    </TableCell>
+                                    <TableCell>
+                                        Combined
+                                    </TableCell>
+                                    <TableCell>
+                                        Driver
+                                    </TableCell>
+                                    <TableCell>
+                                        Progamming
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {sortedCombinedSkills && Array.isArray(sortedCombinedSkills) && sortedCombinedSkills.map(([teamId, skills], index, array) => (
+                                    <TableRow key={index}>
+                                        <TableCell>
+                                            {index + 1}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Link className="teamBox" to={`/teams/${teamId}`}>
+                                                {skills[0].team.name}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell>
+                                            {skills[0].score + skills[1].score}
+                                        </TableCell>
+                                        <TableCell>
+                                            {skills[1].score}
+                                        </TableCell>
+                                        <TableCell>
+                                            {skills[0].score}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </ThemeProvider>
             </div>
         </div>
     );  

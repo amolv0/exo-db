@@ -5,8 +5,10 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
-import '../../Stylesheets/eventTable.css';
 import { getSeasonNameFromId } from '../../SeasonEnum';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
 
 // This component creates a list of the skills rankings
 
@@ -207,71 +209,62 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string; sho
                         </div>
                     </div>
                     )}
-                    {/* Table */}
-                    <div className={` table  ${short === true ? 'max-w-shortSkillspx' : ''} `}>
-                        <div className="header col rank">
-                            <div className = "header-cell rounded-tl-lg">
-                            Rank
-                            </div>
-                            {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index, array) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                                    <div className = "flex justify-center items-center">
-                                        {calculateRank(index)}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="header col team">
-                            <div className = "header-cell">
-                                Team
-                            </div>
-                            {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
-                                    <div>
-                                        <Link to={`/teams/${rank.team_id}`} className = "hover:text-blue-200 flex gap-2 items-center justify-center">
-                                            <div className = "teamBox"> {rank.team_number}</div>
-                                            <div> {rank.team_name} </div>
-                                        </Link>
-                                    </div>
-                                </div>
-                            ))}
-                        </div> 
-                        <div className="header col score">
-                            <div className = "header-cell">
-                                Score
-                            </div>
-                            {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                    <div className = "flex gap-2 items-center justify-center">
-                                        <div className = "scoreDisplay">
-                                            {rank.score}
-                                        </div> 
-                                        <div>
-                                            <div>
-                                                (D:{rank.driver_component})
-                                            </div>
-                                            <div>
-                                                (P:{rank.programming_component})
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>              
-                        <div className = "hide">
-                            <div className="header col eventSkillsName">
-                                <div className = "header-cell">
-                                    Event
-                                </div>
-                                {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
-                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
-                                        <Link to={`/events/${rank.event_id}`} className = "hover:text-blue-200">
-                                            {rank.event_name && rank.event_name}
-                                        </Link>
-                                    </div>
-                                ))}
-                            </div>   
-                        </div>
+                    <div className="flex justify-center mx-10">
+                        <ThemeProvider theme={theme}>
+                            <TableContainer component={Paper} style={{ width: '1100px', overflowX: 'auto', marginBottom: '20px' }}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>
+                                                Rank
+                                            </TableCell>
+                                            <TableCell>
+                                                Team
+                                            </TableCell>
+                                            <TableCell>
+                                                Combined
+                                            </TableCell>
+                                            <TableCell>
+                                                Driver
+                                            </TableCell>
+                                            <TableCell>
+                                                Progamming
+                                            </TableCell>
+                                            <TableCell>
+                                                Event
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>
+                                                    {calculateRank(index)}
+                                                </TableCell>
+                                                <TableCell>
+                                                <Link to={`/teams/${rank.team_id}`} className = "flex">
+                                                    <div className = "teamBox"> {rank.team_number} </div>
+                                                    <div> {rank.team_name} </div>
+                                                </Link>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {rank.score}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {rank.driver_component}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {rank.programming_component}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {rank.event_name}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </ThemeProvider>
                     </div>
                     {!short && (
                     <div className = "pageSelector mb-10">

@@ -5,8 +5,11 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
-import '../../Stylesheets/eventTable.css';
 import { getSeasonNameFromId } from '../../SeasonEnum';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
+import '../../Stylesheets/pageLayout.css'
 
 // This component creates a list of the season rankings
 
@@ -206,75 +209,56 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string; 
                     )}
 
                     {/* Table */}
-                    <div className={` table  ${short === true ? 'max-w-shortRatingspx' : ''} `}>
-                        <div className="header col rank">
-                            <div className = "header-cell rounded-tl-lg">
-                                Rank
-                            </div>
-                            {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index, array) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                                    <div className = "flex justify-center items-center">
-                                        {calculateRank(index)}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>   
-                        <div className="header col team">
-                            <div className = "header-cell">
-                                Team
-                            </div>
-                            {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
-                                    <div>
-                                        <Link to={`/teams/${rank.team_id}`} className = "hover:text-blue-200 flex gap-2 items-center justify-center">
-                                            <div className = "teamBox"> {rank.team_number} </div>
-                                            <div> {rank.team_name} </div>
-                                        </Link>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="header col stat">
-                            <div className = "header-cell">
-                                W-L-T
-                            </div>
-                            {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
-                                    <div>
-                                        {rank.wins} - {rank.losses} - {rank.ties}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className = "hide">
-                            <div className="header col stat">
-                                <div className = "header-cell">
-                                    Avg CCWM
-                                </div>
-                                {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
-                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
-                                        <div>
-                                            {rank.avg_ccwm && rank.avg_ccwm.toFixed(2)}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div> 
-                        </div>
-                        <div className = "hide">
-                            <div className="header col stat">
-                                <div className = "header-cell">
-                                    mu
-                                </div>
-                                {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
-                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>            
-                                        <div>
-                                            {rank.mu.toFixed(2)}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>     
-                        </div>
-  
+                    <div className="flex justify-center mx-10">
+                        <ThemeProvider theme={theme}>
+                            <TableContainer component={Paper} style={{ width: '1100px', overflowX: 'auto', marginBottom: '20px' }}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>
+                                                Rank
+                                            </TableCell>
+                                            <TableCell>
+                                                Team
+                                            </TableCell>
+                                            <TableCell>
+                                                W-L-T
+                                            </TableCell>
+                                            <TableCell>
+                                                Avg CCWM
+                                            </TableCell>
+                                            <TableCell>
+                                                mu
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {seasonRanking && Array.isArray(seasonRanking) && seasonRanking.map((rank, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>
+                                                    {calculateRank(index)}
+                                                </TableCell>
+                                                <TableCell>
+                                                <Link to={`/teams/${rank.team_id}`} className = "flex">
+                                                    <div className = "teamBox"> {rank.team_number} </div>
+                                                    <div> {rank.team_name} </div>
+                                                </Link>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {rank.wins} - {rank.losses} - {rank.ties}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {rank.avg_ccwm && rank.avg_ccwm.toFixed(2)}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {rank.mu.toFixed(2)}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </ThemeProvider>
                     </div>
                     {/* Page selector */}
                     {!short && (

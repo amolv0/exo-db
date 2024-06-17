@@ -1,6 +1,5 @@
 import React, {  useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../../Stylesheets/eventTable.css';
 import DivisionDropDown from '../Dropdowns/DivisionDropDown'
 import { TableSortLabel } from '@mui/material';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';

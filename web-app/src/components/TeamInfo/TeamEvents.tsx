@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import '../../Stylesheets/eventTable.css'
 import { Link } from 'react-router-dom';
 import {  CircularProgress } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import { getSeasonNameFromId } from '../../SeasonEnum';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
+
 
 // The component displays all the events of a Team
 
@@ -149,67 +152,49 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                         />      
                     </div>
                     <br />
-                    <div className="table">
-                        <div className="header col eventProgram">
-                            <div className = "header-cell rounded-tl-lg">
-                                PROGRAM
-                            </div>
-                            {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((event, index, array) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                                    <div className={
-                                        `${event.program.code || event.program === 'VRC' ? 'vrc' : 
-                                        event.program.code || event.program === 'VEXU' ? 'vexu' : 
-                                        event.program.code || event.program === 'VIQRC' ? 'viqrc' : ''}`
-                                    }>
-                                        {event.program.code || event.program}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="header col eventName">
-                            <div className = "header-cell">
-                                EVENT
-                            </div>
-                            {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((event, index) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                    <Link to={`/events/${event.id}`}>
-                                        {event.name && event.name}
-                                    </Link>
-                                </div>
-                            ))}
-                        </div>
-                    <div className="header col eventLocation">
-                        <div className = "header-cell">
-                            LOCATION
-                        </div>
-                            {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((event, index) => (
-                                <div key = {index} className={`body-cell location ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                    {event.location && (
-                                        <div>
-                                            {event.location.city && <span>{event.location.city}, </span>}
-                                            {event.location.region && <span>{event.location.region}, </span>}
-                                            {event.location.country}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    <div className="header col date">
-                        <div className = "rounded-tr-lg header-cell" onClick={toggleSortingDirection} style={{ cursor: 'pointer' }}>
-                            DATE {ascending ? '▲' : '▼'}
-                        </div>
-                            {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((event, index, array) => (
-                                <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-br-lg rounded-b-none' : ''}`}>
-                                    {event.start && (event.start.substring(0, 10) === event.end?.substring(0, 10)
-                                    ? event.start.substring(0, 10) : event.start.substring(0, 10) + ' - ' + event.end?.substring(0, 10))}
-                                </div>
-                            ))}
-                        </div>
+                    <div className="flex justify-center mx-10">
+                        <ThemeProvider theme={theme}>
+                            <TableContainer component={Paper} style={{ width: '1100px', overflowX: 'auto', marginBottom: '20px' }}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Program</TableCell>
+                                            <TableCell>
+                                                Event
+                                            </TableCell>
+                                            <TableCell>
+                                                Location
+                                            </TableCell>
+                                            <TableCell>
+                                                Date
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((event, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>
+                                                    {event.program.code || event.program}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {event.name}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {event.location.city && <span>{event.location.city}, </span>}
+                                                    {event.location.region && <span>{event.location.region}, </span>}
+                                                    {event.location.country}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {event.start && (event.start.substring(0, 10) === event.end?.substring(0, 10)
+                                                    ? event.start.substring(0, 10) : event.start.substring(0, 10) + ' - ' + event.end?.substring(0, 10))}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </ThemeProvider>
                     </div>
-                    <br>
-                    </br>
-                    <br>
-                    </br>
                 </div>
             )}
         </div>

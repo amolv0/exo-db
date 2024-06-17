@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CircularProgress , Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
-import '../../Stylesheets/eventTable.css'
 import { getSeasonNameFromId } from '../../SeasonEnum';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';

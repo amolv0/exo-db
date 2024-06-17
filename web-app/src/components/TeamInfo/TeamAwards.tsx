@@ -6,7 +6,6 @@ import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import { Box, Typography, Link as MuiLink } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
-import '../../Stylesheets/eventTable.css'
 
 // The component displays all the team awards
 

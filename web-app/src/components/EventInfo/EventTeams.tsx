@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Typography, CircularProgress } from '@mui/material';
-import '../../Stylesheets/eventTable.css'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
 
 interface LocationData {
     city: string | null;
@@ -89,68 +91,51 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
             {loading ? (
                 <CircularProgress color="inherit" />
             ) : teamDetails.length > 0 ? (
+                
                 <div className = "p-10">
                     <div className="tableTitleC">Teams List</div>
-                    <div className="table">
-                        <div className="header col teamsNumber">
-                            <div className = "header-cell rounded-tl-lg">
-                            Number
-                            </div>
-                            {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index, array) => (
-                                (team.number && 
-                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''} ${index === array.length - 1 ? 'rounded-bl-lg rounded-b-none' : ''}`}>
-                                        <div>
-                                            <Link to={`/teams/${team.id}`} className = "teamBox">{team.number}</Link>
-                                        </div>
-                                    </div>
-                                )
-                            ))}
-                        </div>
-                        <div className="header col teamsName">
-                            <div className = "header-cell">
-                                Team Name
-                            </div>
-                            {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
-                                (team.number && 
-                                    <div key = {index}className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                        <div>
-                                            <Link to={`/teams/${team.id}`}>{team.team_name}</Link>
-                                        </div>
-                                    </div>
-                                )
-                            ))}
-                        </div>
-                        <div className = "hide">
-                            <div className="header col teamsOrg">
-                                <div className = "header-cell">
-                                    Organization
-                                </div>
-                                {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
-                                    (team.number && 
-                                        <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                            <div>
-                                                {team.organization}
-                                            </div>
-                                        </div>
-                                    )
-                                ))}
-                            </div>
-                        </div>
-                        <div className="header col teamsLocation">
-                            <div className = "rounded-tr-lg header-cell">
-                                Location
-                            </div>
-                            {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index) => (
-                                (team.number && 
-                                    <div key = {index} className={`body-cell ${index % 2 === 0 ? 'bg-opacity-65' : ''}`}>
-                                        <div>
-                                            {team.location?.city}{team.location?.city && team.location?.region ? ', ' : ''}
-                                            {team.location?.region}{team.location?.region && team.location?.country ? ', ' : ''}{team.location?.country}
-                                        </div>
-                                    </div>
-                                )
-                            ))}
-                        </div>
+                    <div className="flex justify-center mx-10">
+                        <ThemeProvider theme={theme}>
+                            <TableContainer component={Paper} style={{ width: '1100px', overflowX: 'auto', marginBottom: '20px' }}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>
+                                                Number
+                                            </TableCell>
+                                            <TableCell>
+                                                Name
+                                            </TableCell>
+                                            <TableCell>
+                                                Organization
+                                            </TableCell>
+                                            <TableCell>
+                                                Location
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {teamDetails && Array.isArray(teamDetails) && teamDetails.map((team, index, array) => (
+                                            <TableRow key={index}>
+                                                <TableCell>
+                                                    <Link to={`/teams/${team.id}`} className = "teamBox">{team.number}</Link>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Link to={`/teams/${team.id}`}>{team.team_name}</Link>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {team.organization}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {team.location?.city}{team.location?.city && team.location?.region ? ', ' : ''}
+                                                    {team.location?.region}{team.location?.region && team.location?.country ? ', ' : ''}{team.location?.country}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </ThemeProvider>
                     </div>
                 </div>
             ) : (
