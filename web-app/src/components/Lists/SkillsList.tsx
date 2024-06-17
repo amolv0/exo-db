@@ -239,12 +239,14 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string; sho
                                         {skillsRanking && Array.isArray(skillsRanking) && skillsRanking.map((rank, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>
-                                                    {calculateRank(index)}
+                                                    <div className = "rankBox">
+                                                        {calculateRank(index)}
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell>
                                                 <Link to={`/teams/${rank.team_id}`} className = "flex">
                                                     <div className = "teamBox"> {rank.team_number} </div>
-                                                    <div> {rank.team_name} </div>
+                                                    <div className = "teamName"> {rank.team_name} </div>
                                                 </Link>
                                                 </TableCell>
                                                 <TableCell>

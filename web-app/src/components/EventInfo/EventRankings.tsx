@@ -100,7 +100,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                                         </TableSortLabel>
                                     </TableCell>
                                     <TableCell>
-                                        Number
+                                        Team
                                     </TableCell>
                                     <TableCell>
                                         <TableSortLabel
@@ -189,11 +189,13 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                                 {sortedRankings.map((rankings, index) => (
                                     <TableRow key={index}>
                                         <TableCell>
+                                            <div className="rankBox"> 
                                             {rankings.rank}
+                                            </div> 
                                         </TableCell>
                                         <TableCell>
                                             <Link key={rankings.team.id} to={`/teams/${rankings.team.id}`}>
-                                                <div>{rankings.team.name}</div>
+                                                <div className = "teamBox">{rankings.team.name}</div>
                                             </Link>
                                         </TableCell>
                                         <TableCell>{rankings.wins}-{rankings.losses}-{rankings.ties}</TableCell>

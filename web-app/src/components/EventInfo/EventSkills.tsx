@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
+import { TableSortLabel } from '@mui/material';
 
 // Displays the skills Rankings for the event
 
@@ -25,9 +26,6 @@ interface EventSkillsComponentProps {
 }
 
 const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) => {
-  
-    const [selectedOption, setSelectedOption] = useState<'programming' | 'driver' | 'combined'>('combined');
-
     // Filter the "programming" scores and "driver" scores, and need to map the
     // team to their prog + driver scores because data is not given together
     
@@ -37,6 +35,14 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
     const programmingSkillsMap = new Map<number, SkillData[]>();
     const driverSkillsMap = new Map<number, SkillData[]>();
     const combinedSkillsMap = new Map<number, SkillData[]>();
+    const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+    const [orderBy, setOrderBy] = useState<string>('rank');
+
+    const handleRequestSort = (property: string) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
 
     programmingSkills.forEach(skill => {
         const teamId = skill.team.id;
@@ -60,30 +66,24 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
         combinedSkillsMap.set(teamId, combinedSkills);
     });
 
-    // Sort the prog + driver skills
-    const sortedCombinedSkills = Array.from(combinedSkillsMap.entries()).sort((a, b) => {
-        const totalScoreA = a[1].reduce((acc, curr) => acc + curr.score, 0);
-        const totalScoreB = b[1].reduce((acc, curr) => acc + curr.score, 0);
-        return totalScoreB - totalScoreA;
-    });
-
-    // Sort the prog skills
-    const sortedProgSkills = Array.from(programmingSkillsMap.entries()).sort((a, b) => {
-        const totalScoreA = a[1].reduce((acc, curr) => acc + curr.score, 0);
-        const totalScoreB = b[1].reduce((acc, curr) => acc + curr.score, 0);
-        return totalScoreB - totalScoreA;
-    });
-
-    // Sort the driver skills
-    const sortedDriverSkills = Array.from(driverSkillsMap.entries()).sort((a, b) => {
-        const totalScoreA = a[1].reduce((acc, curr) => acc + curr.score, 0);
-        const totalScoreB = b[1].reduce((acc, curr) => acc + curr.score, 0);
-        return totalScoreB - totalScoreA;
+    const sortedRankings = Array.from(combinedSkillsMap.entries()).sort((a, b) => {
+        if (orderBy === 'combined' || orderBy === 'rank') {
+            return order === 'asc' ? (b[1][0].score + b[1][1].score) - (a[1][0].score + a[1][1].score)
+            : (a[1][0].score + a[1][1].score) - (b[1][0].score + b[1][1].score);
+        } else if (orderBy === 'prog') {
+            return order === 'asc' ? (b[1][0].score - a[1][0].score) 
+            : (a[1][0].score - b[1][0].score);
+        } else if (orderBy === 'driver') {
+            return order === 'asc' ? (b[1][1].score - a[1][1].score) 
+            : (a[1][1].score - b[1][1].score);
+        }
+        return 0;
     });
 
     return (
         <div className = "p-10">
-            <div className="tableTitleC">Skills Rankings</div>  
+            <div className="tableTitleC">Skills Rankings</div>
+            <br/>
             <div className="flex justify-center mx-10">
                 <ThemeProvider theme={theme}>
                     <TableContainer component={Paper} style={{ width: '700px', overflowX: 'auto', marginBottom: '20px' }}>
@@ -91,27 +91,53 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
                             <TableHead>
                                 <TableRow>
                                     <TableCell>
-                                        Rank
+                                        <TableSortLabel
+                                            active={orderBy === 'rank'}
+                                            direction={orderBy === 'rank' ? order : 'asc'}
+                                            onClick={() => handleRequestSort('rank')}
+                                        >
+                                            Rank
+                                        </TableSortLabel>
                                     </TableCell>
                                     <TableCell>
-                                        Number
+                                        Team
                                     </TableCell>
                                     <TableCell>
-                                        Combined
+                                        <TableSortLabel
+                                            active={orderBy === 'combined'}
+                                            direction={orderBy === 'combined' ? order : 'asc'}
+                                            onClick={() => handleRequestSort('combined')}
+                                        >
+                                            Combined
+                                        </TableSortLabel>
                                     </TableCell>
                                     <TableCell>
-                                        Driver
+                                        <TableSortLabel
+                                            active={orderBy === 'driver'}
+                                            direction={orderBy === 'driver' ? order : 'asc'}
+                                            onClick={() => handleRequestSort('driver')}
+                                        >
+                                            Driver
+                                        </TableSortLabel>
                                     </TableCell>
                                     <TableCell>
-                                        Progamming
+                                        <TableSortLabel
+                                            active={orderBy === 'prog'}
+                                            direction={orderBy === 'prog' ? order : 'asc'}
+                                            onClick={() => handleRequestSort('prog')}
+                                        >
+                                            Prog
+                                        </TableSortLabel>
                                     </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {sortedCombinedSkills && Array.isArray(sortedCombinedSkills) && sortedCombinedSkills.map(([teamId, skills], index, array) => (
+                                {sortedRankings && Array.isArray(sortedRankings) && sortedRankings.map(([teamId, skills], index, array) => (
                                     <TableRow key={index}>
                                         <TableCell>
-                                            {index + 1}
+                                            <div className="rankBox"> 
+                                                {skills[0].rank}
+                                            </div>
                                         </TableCell>
                                         <TableCell>
                                             <Link className="teamBox" to={`/teams/${teamId}`}>

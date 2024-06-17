@@ -296,7 +296,11 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                                                             {rankings.event_name}
                                                         </Link>
                                                     </TableCell>
-                                                    <TableCell>{rankings.rank}</TableCell>
+                                                    <TableCell>
+                                                        <div className="rankBox"> 
+                                                        {rankings.rank}
+                                                        </div>
+                                                    </TableCell>
                                                     <TableCell>{rankings.wins}-{rankings.losses}-{rankings.ties}</TableCell>
                                                     <TableCell>{rankings.average_points}</TableCell>
                                                     <TableCell>{rankings.total_points}</TableCell>

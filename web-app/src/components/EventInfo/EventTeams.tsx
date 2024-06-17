@@ -94,6 +94,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                 
                 <div className = "p-10">
                     <div className="tableTitleC">Teams List</div>
+                    <br/>
                     <div className="flex justify-center mx-10">
                         <ThemeProvider theme={theme}>
                             <TableContainer component={Paper} style={{ width: '1100px', overflowX: 'auto', marginBottom: '20px' }}>

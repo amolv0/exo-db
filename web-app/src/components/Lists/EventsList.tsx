@@ -186,7 +186,9 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>Program</TableCell>
+                                            <TableCell>
+                                                Program
+                                            </TableCell>
                                             <TableCell>
                                                 Event
                                             </TableCell>
@@ -205,7 +207,9 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                                                     {event.program.code || event.program}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {event.name}
+                                                    <Link to={`/events/${event.id}`} className = "flex">
+                                                        {event.name}
+                                                    </Link>
                                                 </TableCell>
                                                 <TableCell>
                                                     {event.location.city && <span>{event.location.city}, </span>}

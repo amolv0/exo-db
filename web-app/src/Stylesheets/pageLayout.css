@@ -40,7 +40,28 @@
     margin-bottom: 20px;
     font-family: var(--font-family-primary);
 }
-  
+
+.teamBox {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    gap: 10px;
+    background: var(--team-color);
+    border-radius: 3px;
+    font-weight: normal;
+    color: var(--secondary-color);
+    font-family: var(--font-family-primary);
+  }
+
+.teamName {
+    padding: 5px;
+}
+
+.rankBox {
+    font-weight: bold;
+}
+
 @media screen and (min-width: 1024px) {
 
     .leftDisplay {
