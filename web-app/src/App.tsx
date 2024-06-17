@@ -23,20 +23,21 @@ const Home: React.FC = () => {
     return (
         <div className = "pageBackground">
             <div className="flex flex-col items-center px-20">
-              <div>
-                  <img src={igniteLogo} className="w-64 h-auto" alt="Ignite Logo" />
-              </div>
-              <h1 className="text-center mt-10 text-xl font-bold">
-                  Welcome to IgniteDB! IgniteDB is a comprehensive database of all teams within the VEX circuit,
-                  including detailed information on skills, match statistics, reveals, and team rankings based on Elo ratings.
-              </h1>
-              <h1 className="text-center mt-10 text-xl font-bold">
-                  Feel free to search for any team or event:
-              </h1>
-              <Search></Search>
-              <div className="title">
-                  Featured Events
-                  <EventsListQuery 
+                <div>
+                    <img src={igniteLogo} className="w-64 h-auto" alt="Ignite Logo" />
+                </div>
+                <h1 className="text-center mt-10 text-xl font-bold">
+                    Welcome to IgniteDB! IgniteDB is a comprehensive database of all teams within the VEX circuit,
+                    including detailed information on skills, match statistics, reveals, and team Elo.
+                </h1>
+                <h1 className="text-center mt-10 text-xl font-bold">
+                    Feel free to search for any team or event:
+                </h1>
+                <Search></Search>
+                <div className="title">
+                    Featured Events
+                </div>
+                <EventsListQuery 
                     numberOfEvents = {5}
                     startAfter={formattedOneWeekAgo}
                     status={''}
@@ -44,19 +45,17 @@ const Home: React.FC = () => {
                     programCode={'VRC'}
                     display={true}
                 />
-              </div>
-              <div className = "flex flex-wrap items-center mb-10">
-                <div className="title mx-20">
+                <div className="title">
                   Top 5 ELO
-                  <RatingsList program={"VEX"} season={"181"} region={""} short={true} />
                 </div>
-                <div className="title mx-20">
+                <RatingsList program={"VEX"} season={"181"} region={""} short={true} />
+                <div className="title">
                   Top 5 Skills
-                  <SkillsList season={"181"} grade={"High School"} region={""} short={true}/>
                 </div>
-              </div>
-
-          </div>
+                <SkillsList season={"181"} grade={"High School"} region={""} short={true}/>
+                <br></br>
+                <br></br>
+            </div>
         </div>
     );
 };

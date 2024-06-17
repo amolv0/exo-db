@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Typography, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
+import { Typography, Link as MuiLink } from '@mui/material';
 
 interface LocationData {
     city: string | null;
@@ -122,7 +123,9 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                                                     <Link to={`/teams/${team.id}`} className = "teamBox">{team.number}</Link>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Link to={`/teams/${team.id}`}>{team.team_name}</Link>
+                                                    <MuiLink component={Link} to={`/teams/${team.id}`} underline="hover" className = "flex">
+                                                        {team.team_name}
+                                                    </MuiLink>
                                                 </TableCell>
                                                 <TableCell>
                                                     {team.organization}

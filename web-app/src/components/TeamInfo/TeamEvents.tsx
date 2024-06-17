@@ -6,7 +6,7 @@ import { getSeasonNameFromId } from '../../SeasonEnum';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
-
+import { Typography, Link as MuiLink } from '@mui/material';
 
 // The component displays all the events of a Team
 
@@ -177,7 +177,11 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                                                     {event.program.code || event.program}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {event.name}
+                                                    <MuiLink component={Link} to={`/events/${event.id}`} underline="hover" className = "flex">
+                                                        <Typography>
+                                                            <div> {event.name} </div>
+                                                        </Typography>
+                                                    </MuiLink>
                                                 </TableCell>
                                                 <TableCell>
                                                     {event.location.city && <span>{event.location.city}, </span>}

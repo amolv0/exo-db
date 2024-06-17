@@ -4,26 +4,16 @@
     justify-content: center;
     margin: 0 auto;
     padding-top:10px;
+    margin-bottom: 50px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
-.pageSelector {
-    display: flex;
-    justify-content: flex-end;
-    text-align: right;
-}
-
-.pageDisplay {
-    padding-top: 8px;
-}
-
-.tableTitle {
-    padding-top: 20px;
-    display: flex;
-    text-align: center;
-    align-items: center;
-    font-size: 20px;
-    font-weight: bold;
-    font-family: var(--font-family-primary);
+.selector {
+    max-width: 1100px;
+    justify-content: center;
+    margin: 0 auto;
+    padding-top:10px;
 }
 
 .tableTitleC {
@@ -59,10 +49,32 @@
 }
 
 .rankBox {
-    font-weight: bold;
+    font-variant: bold;
 }
 
 @media screen and (min-width: 1024px) {
+    .selector {
+        display: flex;
+        justify-content: space-between;
+    }
+    .pageSelector {
+        display: flex;
+        justify-content: flex-end;
+        text-align: right;
+    }
+    
+    .pageDisplay {
+        padding-top: 8px;
+    }
+    
+    .tableTitle {
+        display: flex;
+        justify-content: flex-start;
+        text-align: left;
+        font-size: 20px;
+        font-weight: bold;
+        font-family: var(--font-family-primary);
+    }
 
     .leftDisplay {
         display: flex;
@@ -75,10 +87,9 @@
     .title {
         font-size: 2rem;
         margin-bottom: 1rem;
-        margin-top: 3rem;
+        margin-top: 1rem;
         text-align: left;
         font-weight: bold;
-        left: -29.5rem;
     }
 
     .leftOngoing {
@@ -89,35 +100,7 @@
         left: -25.3rem;
         margin-bottom: 20px;
     }
-
-    .eventAdjust {
-        left: -28.8rem;
-    }
-
-    .eventOngoingAdjust {
-        left: -29.5rem;
-    }
-
-    .eventDropdownAdjust {
-        right: 65px;
-    }
-
-    .ratingAdjust {
-        left: -27.4rem;
-    }
-
-    .ratingDropdownAdjust {
-        left: -20px;
-    }
-
-    .skillsAdjust {
-        left: -29rem;
-    }
-
-    .skillsDropdownAdjust {
-        left: -10px;
-    }
-
+    
     .dropdownDisplay {
         display: flex;
         flex-wrap: wrap;
@@ -153,5 +136,25 @@
         justify-content: center;
         align-items: center;
         position: relative;
+    }
+    
+    .pageSelector {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .pageDisplay {
+        padding-top: 8px;
+    }
+    
+    .tableTitle {
+        padding-top: 20px;
+        display: flex;
+        font-size: 20px;
+        font-weight: bold;
+        font-family: var(--font-family-primary);
+        justify-content: center;
     }
 }

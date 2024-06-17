@@ -28,13 +28,14 @@ const Events: React.FC = () => {
             <h1 className="title leftDisplay eventAdjust">Events</h1>
             {/* DropDowns*/}
             <div className="eventOngoingAdjust leftDisplay">
-                <OngoingDropdown ongoing={status} setOngoing={setStatus}></OngoingDropdown>
+            <OngoingDropdown ongoing={status} setOngoing={setStatus}></OngoingDropdown>
             </div>
             <div className="dropdownDisplay eventDropdownAdjust">
                 <ProgramDropdown program={program} setProgram={setProgram} all={true} />
                 <RegionDropdown onSelect={setRegion} value={region} />
                 <DateDropdown startAfterDate={startAfterDate} setStartAfterDate={setStartAfterDate} />
             </div>
+            <br/>
             <div className="eventDisplay">
                 <EventsListQuery
                   numberOfEvents={100000}

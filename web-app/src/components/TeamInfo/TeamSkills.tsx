@@ -5,6 +5,7 @@ import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import { getSeasonNameFromId } from '../../SeasonEnum';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
+import { Typography, Link as MuiLink } from '@mui/material';
 
 // This component gets all of the skills for a team
 interface TeamSkillsProps {
@@ -257,9 +258,11 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                                                 return sortedSkills.map((skills, index) => (
                                                     <TableRow key={index}>
                                                         <TableCell>
-                                                            <Link to={`/events/${skills.event_id}`}>
-                                                                <div>{skills.event_name}</div>
-                                                            </Link>
+                                                            <MuiLink component={Link} to={`/events/${skills.event_id}`} underline="hover" className = "flex">
+                                                                <Typography>
+                                                                    <div> {skills.event_name} </div>
+                                                                </Typography>
+                                                            </MuiLink>
                                                         </TableCell>
                                                         <TableCell>{skills.rank}</TableCell>
                                                         <TableCell>{skills.scores['driver'] + skills.scores['programming']}</TableCell>

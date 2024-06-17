@@ -47,6 +47,7 @@ const Teams: React.FC = () => {
                     <RegionDropdown onSelect={setSelectedRegion} value = {selectedRegion}/>
                 </div>
             </div>
+            <br/>
             <div className = "eventDisplay">
                 <SkillsList season={seasonId.toString()} grade={grade} region={selectedRegion}/>
             </div>

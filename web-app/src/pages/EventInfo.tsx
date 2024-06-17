@@ -102,7 +102,7 @@ const EventInfo: React.FC = () => {
                     </div>
 
                     {/* Main content */}
-                    <div className = "team-info-display">
+                    <div className = "pageBackground">
                         {activeElement === 'EventInfo' && (
                             <>
                                 <EventAwards 

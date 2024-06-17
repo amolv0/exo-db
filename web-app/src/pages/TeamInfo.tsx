@@ -101,7 +101,7 @@ const TeamInfo: React.FC = () => {
                         </div>
                     
                         {/* Content */}
-                        <div className = "team-info-display">
+                        <div className = "pageBackground">
                             {activeElement === 'TeamInfo' && teamData && (
                                 <TeamProfile data={teamData[0]}/>
                             )}

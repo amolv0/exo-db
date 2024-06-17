@@ -74,6 +74,7 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: 'Proxima Nova, sans-serif',
+    fontSize: 13,
   },
 });
 

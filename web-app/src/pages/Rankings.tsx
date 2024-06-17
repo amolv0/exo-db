@@ -48,7 +48,7 @@ const Rankings: React.FC = () => {
                 <SeasonDropdown setSeasonId={setSeasonId} seasonId={seasonId} type={program} grade='' restrict = {null} />
                 <RegionDropdown onSelect={setSelectedRegion} value = {selectedRegion}/>
             </div>
-
+            <br/>
             <div className = "eventDisplay"> 
                 <RatingsList program={program} season={seasonId.toString()} region={selectedRegion} />
             </div>

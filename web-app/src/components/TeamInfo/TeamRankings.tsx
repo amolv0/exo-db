@@ -6,6 +6,7 @@ import { getSeasonNameFromId } from '../../SeasonEnum';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
+import { Typography, Link as MuiLink } from '@mui/material';
 
 interface TeamrankingsProps {
     rankings: number[];
@@ -292,9 +293,11 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                                             {sortedRankings.map((rankings, index) => (
                                                 <TableRow key={index}>
                                                     <TableCell>
-                                                        <Link to={`/events/${rankings.event_id}`}>
-                                                            {rankings.event_name}
-                                                        </Link>
+                                                        <MuiLink component={Link} to={`/events/${rankings.event_id}`} underline="hover" className = "flex">
+                                                            <Typography>
+                                                                <div> {rankings.event_name} </div>
+                                                            </Typography>
+                                                        </MuiLink>
                                                     </TableCell>
                                                     <TableCell>
                                                         <div className="rankBox"> 

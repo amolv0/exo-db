@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
 import '../../Stylesheets/pageLayout.css'
+import { Typography, Link as MuiLink } from '@mui/material';
 
 // This component creates a list of the season rankings
 
@@ -189,29 +190,30 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string; 
                 <div>No Ratings Found</div>
             ) : (
                 <div>
-                    <div className = "tableTitle">
-                        {region} {getSeasonNameFromId(parseInt(season))} Rankings
-                    </div>
-                    {/* Page selector */}
-                    {!short && (
-                    <div className = "pageSelector">
-                        <div className = "pageDisplay">
-                            {(currentPage * page) - (page -1)} - {Math.min(currentPage * page, seasonRanking.length + 
-                            (currentPage * page) - page)} of {Math.min(lastPage * page, seasonRanking.length + (lastPage * page) - (page))}
+                    <div className = "selector"> 
+                        <div className = "tableTitle">
+                            {region} {getSeasonNameFromId(parseInt(season))} Rankings
                         </div>
-                        <div>
-                            <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
-                            <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
-                            <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
-                            <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                        {/* Page selector */}
+                        {!short && (
+                        <div className = "pageSelector">
+                            <div className = "pageDisplay">
+                                {(currentPage * page) - (page -1)} - {Math.min(currentPage * page, seasonRanking.length + 
+                                (currentPage * page) - page)} of {Math.min(lastPage * page, seasonRanking.length + (lastPage * page) - (page))}
+                            </div>
+                            <div>
+                                <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+                                <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+                                <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+                                <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                            </div>
                         </div>
+                        )}
                     </div>
-                    )}
-
                     {/* Table */}
                     <div className="flex justify-center mx-10">
                         <ThemeProvider theme={theme}>
-                            <TableContainer component={Paper} style={{ width: '1100px', overflowX: 'auto', marginBottom: '20px' }}>
+                            <TableContainer component={Paper} style={{ width: '1100px', overflowX: 'auto'}}>
                                 <Table>
                                     <TableHead>
                                         <TableRow>
@@ -241,10 +243,14 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string; 
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
-                                                <Link to={`/teams/${rank.team_id}`} className = "flex">
+                                                <div className = "flex">
                                                     <div className = "teamBox"> {rank.team_number} </div>
-                                                    <div className = "teamName"> {rank.team_name} </div>
-                                                </Link>
+                                                    <MuiLink component={Link} to={`/teams/${rank.team_id}`} underline="hover" className = "flex">
+                                                        <Typography>
+                                                            <div className = "teamName"> {rank.team_name} </div>
+                                                        </Typography>
+                                                    </MuiLink>
+                                                </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     {rank.wins} - {rank.losses} - {rank.ties}
@@ -263,20 +269,23 @@ const RankingsList: React.FC<{ program:string; season: string; region?: string; 
                         </ThemeProvider>
                     </div>
                     {/* Page selector */}
-                    {!short && (
-                    <div className = "pageSelector mb-10">
-                        <div className = "pageDisplay">
-                            {(currentPage * page) - (page -1)} - {Math.min(currentPage * page, seasonRanking.length + 
-                            (currentPage * page) - page)} of {Math.min(lastPage * page, seasonRanking.length + (lastPage * page) - (page))}
+                    <div className = "selector"> 
+                        <div></div>
+                        {!short && (
+                        <div className = "pageSelector mb-10">
+                            <div className = "pageDisplay">
+                                {(currentPage * page) - (page -1)} - {Math.min(currentPage * page, seasonRanking.length + 
+                                (currentPage * page) - page)} of {Math.min(lastPage * page, seasonRanking.length + (lastPage * page) - (page))}
+                            </div>
+                            <div>
+                                <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+                                <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+                                <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+                                <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                            </div>
                         </div>
-                        <div>
-                            <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
-                            <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
-                            <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
-                            <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
-                        </div>
+                        )}
                     </div>
-                    )}
                 </div>
             )}
         </div>

@@ -3,6 +3,7 @@ import { Box, Typography } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
 import DivisionDropDown from '../Dropdowns/DivisionDropDown';
+import { Link } from 'react-router-dom';
 
 // Current Bracket code -> Subject to change ***
 
@@ -116,7 +117,7 @@ const MatchComponent: React.FC<MatchComponentProps> = ({ match }) => {
     };
 
     const renderTeams = (allianceColor: 'red' | 'blue') => {
-        const teams = match.participants.filter(participant => participant.color === allianceColor).map(p => p.name);
+        const teams = match.participants.filter(participant => participant.color === allianceColor).map(p => ({ id: p.id, name: p.name }));
         const isHome = allianceColor === 'blue';
         return (
             <ThemeProvider theme={theme}>
@@ -136,7 +137,9 @@ const MatchComponent: React.FC<MatchComponentProps> = ({ match }) => {
                     <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: 3 }}>
                         {teams.map((team, index) => (
                             <Typography key={index} variant="body1" sx={{ textAlign: 'center' }}>
-                                {team}
+                                <Link to={`/teams/${team.id}`}>
+                                    {team.name}
+                                </Link>
                             </Typography>
                         ))}
                     </Box>

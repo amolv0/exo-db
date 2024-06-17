@@ -8,6 +8,7 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
+import { Typography, Link as MuiLink } from '@mui/material';
 
 // This displays the proper events list given the parameters
 
@@ -161,28 +162,30 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                 <div>{error}</div>
             ) :  (
                 <div>
-                    <div className="tableTitle">
-                        {(region === 'All' && programCode === 'All') && "All Events"}
-                        {(region && programCode !== 'All') && `${region} ${programCode} Events`}
-                        {(region !== 'All' && programCode === 'All') && `All ${region}  Events`}
-                    </div>
-                    {/* Page selector */}
-                    {!display && ( 
-                    <div className = "pageSelector">
-                        <div className = "pageDisplay">
-                            {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
+                    <div className = "selector"> 
+                        <div className = "tableTitle">
+                            {(region === 'All' && programCode === 'All') && "All Events"}
+                            {(region && programCode !== 'All') && `${region} ${programCode} Events`}
+                            {(region !== 'All' && programCode === 'All') && `All ${region}  Events`}
                         </div>
-                        <div>
-                            <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
-                            <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
-                            <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
-                            <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
-                        </div>
+                        {/* Page selector */}
+                        {!display && ( 
+                            <div className = "pageSelector">
+                                <div className = "pageDisplay">
+                                    {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
+                                </div>
+                                <div>
+                                    <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+                                    <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+                                    <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+                                    <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    )}
                     <div className="flex justify-center mx-10">
                         <ThemeProvider theme={theme}>
-                            <TableContainer component={Paper} style={{ width: '1100px', overflowX: 'auto', marginBottom: '20px' }}>
+                            <TableContainer component={Paper} style={{ width: '1100px', overflowX: 'auto'}}>
                                 <Table>
                                     <TableHead>
                                         <TableRow>
@@ -207,9 +210,11 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                                                     {event.program.code || event.program}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Link to={`/events/${event.id}`} className = "flex">
+                                                <MuiLink component={Link} to={`/events/${event.id}`} underline="hover">
+                                                    <Typography>
                                                         {event.name}
-                                                    </Link>
+                                                    </Typography>
+                                                </MuiLink>
                                                 </TableCell>
                                                 <TableCell>
                                                     {event.location.city && <span>{event.location.city}, </span>}
@@ -228,19 +233,22 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                         </ThemeProvider>
                     </div>
                     {/* EndPage selector */}
+                    <div className = "selector">
+                    <div></div>
                     {!display && ( 
-                    <div className = "pageSelector mb-10">
-                        <div className = "pageDisplay">
-                            {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
+                        <div className = "pageSelector mb-10">
+                            <div className = "pageDisplay">
+                                {(currentPage * 25) - 24} - {Math.min(currentPage * 25, size)} of {size}
+                            </div>
+                            <div>
+                                <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
+                                <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
+                                <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
+                                <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
+                            </div>
                         </div>
-                        <div>
-                            <IconButton onClick={handleFirstPage}><SkipPreviousIcon /></IconButton>
-                            <IconButton onClick={handlePrevPage}><NavigateBeforeIcon /></IconButton>
-                            <IconButton onClick={handleNextPage}><NavigateNextIcon /></IconButton>
-                            <IconButton onClick={handleLastPage}><SkipNextIcon /></IconButton>
-                        </div>
-                    </div>
                     )}
+                    </div>
                 </div>
                 
             )}
