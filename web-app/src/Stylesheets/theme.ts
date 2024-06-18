@@ -36,17 +36,17 @@ const theme = createTheme({
           backgroundColor: 'var(--primary-color)',
           color: 'white',
           '& .MuiTableSortLabel-root': {
-            color: 'inherit', // Maintain the header color by default
+            color: 'inherit',
             '&.Mui-active': {
-              color: 'var(--highlight-color)', // Color when header is active (clicked for sorting)
+              color: 'var(--highlight-color)',
               '& .MuiTableSortLabel-icon': {
-                color: 'var(--highlight-color)', // Color for active arrow
+                color: 'var(--highlight-color)',
               },
             },
             '&:hover': {
-              color: 'var(--highlight-color)', // Color when header is hovered
+              color: 'var(--highlight-color)',
               '& .MuiTableSortLabel-icon': {
-                color: 'var(--highlight-color)', // Color for active arrow
+                color: 'var(--highlight-color)',
               },
             },
           },
@@ -74,7 +74,8 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: 'Proxima Nova, sans-serif',
-    fontSize: 13,
+    fontSize: 12,
+    fontWeightRegular: "5px",
   },
 });
 

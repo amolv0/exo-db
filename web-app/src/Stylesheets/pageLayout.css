@@ -35,7 +35,8 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding: 5px;
+    padding: 7px;
+    max-height:30px;
     gap: 10px;
     background: var(--team-color);
     border-radius: 3px;

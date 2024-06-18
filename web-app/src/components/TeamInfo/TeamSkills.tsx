@@ -228,11 +228,11 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>Event</TableCell>
                                             <TableCell>Rank</TableCell>
                                             <TableCell>Combined</TableCell>
                                             <TableCell>Driver</TableCell>
                                             <TableCell>Programming</TableCell>
+                                            <TableCell>Event</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -257,6 +257,10 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
 
                                                 return sortedSkills.map((skills, index) => (
                                                     <TableRow key={index}>
+                                                        <TableCell>{skills.rank}</TableCell>
+                                                        <TableCell>{skills.scores['driver'] + skills.scores['programming']}</TableCell>
+                                                        <TableCell>{skills.scores['driver']}</TableCell>
+                                                        <TableCell>{skills.scores['programming']}</TableCell>
                                                         <TableCell>
                                                             <MuiLink component={Link} to={`/events/${skills.event_id}`} underline="hover" className = "flex">
                                                                 <Typography>
@@ -264,10 +268,6 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                                                                 </Typography>
                                                             </MuiLink>
                                                         </TableCell>
-                                                        <TableCell>{skills.rank}</TableCell>
-                                                        <TableCell>{skills.scores['driver'] + skills.scores['programming']}</TableCell>
-                                                        <TableCell>{skills.scores['driver']}</TableCell>
-                                                        <TableCell>{skills.scores['programming']}</TableCell>
                                                     </TableRow>
                                                 ));
                                             })

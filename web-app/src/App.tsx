@@ -26,11 +26,16 @@ const Home: React.FC = () => {
                 <div>
                     <img src={igniteLogo} className="w-64 h-auto" alt="Ignite Logo" />
                 </div>
-                <h1 className="text-center mt-10 text-xl font-bold">
+
+                <h1 className="mt-5 text-center text-xl font-bold bg-yellow-100 text-yellow-800 p-4 border border-yellow-300 rounded">
+                    ⚠️Currently IgniteDB only fully supports VRC and VEXU⚠️
+                </h1>
+
+                <h1 className="text-center mt-5 text-xl font-bold">
                     Welcome to IgniteDB! IgniteDB is a comprehensive database of all teams within the VEX circuit,
                     including detailed information on skills, match statistics, reveals, and team Elo.
                 </h1>
-                <h1 className="text-center mt-10 text-xl font-bold">
+                <h1 className="text-center mt-5 text-xl font-bold">
                     Feel free to search for any team or event:
                 </h1>
                 <Search></Search>

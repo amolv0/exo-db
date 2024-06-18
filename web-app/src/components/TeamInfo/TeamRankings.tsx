@@ -147,8 +147,11 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
     };
 
     const sortedRankings = seasonMap[selectedSeason]?.slice().sort((a, b) => {
-        if (orderBy === 'rank' || orderBy === 'wins' || orderBy === 'losses' || orderBy === 'average_points' || orderBy === 'total_points' || orderBy === 'opr' || orderBy === 'dpr') {
+        if (orderBy === 'rank' || orderBy === 'dpr' ) {
             return order === 'asc' ? a[orderBy] - b[orderBy] : b[orderBy] - a[orderBy];
+        }
+        if (orderBy === 'wins' || orderBy === 'losses' || orderBy === 'average_points' || orderBy === 'total_points' || orderBy === 'opr' ) {
+            return order !== 'asc' ? a[orderBy] - b[orderBy] : b[orderBy] - a[orderBy];
         }
         return 0;
     });
@@ -232,7 +235,6 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                                     <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell>Event</TableCell>
                                                 <TableCell>
                                                     <TableSortLabel
                                                         active={orderBy === 'rank'}
@@ -287,18 +289,12 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                                                         Dpr
                                                     </TableSortLabel>
                                                 </TableCell>
+                                                <TableCell>Event</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {sortedRankings.map((rankings, index) => (
                                                 <TableRow key={index}>
-                                                    <TableCell>
-                                                        <MuiLink component={Link} to={`/events/${rankings.event_id}`} underline="hover" className = "flex">
-                                                            <Typography>
-                                                                <div> {rankings.event_name} </div>
-                                                            </Typography>
-                                                        </MuiLink>
-                                                    </TableCell>
                                                     <TableCell>
                                                         <div className="rankBox"> 
                                                         {rankings.rank}
@@ -309,6 +305,13 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                                                     <TableCell>{rankings.total_points}</TableCell>
                                                     <TableCell>{rankings.opr}</TableCell>
                                                     <TableCell>{rankings.dpr}</TableCell>
+                                                    <TableCell>
+                                                        <MuiLink component={Link} to={`/events/${rankings.event_id}`} underline="hover" className = "flex">
+                                                            <Typography>
+                                                                <div> {rankings.event_name} </div>
+                                                            </Typography>
+                                                        </MuiLink>
+                                                    </TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>

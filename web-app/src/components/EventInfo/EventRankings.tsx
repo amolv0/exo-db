@@ -59,10 +59,10 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
     };
 
     const sortedRankings = [...rankings]?.slice().sort((a, b) => {
-        if (orderBy === 'rank') {
+        if (orderBy === 'rank' || orderBy === 'dpr') {
             return order === 'asc' ? a[orderBy] - b[orderBy] : b[orderBy] - a[orderBy];
         } else if (orderBy === 'wins' || orderBy === 'wp' || orderBy === 'sp'|| orderBy === 'ap'
-        || orderBy === 'average_points' || orderBy === 'high_score' || orderBy === 'opr' || orderBy === 'ccwm' || orderBy === 'dpr') {
+        || orderBy === 'average_points' || orderBy === 'high_score' || orderBy === 'opr' || orderBy === 'ccwm' ) {
             return order === 'asc' ?  b[orderBy] - a[orderBy] : a[orderBy] - b[orderBy];
         }
         return 0;
