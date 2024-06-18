@@ -177,6 +177,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                             display="flex" 
                             justifyContent="center" 
                             alignItems="center"
+                            margin="10px"
                             >
                             <Box 
                                 border={1} 

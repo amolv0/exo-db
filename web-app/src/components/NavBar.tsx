@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Search from '../components/Search';
-import '../Stylesheets/colorTheme.css'
+import '../Stylesheets/colorTheme.css';
 
 const Navbar: React.FC = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1100);
-
+    const [isSticky, setIsSticky] = useState(false);
     const location = useLocation();
 
     const handleResize = () => {
@@ -19,27 +19,40 @@ const Navbar: React.FC = () => {
         };
     }, []);
 
+    useEffect(() => {
+        const handleScroll = () => {
+            const navbar = document.getElementById('navbar');
+            if (navbar) {
+                // Calculate the threshold based on your design
+                const threshold = 20; // Adjust as needed
+                const isNavbarSticky = window.scrollY > threshold;
+                setIsSticky(isNavbarSticky);
+            }
+        };
+    
+        window.addEventListener('scroll', handleScroll);
+    
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
     const renderDesktopMenu = () => {
         return (
             <div>
-                <nav className="colorPrimary p-2 text-xl text-white">
+                <nav id="navbar" className={`p-2 text-xl transition duration-800 ${isSticky ? 'sticky top-0 z-50 shadow-lg bg-red-100 text-dark_red' : 'colorPrimary text-white '}`}>
                     <div className="container mx-auto flex justify-between items-center">
-                        {/* Powered By */}
                         <div className="flex items-center space-x-4">
-                            {/* First element */}
                             <Link to="https://www.igniterobotics.org/" target="_blank" rel="noopener noreferrer">
                                 <div className="flex items-center transition duration-400 hover:scale-110">
-                                <span className="text-xl mr-2 font-bold">ignite.db</span>
-                                <div>
-                                    <span className="text-xs">pre-release 1.15</span>
+                                    <span className="text-xl mr-2 font-bold">ignite.db</span>
+                                    <div>
+                                        <span className="text-xs">pre-release 1.15</span>
+                                    </div>
                                 </div>
-                            </div>
                             </Link>
-                            <div>
-                                |
-                            </div>
-                            {/* Second element */}
-                            <div className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
+                            <div>|</div>
+                            <div className="transition duration-400 hover:text-gray-200 hover:scale-110">
                                 <Link to="/">Home</Link>
                             </div>
                             <div>
@@ -47,18 +60,17 @@ const Navbar: React.FC = () => {
                             </div>
                         </div>
     
-                        {/* Navigation Links */}
                         <ul className="flex space-x-4 ml-auto">
-                            <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
+                            <li className="transition duration-400 hover:text-gray-200 hover:scale-110">
                                 <Link to="/events">Events</Link>
                             </li>
-                            <li className="text-white transition duration-400 hover:text-gray-200 hover:scale-110">
+                            <li className="transition duration-400 hover:text-gray-200 hover:scale-110">
                                 <Link to="/skills">Skills</Link>
                             </li>
-                            <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
+                            <li className="transition duration-400 hover:text-gray-200 hover:scale-110">
                                 <Link to="/rankings">Ratings</Link>
                             </li>
-                            <li className="text-white transition duration-400 hover:text-gray-200  hover:scale-110">
+                            <li className="transition duration-400 hover:text-gray-200 hover:scale-110">
                                 <Link to="/about">About</Link>
                             </li>
                         </ul>
@@ -71,13 +83,13 @@ const Navbar: React.FC = () => {
     const renderMobileMenu = () => {
         return (
             <div>
-                <nav className="bg-dark_red p-4 text-xl text-white">
+                <nav id="navbar" className={`p-2 text-xl transition duration-800 ${isSticky ? 'sticky top-0 z-50 shadow-lg bg-white  text-dark_red' : 'colorPrimary text-white '}`}>
                     <div className="container mx-auto flex justify-between items-center">
                         <div className="flex items-center space-x-4">
                             <span className="text-xl mr-2 font-bold">ignite.db</span>
-                            <Search></Search>
+                            <Search/>
                         </div>
-                        <select className="bg-dark_red text-white ml-10" 
+                        <select className={`rounded-lg ml-10 ${isSticky ? 'bg-dark_red text-white' : 'bg-white text-dark_red'}`}
                             value={location.pathname}
                             onChange={(e) => window.location.href = e.target.value}>
                             <option value="/">Home</option>
@@ -93,9 +105,9 @@ const Navbar: React.FC = () => {
     };
 
     return (
-        <div>
+        <header className="sticky top-0 z-50">
             {isMobile ? renderMobileMenu() : renderDesktopMenu()}
-        </div>
+        </header>
     );
 };
 

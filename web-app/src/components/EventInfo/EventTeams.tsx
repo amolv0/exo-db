@@ -93,7 +93,7 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
                 <CircularProgress color="inherit" />
             ) : teamDetails.length > 0 ? (
                 
-                <div className = "p-10">
+                <div>
                     <div className="tableTitleC">Teams List</div>
                     <br/>
                     <div className="flex justify-center mx-10">

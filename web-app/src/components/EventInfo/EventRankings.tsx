@@ -69,7 +69,7 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
     });
     
     return (
-        <div className = "p-10">
+        <div>
             <div className="tableTitleC">
                 Rankings List
             </div>
@@ -214,6 +214,8 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                     </TableContainer>
                 </ThemeProvider>
             </div>
+            <br>
+            </br>
         </div>
     );
 };

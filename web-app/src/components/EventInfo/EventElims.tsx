@@ -201,7 +201,7 @@ const EventElims: React.FC<Divisions> = ({ division }) => {
     const matchesByRound = groupMatchesByRound(transformedMatches);
 
     return (
-        <div className="p-10">
+        <div>
             <div className="tableTitleC">
                 Elimination Bracket
             </div>

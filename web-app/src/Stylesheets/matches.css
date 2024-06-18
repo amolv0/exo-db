@@ -17,7 +17,7 @@
 
 .matchContainer {
     display: flex;
-    max-height: 100px;
+    max-height: 200px;
     margin-bottom: 10px;
     background-color: white;
     justify-content: space-between;
@@ -58,6 +58,13 @@
     width: 100px;
 }
 
-@media screen and (max-width: 600px) {
-    
+@media screen and (max-width: 500px) {
+    .match{
+        font-size: 8px;
+    }
+    .matchTeamDisplay {
+        font-size: 8px;
+        font-weight: 700;
+        width: 50px;
+    }
 }

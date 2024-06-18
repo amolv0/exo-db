@@ -107,7 +107,7 @@ const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
     }
 
     return (
-        <div className = "pt-10">
+        <div>
             <div className="tableTitleC">
                 Matches List
             </div>

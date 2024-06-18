@@ -38,7 +38,6 @@
       font-weight: bold;
       font-size: 20px;
       text-align: center;
-      padding-top: 20px;
   }
   
   .team-profile-info {
@@ -102,12 +101,19 @@
   }
   
   .champion {
-      font-family: var(--font-family-primary);
-      text-transform: uppercase;
-      font-weight: bold;
-      color: var(--highlight-color);
-  }
-  
+    position: relative;
+    font-family: var(--font-family-primary);
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #FF5733; /* Orange color */
+    letter-spacing: 1px;
+    font-size: 50px;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+    }
+
+
+
   .event-profile-value {
       font-size: 30px;
       color: var(--primary-color);
