@@ -39,6 +39,8 @@ const Home: React.FC = () => {
                     Feel free to search for any team or event:
                 </h1>
                 <Search></Search>
+            </div>
+            <div className = "eventDisplay"> 
                 <div className="title">
                     Featured Events
                 </div>
@@ -51,16 +53,16 @@ const Home: React.FC = () => {
                     display={true}
                 />
                 <div className="title">
-                  Top 5 ELO
+                Top 5 ELO
                 </div>
                 <RatingsList program={"VEX"} season={"181"} region={""} short={true} />
                 <div className="title">
-                  Top 5 Skills
+                Top 5 Skills
                 </div>
                 <SkillsList season={"181"} grade={"High School"} region={""} short={true}/>
-                <br></br>
-                <br></br>
             </div>
+            <br></br>
+            <br></br>
         </div>
     );
 };

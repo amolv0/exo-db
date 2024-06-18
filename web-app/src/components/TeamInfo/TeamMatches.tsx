@@ -168,11 +168,13 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
                                             return time1 - time2;
                                         })
                                         .map((match, index) => (
-                                            <MatchBasic2 key={index} match={match} />
+                                            currTeam ? <MatchBasic2 key={index} match={match} teamName={currTeam} /> : <MatchBasic2 key={index} match={match} />
                                         ))}
                                 </div>
                         ))}
                     </div>
+                    <br />
+                    <br />
                 </div>
             )}
         </div>

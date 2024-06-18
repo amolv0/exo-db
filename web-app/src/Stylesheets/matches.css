@@ -5,6 +5,7 @@
     padding: 20px 20px;
     background-color: var(--white-color);
     border-radius: 10px;
+    border: 1px solid #777777;
 }
 
 .matchesTitle {
@@ -16,13 +17,22 @@
 
 .matchContainer {
     display: flex;
-    height: 50px;
+    max-height: 100px;
     margin-bottom: 10px;
     background-color: white;
     justify-content: space-between;
     padding-left: 10px;
     padding-right: 10px;
     border-radius: 10px;
+    border: 1px solid #777777;
+}
+
+.highlight-winner {
+    background: linear-gradient(to right, rgba(144, 238, 144, 0.5), white, white, rgba(144, 238, 144, 0.5));
+}
+
+.highlight-loser {
+    background: linear-gradient(to right, rgba(255, 182, 193, 0.5), white, white, rgba(255, 182, 193, 0.5));
 }
 
 .matchInfo {

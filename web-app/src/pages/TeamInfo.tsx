@@ -92,7 +92,7 @@ const TeamInfo: React.FC = () => {
 
                         {/* Nav bar */}
                         <div className="team-container">
-                                <div className={`team-button transition ${activeElement === 'TeamInfo' ? 'active' : ''}`} onClick={() => handleHeaderClick('TeamInfo')}>Team Info</div>
+                                <div className={`team-button transition ${activeElement === 'TeamInfo' ? 'active' : ''}`} onClick={() => handleHeaderClick('TeamInfo')}>Info</div>
                                 <div className={`team-button transition ${activeElement === 'Events' ? 'active' : ''}`} onClick={() => handleHeaderClick('Events')}>Events</div>
                                 <div className={`team-button transition ${activeElement === 'Matches' ? 'active' : ''}`} onClick={() => handleHeaderClick('Matches')}>Matches</div>
                                 <div className={`team-button transition ${activeElement === 'Skills' ? 'active' : ''}`} onClick={() => handleHeaderClick('Skills')}>Skills</div>

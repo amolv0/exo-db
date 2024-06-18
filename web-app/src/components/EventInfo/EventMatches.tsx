@@ -127,9 +127,16 @@ const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
             </div>
             <div className = "match">
                 {filteredMatches.map((match, index) => (
+                    selectedTeam === "All" ?
                     <MatchBasic2 key={index} match={match} />
+                    :
+                    <MatchBasic2 key={index} match={match} teamName={selectedTeam}/>
                 ))}
             </div>
+            <br>
+            </br>
+            <br>
+            </br>
         </div>
     );
 };

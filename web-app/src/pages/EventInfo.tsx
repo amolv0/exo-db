@@ -93,8 +93,8 @@ const EventInfo: React.FC = () => {
 
                     {/* Navigation bar */}
                     <div className="team-container">
-                        <div className={`team-button transition ${activeElement === 'EventInfo' ? 'active' : ''}`} onClick={() => handleHeaderClick('EventInfo')}>Event Info</div>
-                        <div className={`team-button transition ${activeElement === 'TeamsList' ? 'active' : ''}`} onClick={() => handleHeaderClick('TeamsList')}>Teams List</div>
+                        <div className={`team-button transition ${activeElement === 'EventInfo' ? 'active' : ''}`} onClick={() => handleHeaderClick('EventInfo')}>Info</div>
+                        <div className={`team-button transition ${activeElement === 'TeamsList' ? 'active' : ''}`} onClick={() => handleHeaderClick('TeamsList')}>Teams</div>
                         <div className={`team-button transition ${activeElement === 'Matches' ? 'active' : ''}`} onClick={() => handleHeaderClick('Matches')}>Matches</div>
                         <div className={`team-button transition ${activeElement === 'Rankings' ? 'active' : ''}`} onClick={() => handleHeaderClick('Rankings')}>Rankings</div>
                         <div className={`team-button transition ${activeElement === 'Elims' ? 'active' : ''}`} onClick={() => handleHeaderClick('Elims')}>Elims</div>

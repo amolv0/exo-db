@@ -186,6 +186,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                                 mb={4}
                                 maxWidth="800px"
                                 width="100%"
+                                bgcolor="var(--white-color)"
                             >
                                 <Typography variant="h5" fontWeight="bold" gutterBottom>
                                 {getSeasonNameFromId(selectedSeason)}
@@ -198,7 +199,7 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                                     borderRadius={2} 
                                     p={4} 
                                     mb={4}
-                                    bgcolor="var(--secondary-color)"
+                                    bgcolor="var(--background-color)"
                                 >
                                     <MuiLink component={Link} to={`/events/${award.event.id}`} underline="hover">
                                     <Typography variant="h6" fontWeight="bold" gutterBottom>
