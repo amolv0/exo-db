@@ -67,15 +67,19 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
     });
 
     const sortedRankings = Array.from(combinedSkillsMap.entries()).sort((a, b) => {
+        const driver = (a[1]?.[1]?.score ?? 0);
+        const driver2 = (b[1]?.[1]?.score ?? 0);
+        const prog = (a[1]?.[0]?.score ?? 0);
+        const prog2 = (b[1]?.[0]?.score ?? 0);
         if (orderBy === 'combined' || orderBy === 'rank') {
-            return order === 'asc' ? (b[1][0].score + b[1][1].score) - (a[1][0].score + a[1][1].score)
-            : (a[1][0].score + a[1][1].score) - (b[1][0].score + b[1][1].score);
+            return order === 'asc' ? (prog2 + driver2) - (prog + driver)
+            : (prog + driver) - (prog2 + driver2);
         } else if (orderBy === 'prog') {
-            return order === 'asc' ? (b[1][0].score - a[1][0].score) 
-            : (a[1][0].score - b[1][0].score);
+            return order === 'asc' ? (prog2 - prog) 
+            : (prog - prog2);
         } else if (orderBy === 'driver') {
-            return order === 'asc' ? (b[1][1].score - a[1][1].score) 
-            : (a[1][1].score - b[1][1].score);
+            return order === 'asc' ? (driver2 - driver) 
+            : (driver - driver2);
         }
         return 0;
     });
@@ -145,13 +149,13 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
                                             </Link>
                                         </TableCell>
                                         <TableCell>
-                                            {skills[0].score + skills[1].score}
+                                            {(skills[0]?.score ?? 0) + (skills[1]?.score ?? 0)}
                                         </TableCell>
                                         <TableCell>
-                                            {skills[1].score}
+                                            {skills[1]?.score ?? 0}
                                         </TableCell>
                                         <TableCell>
-                                            {skills[0].score}
+                                            {skills[0]?.score ?? 0}
                                         </TableCell>
                                     </TableRow>
                                 ))}

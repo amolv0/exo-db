@@ -1,7 +1,5 @@
 import React from 'react';
-import { useTheme } from '@mui/material/styles';
 import '../../../Stylesheets/matches.css'
-import { Typography, Grid, Paper } from '@mui/material';
 
 interface Match {
     scheduled: string;
@@ -28,8 +26,12 @@ interface TeamInfo {
     id: number;
 }
 
-const MatchDisplay2: React.FC<{ match: Match, currTeam?: string }> = ({ match, currTeam}) => {
-    const theme = useTheme();
+interface MatchDisplayProps {
+    match: Match;
+    teamName?: string;
+  }
+
+const MatchDisplay: React.FC<MatchDisplayProps> = ({ match, teamName }) => {
     const { name, field, scheduled, started, alliances } = match;
     if (alliances) {
         
@@ -49,55 +51,51 @@ const MatchDisplay2: React.FC<{ match: Match, currTeam?: string }> = ({ match, c
 
     const isBlueWinning = blueScore > redScore;
     const equal = blueScore == redScore;
-
-    let winning = 3;
-
-    if (currTeam) {
-        const isRedTeam = redAlliance.teams.some(teamData => teamData.team.id.toString() === currTeam);
-        const isBlueTeam = blueAlliance.teams.some(teamData => teamData.team.id.toString() === currTeam);
-
-        if (isRedTeam) {
-            winning = redScore > blueScore ? 1 : 0;
-        } else if (isBlueTeam) {
-            winning = blueScore > redScore ? 1 : 0;
-        }
-    }
-
     return (
-        <Grid container className="mx-20" component={Paper} elevation={3} alignItems="center">
-            <Grid item xs={12} sm={6}>
-                <Typography variant="h6">{name}</Typography>
-                <Typography variant="body1">Field: {field}</Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} container justifyContent="center" alignItems="center">
-                <Grid container spacing={1}>
-                    <Grid item>
-                        <Typography variant="body1" style={{ color: winning === 1 ? 'green' : 'red' }}>
-                            {redScore}
-                        </Typography>
-                    </Grid>
-                    <Grid item>
-                        <Typography variant="body1" style={{ color: winning === 1 ? '#1876D2' : '#93BAE9' }}>
-                            :
-                        </Typography>
-                    </Grid>
-                    <Grid item>
-                        <Typography variant="body1" style={{ color: winning === 1 ? '#1876D2' : '#93BAE9' }}>
-                            {blueScore}
-                        </Typography>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={12} container justifyContent="center">
-                <Typography variant="body1">
+        <div className = "matchContainer">
+            <div className = "matchName">
+                <div>
+                    {name}
+                </div>
+                <div>
+                    Field: {field}
+                </div>
+            </div>
+            <div className = "matchInfo">
+                <div className = "matchTeamDisplay">
+                    {redAlliance.teams.map((teamData) => (
+                        <div>
+                            <span style={{ color: isBlueWinning && !equal? '#FFCCCC' : 'red' }}>{teamData.team.name}</span>
+                        </div>
+                    ))}
+                </div>
+               
+                <div className = "matchScoreDisplay">
+                    <div>
+                        <span style={{ color: isBlueWinning ? '#FFCCCC' : 'red' }}>{redScore}</span>
+                        :
+                        <span style={{ color: isBlueWinning ? '#1876D2' : '#93BAE9' }}>{blueScore}</span>
+                    </div>
+                </div>
+
+                <div className = "matchTeamDisplay text-right">
+                    {blueAlliance.teams.map((teamData) => (
+                        <div>
+                            <span style={{ color: isBlueWinning ? '#1876D2' : '#93BAE9' }}>{teamData.team.name}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <div className = "matchLocation"> 
+                <div className = "matchTime">
                     {startTime.split(':').slice(0, 2).join(':') + " " + startTime.substring(startTime.length - 2, startTime.length)}
-                </Typography>
-                <Typography variant="body1">
-                    Status: {started || !equal ? "Completed" : "Not Started"}
-                </Typography>
-            </Grid>
-        </Grid>
+                </div>
+                <div className = "matchStatus">
+                    Status: {started || !equal ? "Completed" : "Not started"}
+                </div>
+            </div>
+        </div>
     );
 };
 
-export default MatchDisplay2;
+export default MatchDisplay;

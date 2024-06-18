@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MatchBasic from '../Lists/Helpers/MatchBasic';
+import MatchBasic2 from '../Lists/Helpers/MatchBasic2';
 import DivisionDropDown from '../Dropdowns/DivisionDropDown'
 import TeamsDropDown from '../Dropdowns/TeamsDropDown'
 
@@ -125,10 +125,11 @@ const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
                     teams = {teamsByDivision[selectedDivisionIndex]}
                 /> 
             </div>
-            
-            {filteredMatches.map((match, index) => (
-                <MatchBasic key={index} match={match} />
-            ))}
+            <div className = "match">
+                {filteredMatches.map((match, index) => (
+                    <MatchBasic2 key={index} match={match} />
+                ))}
+            </div>
         </div>
     );
 };

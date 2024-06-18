@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
-import MatchBasic from '../Lists/Helpers/MatchBasic';
 import MatchBasic2 from '../Lists/Helpers/MatchBasic2';
 import { Link } from 'react-router-dom';
 import { getSeasonNameFromId } from '../../SeasonEnum';
-
+import '../../Stylesheets/matches.css'
 // This component gets all of the matches and displays for a team
 
 interface TeamMatchesProps {
@@ -149,8 +148,8 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
                     <br />
 
                     {/* Content */}
-                    <div>
-                    {seasonEventsMap[selectedSeason] &&
+                    <div className = "match">
+                        {seasonEventsMap[selectedSeason] &&
                         Object.entries(seasonEventsMap[selectedSeason])
                             .sort(([, matches1], [, matches2]) => {
                                 const startTime1 = matches1[0].started ? new Date(matches1[0].started).getTime() : new Date(matches1[0].scheduled).getTime();
@@ -170,15 +169,9 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
                                         })
                                         .map((match, index) => (
                                             <MatchBasic2 key={index} match={match} />
-                                            /*{                                            currTeam ? (
-                                                <MatchBasic key={index} match={match} currTeam={currTeam} />
-                                            ) : (
-                                                <MatchBasic key={index} match={match} />
-                                            ) }*/
-
                                         ))}
                                 </div>
-                            ))}
+                        ))}
                     </div>
                 </div>
             )}

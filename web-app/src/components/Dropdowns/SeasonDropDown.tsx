@@ -60,12 +60,14 @@ const SeasonDropDown: React.FC<SeasonDropdownProps> = ({ setSeasonId, seasonId, 
                         >
                             {seasons
                             .filter(s => {
-                                if (type === 'VEXU' || grade === 'College') {
-                                    return getSeasonNameFromId(s).includes('VEXU');
-                                } else if (type === 'VEX') {
-                                    return !getSeasonNameFromId(s).includes('VEXU') && getSeasonNameFromId(s).includes('VEX');
-                                } else if (grade !== 'College') {
-                                    return !getSeasonNameFromId(s).includes('VEXU') && getSeasonNameFromId(s).includes('VEX');
+                                if (grade !== '') {
+                                    if (type === 'VEXU' || grade === 'College') {
+                                        return getSeasonNameFromId(s).includes('VEXU');
+                                    } else if (type === 'VEX') {
+                                        return !getSeasonNameFromId(s).includes('VEXU') && getSeasonNameFromId(s).includes('VEX');
+                                    } else if (grade !== 'College') {
+                                        return !getSeasonNameFromId(s).includes('VEXU') && getSeasonNameFromId(s).includes('VEX');
+                                    }
                                 }
                                 return true;
                             })
