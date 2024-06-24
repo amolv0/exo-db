@@ -60,7 +60,7 @@ const SeasonDropDown: React.FC<SeasonDropdownProps> = ({ setSeasonId, seasonId, 
                         >
                             {seasons
                             .filter(s => {
-                                if (grade !== '') {
+                                if (grade !== '' || type !== '') {
                                     if (type === 'VEXU' || grade === 'College') {
                                         return getSeasonNameFromId(s).includes('VEXU');
                                     } else if (type === 'VEX') {

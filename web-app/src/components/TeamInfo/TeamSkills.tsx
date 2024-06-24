@@ -5,7 +5,7 @@ import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import { getSeasonNameFromId } from '../../SeasonEnum';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
-import { Typography, Link as MuiLink } from '@mui/material';
+import { Typography, Link as MuiLink, TableSortLabel  } from '@mui/material';
 
 // This component gets all of the skills for a team
 interface TeamSkillsProps {
@@ -13,7 +13,7 @@ interface TeamSkillsProps {
 }
 
 const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
-    const [seasonEventsMap, setSeasonEventsMap] = useState<{ [season: number]: { [eventId: number]: any[] } }>({});
+    const [skillsMap, setSkillsMap] = useState<{ [key: number]: any[] }>({});
     const [selectedSeason, setSelectedSeason] = useState<number>(181);
     const [posts, setPosts] = useState(true);
     const [loading, setLoading] = useState<boolean>(true);
@@ -22,6 +22,9 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
     const [showCurrentRankings, setShowCurrentRankings] = useState(true);
     const [rank, setRank] = useState<number>(0);
     const [attempts, setAttempts] = useState<number>(0);
+
+    const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+    const [orderBy, setOrderBy] = useState<string>('rank');
 
     const toggleRankingsDisplay = () => {
       setShowCurrentRankings(prevState => !prevState);
@@ -51,11 +54,13 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
         if (!isFirstUseEffectDone) {
             return;
         }
+
         const fetchSkillsDetails = async () => {
             if (skills && skills.length > 0) {
                 try {
                     setLoading(true);
                     const allSkills: any[] = [];
+
                     //console.log(JSON.stringify(groupsOf50[6])); "[46584492,46584493,46584493]" the first two is middle school skills? Skills post error 4610Z
                     for (let i = 0; i < groupsOf50.length; i++) {
                         await new Promise(resolve => setTimeout(resolve, 10));
@@ -69,7 +74,6 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                         const data = await response.json();
                         allSkills.push(...data);
                     }   
-
                     let tempRank = 0;
                     let size = 0;
                     let attemptsTotal = 0;
@@ -86,7 +90,6 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                         attemptsTotal += skill.attempts;
                         size++;
                     });
-
                     // Temp fix since skills api recoridng every attempt
                     for (const season in tempSeasonEventsMap) {
                         for (const eventId in tempSeasonEventsMap[season]) {
@@ -105,10 +108,32 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                             }
                         }
                     }
+
+                    const tempSeasonEventsMap2: { [key: number]: any[] } = {};
+
+                    for (const season in tempSeasonEventsMap) {                    
+                        for (const eventId in tempSeasonEventsMap[season]) {
+                            const entries = tempSeasonEventsMap[season][eventId];
+                    
+                            if (!tempSeasonEventsMap2[season]) {
+                                tempSeasonEventsMap2[season] = [];
+                            }
+
+                            const combinedEntry: any = {
+                                rank: Math.max(entries[0].rank, entries[1].rank),
+                                score: entries[0].score + entries[1].score,
+                                driver: entries[1].score,
+                                prog: entries[0].score,
+                                event_name: entries[0].event_name,
+                                event_id: entries[0].event_id,
+                            };
+                            tempSeasonEventsMap2[season].push(combinedEntry);
+                        }
+                    }
                     setAttempts(attemptsTotal)
                     setRank(Math.round(tempRank / size * 10) / 10);
-                    setSeasonEventsMap(tempSeasonEventsMap);
-                    setSelectedSeason(Math.max(...Object.keys(tempSeasonEventsMap).map(Number)));
+                    setSkillsMap(tempSeasonEventsMap2);
+                    setSelectedSeason(Math.max(...Object.keys(tempSeasonEventsMap2).map(Number)));
                 } catch (error) {
                     console.error('Error fetching skills details:');
                 } finally {
@@ -123,47 +148,55 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
         fetchSkillsDetails();
     }, [skills, isFirstUseEffectDone, groupsOf50]);
 
-    const averageRank = (selectedSeason: number) => {
+    const averageRank = (selectedSeason: number): number => {
         let rankTotal = 0;
         let totalSkills = 0;
-    
-        if (seasonEventsMap[selectedSeason]) {
-            Object.values(seasonEventsMap[selectedSeason]).forEach(eventSkills => {
-                eventSkills.forEach(skills => {
-                    rankTotal += skills.rank;
-                    totalSkills++;
-                });
+
+        if (skillsMap[selectedSeason] && Array.isArray(skillsMap[selectedSeason])) {
+            skillsMap[selectedSeason].forEach(skills => {
+                rankTotal += skills.rank;
+                totalSkills++;
             });
         }
-    
+
         if (totalSkills === 0) return 0;
     
         return Math.round((rankTotal / totalSkills) * 10) / 10;
     };
 
-    const maxScore = (selectedSeason: number) => {
+    const maxScore = (selectedSeason: number): number => {
         let maxScore = 0;
-        let tempScore = 0;
-        if (seasonEventsMap[selectedSeason]) {
-            Object.values(seasonEventsMap[selectedSeason]).forEach(eventSkills => {
-                eventSkills.forEach((skills, index) => {
-                    tempScore += skills.score;
-                    if(index === 1) {
-                        maxScore = Math.max(tempScore, maxScore);
-                        tempScore = 0;
-                    }
-                });
+    
+        if (skillsMap[selectedSeason] && Array.isArray(skillsMap[selectedSeason])) {
+            skillsMap[selectedSeason].forEach(skills => {
+                const tempScore = skills.score;
+                maxScore = Math.max(tempScore, maxScore);
             });
         }
     
         return maxScore;
     };
+    
+    const handleRequestSort = (property: string) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
+
+    const sortedSkills = skillsMap[selectedSeason]?.slice().sort((a, b) => {
+        if (orderBy === 'rank' ) {
+            return order === 'asc' ? a[orderBy] - b[orderBy] : b[orderBy] - a[orderBy];
+        } else if (orderBy === 'score' || orderBy === 'driver' || orderBy === 'prog') {
+            return order === 'asc' ? b[orderBy] - a[orderBy] : a[orderBy] - b[orderBy];
+        }
+        return 0;
+    });
 
     return (
         <div>
             {loading ? ( // Render loading indicator if loading state is true
                 <CircularProgress style={{ margin: '20px' }} />
-            ) : (posts || Object.keys(seasonEventsMap).length === 0) ? (  // no skills :)
+            ) : (posts || Object.keys(skillsMap).length === 0) ? (  // no skills :)
                 <div>No skills found :I</div>
             ) : (
                 <div className="text-black">
@@ -218,7 +251,7 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                             setSeasonId={setSelectedSeason}
                             type=''
                             grade=''
-                            restrict={Object.keys(seasonEventsMap)}
+                            restrict={Object.keys(skillsMap)}
                         />      
                     </div>
                     <br />
@@ -228,50 +261,63 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>Rank</TableCell>
-                                            <TableCell>Combined</TableCell>
-                                            <TableCell>Driver</TableCell>
-                                            <TableCell>Programming</TableCell>
+                                            <TableCell>
+                                                <TableSortLabel
+                                                    active={orderBy === 'rank'}
+                                                    direction={orderBy === 'rank' ? order : 'asc'}
+                                                    onClick={() => handleRequestSort('rank')}
+                                                >
+                                                    Rank
+                                                </TableSortLabel>
+                                            </TableCell>
+                                            <TableCell>
+                                                <TableSortLabel
+                                                    active={orderBy === 'score'}
+                                                    direction={orderBy === 'score' ? order : 'asc'}
+                                                    onClick={() => handleRequestSort('score')}
+                                                >
+                                                    Combined
+                                                </TableSortLabel>
+                                            </TableCell>
+                                            <TableCell>
+                                                <TableSortLabel
+                                                    active={orderBy === 'driver'}
+                                                    direction={orderBy === 'driver' ? order : 'asc'}
+                                                    onClick={() => handleRequestSort('driver')}
+                                                >
+                                                    Driver
+                                                </TableSortLabel>
+                                            </TableCell>
+                                            <TableCell>
+                                                <TableSortLabel
+                                                        active={orderBy === 'prog'}
+                                                        direction={orderBy === 'prog' ? order : 'asc'}
+                                                        onClick={() => handleRequestSort('prog')}
+                                                    >
+                                                    Prog
+                                                </TableSortLabel>
+                                            </TableCell>
                                             <TableCell>Event</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {seasonEventsMap[selectedSeason] && Object.entries(seasonEventsMap[selectedSeason])
-                                            .map(([eventId, eventSkills]) => {
-                                                // Combine driver and programming scores manually
-                                                const combinedSkills: { [key: string]: any }[] = [];
-                                                eventSkills.forEach(skills => {
-                                                    const existingCombinedSkillIndex = combinedSkills.findIndex(skill => skill.event_id === skills.event_id);
-                                                    if (existingCombinedSkillIndex !== -1) {
-                                                        combinedSkills[existingCombinedSkillIndex].scores[skills.type] = skills.score;
-                                                    } else {
-                                                        combinedSkills.push({ ...skills, scores: { [skills.type]: skills.score } });
-                                                    }
-                                                });
-
-                                                // Sort combinedSkills based on type: driver, programming
-                                                const sortedSkills = combinedSkills.sort((a, b) => {
-                                                    const typeOrder: { [key: string]: number } = { 'driver': 0, 'programming': 1 };
-                                                    return typeOrder[a.type] - typeOrder[b.type];
-                                                });
-
-                                                return sortedSkills.map((skills, index) => (
-                                                    <TableRow key={index}>
-                                                        <TableCell>{skills.rank}</TableCell>
-                                                        <TableCell>{skills.scores['driver'] + skills.scores['programming']}</TableCell>
-                                                        <TableCell>{skills.scores['driver']}</TableCell>
-                                                        <TableCell>{skills.scores['programming']}</TableCell>
-                                                        <TableCell>
-                                                            <MuiLink component={Link} to={`/events/${skills.event_id}`} underline="hover" className = "flex">
-                                                                <Typography>
-                                                                    <div> {skills.event_name} </div>
-                                                                </Typography>
-                                                            </MuiLink>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ));
-                                            })
-                                        }
+                                        {sortedSkills.map((skills, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>
+                                                    <div className="rankBox"> 
+                                                        {skills.rank}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>{skills.score}</TableCell>
+                                                <TableCell>{skills.driver}</TableCell>
+                                                <TableCell>{skills.prog}</TableCell>
+                                                <TableCell>
+                                                    <MuiLink component={Link} to={`/events/${skills.event_id}`} underline="hover" className="flex">
+                                                        <Typography>{skills.event_name}</Typography>
+                                                    </MuiLink>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
                                     </TableBody>
                                 </Table>
                             </TableContainer>

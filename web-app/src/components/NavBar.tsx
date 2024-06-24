@@ -40,7 +40,7 @@ const Navbar: React.FC = () => {
     const renderDesktopMenu = () => {
         return (
             <div>
-                <nav id="navbar" className={`p-2 text-xl transition duration-800 ${isSticky ? 'sticky top-0 z-50 shadow-lg bg-red-100 text-dark_red' : 'colorPrimary text-white '}`}>
+                <nav id="navbar" className={`p-2 text-xl transition duration-800  text-white ${isSticky ? 'sticky top-0 z-50 shadow-lg bg-orange-900' : 'colorPrimary '}`}>
                     <div className="container mx-auto flex justify-between items-center">
                         <div className="flex items-center space-x-4">
                             <Link to="https://www.igniterobotics.org/" target="_blank" rel="noopener noreferrer">

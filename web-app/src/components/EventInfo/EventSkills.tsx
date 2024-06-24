@@ -22,21 +22,23 @@ interface SkillData {
 }
 
 interface EventSkillsComponentProps {
-    skills: SkillData[];
+    skills: SkillData[] | null;
 }
 
 const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) => {
-    // Filter the "programming" scores and "driver" scores, and need to map the
-    // team to their prog + driver scores because data is not given together
-    
+    const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+    const [orderBy, setOrderBy] = useState<string>('rank');
+
+    if (!skills) {
+        return <div>No skills found :I</div>;
+    }
+
     const programmingSkills = skills.filter(skill => skill.type === "programming");
     const driverSkills = skills.filter(skill => skill.type === "driver");
 
     const programmingSkillsMap = new Map<number, SkillData[]>();
     const driverSkillsMap = new Map<number, SkillData[]>();
     const combinedSkillsMap = new Map<number, SkillData[]>();
-    const [order, setOrder] = useState<'asc' | 'desc'>('asc');
-    const [orderBy, setOrderBy] = useState<string>('rank');
 
     const handleRequestSort = (property: string) => {
         const isAsc = orderBy === property && order === 'asc';
