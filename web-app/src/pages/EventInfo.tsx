@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation} from 'react-router-dom';
 import EventAwards from '../components/EventInfo/EventAwards';
 import EventTeams from '../components/EventInfo/EventTeams';
 import EventMatches from '../components/EventInfo/EventMatches';
@@ -7,7 +7,7 @@ import EventRankings from '../components/EventInfo/EventRankings';
 import EventSkills from '../components/EventInfo/EventSkills';
 import EventElims from '../components/EventInfo/EventElims';
 import EventStreams from '../components/EventInfo/EventStreams';
-import { Typography, CircularProgress} from '@mui/material';
+import { Typography, CircularProgress, Link as MuiLink } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import '../Stylesheets/teamInfo.css';
 
@@ -72,12 +72,12 @@ const EventInfo: React.FC = () => {
                         </div>
                         <div className="subtitle-team-info">
                             <span className="mr-1">&#x1F3E0;</span>
-                            <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            <MuiLink href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                                 `${eventData[0].location.address_1}, ${eventData[0].location.city}, ${eventData[0].location.region}, ${eventData[0].location.postcode}, ${eventData[0].location.country}`
-                            )}`} target="_blank" rel="noopener noreferrer">
+                            )}`} target="_blank" rel="noopener noreferrer" underline="hover" sx={{ color: 'lightblue' }}>
                                 {eventData[0].location.address_1 + ', ' || ''}{eventData[0].location.city + ', ' || ''}
                                 {eventData[0].location.region + ', ' || ''}{eventData[0].location.postcode + ', ' || ''}{eventData[0].location.country || ''}
-                            </a>
+                            </MuiLink>
                         </div>
                         <div className="subtitle-team-info">
                             <span className="mr-1">&#x1F55C;</span>

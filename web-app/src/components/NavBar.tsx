@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
     const location = useLocation();
 
     const handleResize = () => {
-        setIsMobile(window.innerWidth < 1100);
+        setIsMobile(window.innerWidth < 900);
     };
 
     useEffect(() => {
@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
                                 <div className="flex items-center transition duration-400 hover:scale-110">
                                     <span className="text-xl mr-2 font-bold">ignite.db</span>
                                     <div>
-                                        <span className="text-xs">pre-release 1.15</span>
+                                        <span className="text-xs">pre-release 1.16</span>
                                     </div>
                                 </div>
                             </Link>

@@ -25,9 +25,9 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
     const [selectedSeason, setSelectedSeason] = useState<number>(181);
     const [posts, setPosts] = useState(true);
     const [loading, setLoading] = useState<boolean>(true);
-    const [champ, setChamps] = useState<number>(0);
-    const [skills, setSkills] = useState<number>(0);
-    const [exc, setExcs] = useState<number>(0);
+    //const [champ, setChamps] = useState<number>(0);
+    //const [skills, setSkills] = useState<number>(0);
+    //const [exc, setExcs] = useState<number>(0);
     const [groupsOf100, setGroupsOf100] = useState<number[][]>([]);
     const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
 
@@ -99,18 +99,19 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
         }
         const seasonMap: { [season: number]: AwardData[] } = {};
 
-        let excellence = 0;
-        let champ = 0;
-        let skills = 0;
+        //let excellence = 0;
+        //let champ = 0;
+        //let skills = 0;
 
         awardData.forEach(award => {
+            /*
             if (award.title.includes("Tournament Champions")) {
                 champ+=1;
             } else if (award.title.includes("Robot Skills Champion")) {
-                skills+=1;
+               skills+=1;
             } else if (award.title.includes("Excellence Award")) {
                 excellence+=1;
-            }
+            }*/
 
             if (!seasonMap[award.season]) {
                 seasonMap[award.season] = [];
@@ -121,9 +122,9 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
           }
         });
 
-        setChamps(champ);
-        setExcs(excellence);
-        setSkills(skills);
+        //setChamps(champ);
+        //setExcs(excellence);
+        //setSkills(skills);
         setSeasonMap(seasonMap)
         setPosts(false);
     }, [awardData, loading]);
