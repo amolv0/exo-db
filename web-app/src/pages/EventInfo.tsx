@@ -60,7 +60,9 @@ const EventInfo: React.FC = () => {
     return (
         <div>
             {loading ? (
-                <CircularProgress color="inherit" />
+                <div className = "loader">
+                    <CircularProgress style={{ margin: '20px' }} />
+                </div>
             ) : (eventData && eventData.length > 0 ? (
                 <div>
                     {/* Events Title */}

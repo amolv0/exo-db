@@ -24,7 +24,7 @@ const Navbar: React.FC = () => {
             const navbar = document.getElementById('navbar');
             if (navbar) {
                 // Calculate the threshold based on your design
-                const threshold = 20; // Adjust as needed
+                const threshold = 15; // Adjust as needed
                 const isNavbarSticky = window.scrollY > threshold;
                 setIsSticky(isNavbarSticky);
             }
@@ -40,14 +40,14 @@ const Navbar: React.FC = () => {
     const renderDesktopMenu = () => {
         return (
             <div>
-                <nav id="navbar" className={`p-2 text-xl transition duration-800  text-white ${isSticky ? 'sticky top-0 z-50 shadow-lg bg-orange-900' : 'colorPrimary '}`}>
-                    <div className="container mx-auto flex justify-between items-center">
+                <nav id="navbar" className={`p-2 text-xl transition duration-800  text-white ${isSticky ? 'sticky top-0 z-50 shadow-lg bg-orange-800' : 'colorPrimary '}`}>
+                    <div className="max-w-screen-xl mx-auto flex justify-between items-center">
                         <div className="flex items-center space-x-4">
                             <Link to="https://www.igniterobotics.org/" target="_blank" rel="noopener noreferrer">
                                 <div className="flex items-center transition duration-400 hover:scale-110">
                                     <span className="text-xl mr-2 font-bold">ignite.db</span>
                                     <div>
-                                        <span className="text-xs">pre-release 1.16</span>
+                                        <span className="text-xs">pre-release 1.17</span>
                                     </div>
                                 </div>
                             </Link>
@@ -83,13 +83,13 @@ const Navbar: React.FC = () => {
     const renderMobileMenu = () => {
         return (
             <div>
-                <nav id="navbar" className={`p-2 text-xl transition duration-800 ${isSticky ? 'sticky top-0 z-50 shadow-lg bg-white  text-dark_red' : 'colorPrimary text-white '}`}>
+                <nav id="navbar" className={`p-2 text-xl transition duration-800  text-white ${isSticky ? 'sticky top-0 z-50 shadow-lg bg-orange-800' : 'colorPrimary '}`}>
                     <div className="container mx-auto flex justify-between items-center">
                         <div className="flex items-center space-x-4">
                             <span className="text-xl mr-2 font-bold">ignite.db</span>
                             <Search/>
                         </div>
-                        <select className={`rounded-lg ml-10 ${isSticky ? 'bg-dark_red text-white' : 'bg-white text-dark_red'}`}
+                        <select className={`rounded-lg ml-10  text-dark_red 'bg-white`}
                             value={location.pathname}
                             onChange={(e) => window.location.href = e.target.value}>
                             <option value="/">Home</option>

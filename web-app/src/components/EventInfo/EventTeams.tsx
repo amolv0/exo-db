@@ -90,7 +90,9 @@ const JSONComponent: React.FC<JSONComponentProps> = ({ teams }) => {
     return (
         <div>
             {loading ? (
-                <CircularProgress color="inherit" />
+                <div className = "loader">
+                    <CircularProgress style={{ margin: '20px' }} />
+                </div>
             ) : teamDetails.length > 0 ? (
                 
                 <div>

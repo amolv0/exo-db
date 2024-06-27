@@ -100,6 +100,7 @@ const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
 
     useEffect(() => {
         setFilteredMatches(divisions[selectedDivisionIndex].matches);
+        setSelectedTeam("All");
     }, [selectedDivisionIndex]);
 
     if (!divisions[selectedDivisionIndex] || !divisions[selectedDivisionIndex].matches || divisions[selectedDivisionIndex].matches.length === 0) {

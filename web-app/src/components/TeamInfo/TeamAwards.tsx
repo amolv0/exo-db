@@ -6,7 +6,7 @@ import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import { Box, Typography, Link as MuiLink } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
-
+import '../../Stylesheets/pageLayout.css'
 // The component displays all the team awards
 
 interface TeamAwardsProps {
@@ -140,7 +140,9 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
     return (
         <div>
             {loading ? ( // Render loading indicator if loading state is true
-                <CircularProgress style={{ margin: '20px' }} />
+                <div className = "loader">
+                    <CircularProgress style={{ margin: '20px' }} />
+                </div>
             ) : (posts || totalAward() === 0)? ( 
                 <div>No awards found</div>
             ) : (

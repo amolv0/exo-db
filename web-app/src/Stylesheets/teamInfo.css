@@ -137,7 +137,7 @@
           font-weight: bold;
           font-size: 30px;
           position: relative;
-          left: calc((100vw - 1540px) / 2);
+          left: calc((100vw - 1300px) / 2);
       }
   
       .subtitle-team-info {
@@ -146,17 +146,7 @@
           font-weight: bold;
           font-size: 15px;
           position: relative;
-          left: calc((100vw - 1540px) / 2);
-      }
-  
-      @media screen and (max-width: 1600px) {
-          .title-team-info {
-              left: calc((100vw - 1300px) / 2);
-          }
-  
-          .subtitle-team-info {
-              left: calc((100vw - 1300px) / 2);
-          }
+          left: calc((100vw - 1300px) / 2);
       }
 
       .team-button {

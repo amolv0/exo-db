@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Link as MuiLink } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import MatchBasic2 from '../Lists/Helpers/MatchBasic2';
 import { Link } from 'react-router-dom';
 import { getSeasonNameFromId } from '../../SeasonEnum';
 import '../../Stylesheets/matches.css'
+
 // This component gets all of the matches and displays for a team
 
 interface TeamMatchesProps {
@@ -114,7 +115,9 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
     return (
         <div>
             {loading ? (
-                <CircularProgress style={{ margin: '20px' }} />
+                <div className = "loader">
+                    <CircularProgress style={{ margin: '20px' }} />
+                </div>
             ) : posts ? (
                 <div>No matches found</div>
             ) : (
@@ -148,31 +151,32 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
                     <br />
 
                     {/* Content */}
-                    <div className = "match">
+                    <div className="match">
                         {seasonEventsMap[selectedSeason] &&
-                        Object.entries(seasonEventsMap[selectedSeason])
+                            Object.entries(seasonEventsMap[selectedSeason])
                             .sort(([, matches1], [, matches2]) => {
                                 const startTime1 = matches1[0].started ? new Date(matches1[0].started).getTime() : new Date(matches1[0].scheduled).getTime();
                                 const startTime2 = matches2[0].started ? new Date(matches2[0].started).getTime() : new Date(matches2[0].scheduled).getTime();
                                 return startTime1 - startTime2;
                             })
-                            .map(([event_name, matches]) => (
-                                <div key={event_name}>
-                                    <Link to={`/events/${matches[0].event_id}`}>
+                            .map(([event_name, matches], eventIndex, eventArray) => (
+                                <React.Fragment key={event_name}>
+                                    <MuiLink component={Link} to={`/events/${matches[0].event_id}`} underline="hover">
                                         <div className="matchesTitle">{event_name}</div>
-                                    </Link>
+                                    </MuiLink>
                                     {matches
                                         .sort((match1, match2) => {
-                                            const time1 = match1.started ? new Date(match1.started).getTime() : new Date(match1.scheduled).getTime();
-                                            const time2 = match2.started ? new Date(match2.started).getTime() : new Date(match2.scheduled).getTime();
-                                            return time1 - time2;
+                                        const time1 = match1.started ? new Date(match1.started).getTime() : new Date(match1.scheduled).getTime();
+                                        const time2 = match2.started ? new Date(match2.started).getTime() : new Date(match2.scheduled).getTime();
+                                        return time1 - time2;
                                         })
                                         .map((match, index) => (
-                                            currTeam ? <MatchBasic2 key={index} match={match} teamName={currTeam} /> : <MatchBasic2 key={index} match={match} />
+                                        currTeam ? <MatchBasic2 key={index} match={match} teamName={currTeam} /> : <MatchBasic2 key={index} match={match} />
                                         ))}
-                                </div>
-                        ))}
-                    </div>
+                                    {eventIndex < eventArray.length - 1 && <div style={{ borderBottom: '3px solid grey', margin: '25px 0' }} />}
+                                </React.Fragment>
+                            ))}
+                        </div>
                     <br />
                     <br />
                 </div>

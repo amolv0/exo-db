@@ -195,7 +195,9 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
     return (
         <div>
             {loading ? ( // Render loading indicator if loading state is true
-                <CircularProgress style={{ margin: '20px' }} />
+                <div className = "loader">
+                    <CircularProgress style={{ margin: '20px' }} />
+                </div>
             ) : (posts || Object.keys(skillsMap).length === 0) ? (  // no skills :)
                 <div>No skills found :I</div>
             ) : (

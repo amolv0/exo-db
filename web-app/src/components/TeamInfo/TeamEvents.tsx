@@ -120,9 +120,11 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
     return (
         <div>
             {loading ? (
-                <CircularProgress style={{ margin: '20px' }} />
+                <div className = "loader">
+                    <CircularProgress style={{ margin: '20px' }} />
+                </div>
             ) : error ? ( 
-                <div>Error: {error}</div>
+                <div>No events found</div>
             ) :  (
                 <div style={{ color: 'black' }}>
                     <div className = "team-profile-subtitle">
@@ -174,7 +176,20 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                                         {seasonMap[selectedSeason] && Array.isArray(seasonMap[selectedSeason]) && seasonMap[selectedSeason].map((event, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>
-                                                    {event.program.code || event.program}
+                                                    <div
+                                                        className="progBox"
+                                                        style={{
+                                                        backgroundColor: event.program === 'VRC'
+                                                            ? 'var(--banner-color)'  // Light gray with 50% opacity
+                                                            : event.program === 'VEXU'
+                                                            ? 'var(--primary-color)'  // Light gray with 30% opacity
+                                                            : event.program === 'VIQRC'
+                                                            ? 'var(--orange-color)'  // Light gray with 70% opacity
+                                                            : 'rgba(128, 128, 128, 0)'
+                                                        }}
+                                                    >
+                                                        {typeof event.program === 'string' ? event.program : event.program.code || event.program}
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <MuiLink component={Link} to={`/events/${event.id}`} underline="hover" className = "flex">

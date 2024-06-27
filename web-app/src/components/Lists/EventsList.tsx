@@ -207,8 +207,21 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                                         {eventsMap && Array.isArray(eventsMap) && eventsMap.map((event, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>
-                                                    {event.program.code || event.program}
-                                                </TableCell>
+                                                    <div
+                                                        className="progBox"
+                                                        style={{
+                                                        backgroundColor: event.program === 'VRC'
+                                                            ? 'var(--banner-color)'  // Light gray with 50% opacity
+                                                            : event.program === 'VEXU'
+                                                            ? 'var(--primary-color)'  // Light gray with 30% opacity
+                                                            : event.program === 'VIQRC'
+                                                            ? 'var(--orange-color)'  // Light gray with 70% opacity
+                                                            : 'rgba(128, 128, 128, 0)'
+                                                        }}
+                                                    >
+                                                        {typeof event.program === 'string' ? event.program : event.program.code || event.program}
+                                                    </div>
+                                                    </TableCell>
                                                 <TableCell>
                                                 <MuiLink component={Link} to={`/events/${event.id}`} underline="hover">
                                                     <Typography>
