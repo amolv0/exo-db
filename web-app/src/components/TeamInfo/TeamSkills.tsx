@@ -30,6 +30,7 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
       setShowCurrentRankings(prevState => !prevState);
     };
 
+    
     const filterConsecutiveNumbers = (numbers: number[]): number[] => {
         const filteredNumbers: number[] = [];
     
@@ -37,9 +38,11 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
             const current = numbers[i];
             const next = numbers[i + 1];
             if (next && next === current + 1) {
-                filteredNumbers.push(current);
-                filteredNumbers.push(next);
-                i+=1;
+                if (!filteredNumbers.includes(current) && !filteredNumbers.includes(next)) {
+                    filteredNumbers.push(current);
+                    filteredNumbers.push(next);
+                    i+=1;
+                }
             }
         }
         return filteredNumbers;
@@ -76,20 +79,17 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                 try {
                     setLoading(true);
                     const allSkills: any[] = [];
-                    for (let i = 0; i < 1; i++) {
+                    for (let i = 0; i < groupsOf50.length; i++) {
                         await new Promise(resolve => setTimeout(resolve, 10));
                         const response = await fetch(`${process.env.REACT_APP_API_URL}/dev/skills/`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            //,1163362,1218104
-                            //body: "[1163362, 1163363, 1935063,1935064,2034488,2034489,11818650,11818651,1941407,1941408,3922792,3922793,2105328,2105329,4839630,4839631,2049454,2049455,2817966,2817967,1965550,1965551,2821010,2821011,2066164,2066165,2022840,2022841,2042196,2042197,2056574,2056575,1995564,1995565]"
                             body: JSON.stringify(groupsOf50[i])
                         });
                         const data = await response.json();
                         allSkills.push(...data);
-
                     }   
                     let tempRank = 0;
                     let size = 0;
