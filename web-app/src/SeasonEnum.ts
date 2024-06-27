@@ -72,6 +72,9 @@ export function getSeasonNameFromId(id: number): string {
         case 92:
         return 'VEX TossUp';
 
+        case 85:
+        return 'VEX Sack Attack';
+
         default:
         return id.toString();
     }
