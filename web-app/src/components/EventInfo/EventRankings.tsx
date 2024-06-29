@@ -194,8 +194,8 @@ const EventRankingsComponent: React.FC<Divisions> = ({ divisions }) => {
                                             </div> 
                                         </TableCell>
                                         <TableCell>
-                                            <Link key={rankings.team.id} to={`/teams/${rankings.team.id}`}>
-                                                <div className = "teamBox">{rankings.team.name}</div>
+                                            <Link className = "teamBox" key={rankings.team.id} to={`/teams/${rankings.team.id}`}>
+                                                {rankings.team.name}
                                             </Link>
                                         </TableCell>
                                         <TableCell>{rankings.wins}-{rankings.losses}-{rankings.ties}</TableCell>
