@@ -24,8 +24,7 @@ const About: React.FC = () => {
                         353X
                     </Link>
                 </div>
-                <br></br>
-                <br></br>
+                {/*}
                 <div className="text-center">
                     <div className="text-2xl font-bold mb-4">More Info</div>
 
@@ -44,19 +43,19 @@ const About: React.FC = () => {
                     <div>
                         <strong>CCWM (Calculated Contribution to Winning Margin):</strong> CCWM assesses a team's overall impact on match outcomes by combining offensive and defensive performance to determine their contribution to winning margins.
                     </div>
-                </div>
+                </div> */}
 
                 <div className = "text-center mt-10">
-                    For any bugs or inquries, feel free to contact @ghijj or @ray02_ on discord
+                    For any questions, bugs, or inquries, feel free to contact @ghijj or @ray02_ on discord
                 </div>
 
 
                 <div className="w-full max-w-4xl mx-auto text-center">
                     <h2 className="text-center mt-8 mb-4 text-xl font-semibold">Version Notes</h2>
                     <div className="colorSecondary shadow-md rounded p-4 mb-4 mx-auto max-w-3xl">
-                        <h3 className="font-bold text-lg">Version 1.0.0 - July 1st 2024</h3>
+                        <h3 className="font-bold text-lg">Version 1.0 - July 1st 2024</h3>
                         <ul className="list-disc list-inside text-left">
-                            <li>🎉🎉🎉🎉🎉Launched🎉🎉🎉🎉🎉</li>
+                            <li>🎉🎉🎉🎉🎉Launch🎉🎉🎉🎉🎉</li>
                         </ul>
                     </div>
                 </div>

@@ -12,7 +12,7 @@
     --highlight-color: rgb(152, 216, 250);
     --subtitle-color: rgb(227, 153, 153);
     --transition-duration: 0.2s;
-    --font-family-primary: 'Proxima Nova';
+    --font-family-primary: 'Proxima Nova', sans-serif;
 }
 
 .colorPrimary {
