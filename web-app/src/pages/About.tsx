@@ -9,8 +9,8 @@ const About: React.FC = () => {
         <div className = "pageBackground">
             <div >
             <br></br>
-            <div className="mx-3">
-                <div className = "text-2xl text-center">
+            <div>
+                <div className = "title leftDisplay eventAdjust">
                     About Us
                 </div>
 
