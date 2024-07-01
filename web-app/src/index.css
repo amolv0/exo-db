@@ -6,7 +6,7 @@
 body {
     background-color: #E5DCD7;
     color: var(--text-color);
-    font-family: 'Proxima Nova', sans-serif;
+    font-family: 'Proxima Nova';
     font-weight: 700;
     font-size: 16px;
     line-height: 1.6;

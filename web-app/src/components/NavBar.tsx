@@ -40,15 +40,12 @@ const Navbar: React.FC = () => {
     const renderDesktopMenu = () => {
         return (
             <div>
-                <nav id="navbar" className={`p-2 text-xl transition duration-800  text-white ${isSticky ? 'sticky top-0 z-50 shadow-lg bg-orange-800' : 'colorPrimary '}`}>
+                <nav id="navbar" className={`p-2 text-xl transition duration-700 text-white ${isSticky ? 'sticky top-0 z-50 shadow-lg colorNavBar' : 'colorPrimary'}`}>
                     <div className="max-w-screen-xl mx-auto flex justify-between items-center">
                         <div className="flex items-center space-x-4">
                             <Link to="https://www.igniterobotics.org/" target="_blank" rel="noopener noreferrer">
                                 <div className="flex items-center transition duration-400 hover:scale-110">
-                                    <span className="text-xl mr-2 font-bold">ignite.db</span>
-                                    <div>
-                                        <span className="text-xs">pre-release 1.17</span>
-                                    </div>
+                                    <span className="text-xl font-bold">ignite.db</span>
                                 </div>
                             </Link>
                             <div>|</div>
@@ -83,13 +80,13 @@ const Navbar: React.FC = () => {
     const renderMobileMenu = () => {
         return (
             <div>
-                <nav id="navbar" className={`p-2 text-xl transition duration-800  text-white ${isSticky ? 'sticky top-0 z-50 shadow-lg bg-orange-800' : 'colorPrimary '}`}>
+                <nav id="navbar" className={`p-2 text-xl transition duration-800 text-white ${isSticky ? 'sticky top-0 z-50 shadow-lg colorNavBar' : 'colorPrimary'}`}>
                     <div className="container mx-auto flex justify-between items-center">
                         <div className="flex items-center space-x-4">
                             <span className="text-xl mr-2 font-bold">ignite.db</span>
                             <Search/>
                         </div>
-                        <select className={`rounded-lg ml-10  text-dark_red 'bg-white`}
+                        <select className={`rounded-lg ml-10 ${isSticky ? 'colorNavBar' : 'colorPrimary'}`}
                             value={location.pathname}
                             onChange={(e) => window.location.href = e.target.value}>
                             <option value="/">Home</option>

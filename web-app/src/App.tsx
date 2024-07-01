@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import './index.css';
 import NavBar from './components/NavBar';
 import Events from './pages/Events';
 import Skills from './pages/Skills';

@@ -73,7 +73,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Proxima Nova, sans-serif',
+    fontFamily: 'var(--font-family-primary)',
     fontSize: 12,
     fontWeightRegular: "5px",
   },
