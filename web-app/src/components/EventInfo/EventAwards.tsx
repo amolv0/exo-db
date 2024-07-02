@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Link as MuiLink } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import theme from '../../Stylesheets/theme';
 import { ThemeProvider } from '@mui/material/styles';

@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import ReactPlayer from 'react-player';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../../Stylesheets/theme';
 
 // Display reveal video
 interface Reveals {
@@ -45,25 +47,27 @@ const TeamReveals: React.FC<TeamRevealsProps> = ({ reveals }) => {
     }
 
     return (
-        <Box maxWidth="md" mx="auto">
-            <Typography variant="h5" gutterBottom align="center">
-                {sortedReveals[currentSlide].reveal_title}
-            </Typography>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-                <IconButton onClick={handlePreviousSlide} style={{ color: 'black', marginRight: '8px' }}>
-                    <ChevronLeft />
-                </IconButton>
-                <Box ref={playerRef} style={{ width: '100%', height: '400px', overflow: 'hidden' }}>
-                    <ReactPlayer url={sortedReveals[currentSlide].reveal_url} width="100%" height="100%" controls />
+        <ThemeProvider theme={theme}>
+            <Box maxWidth="md" mx="auto">
+                <Typography variant="h5" gutterBottom align="center">
+                    {sortedReveals[currentSlide].reveal_title}
+                </Typography>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <IconButton onClick={handlePreviousSlide} style={{ color: 'black', marginRight: '8px' }}>
+                        <ChevronLeft />
+                    </IconButton>
+                    <Box ref={playerRef} style={{ width: '100%', height: '400px', overflow: 'hidden' }}>
+                        <ReactPlayer url={sortedReveals[currentSlide].reveal_url} width="100%" height="100%" controls />
+                    </Box>
+                    <IconButton onClick={handleNextSlide} style={{ color: 'black', marginLeft: '8px' }}>
+                        <ChevronRight />
+                    </IconButton>
                 </Box>
-                <IconButton onClick={handleNextSlide} style={{ color: 'black', marginLeft: '8px' }}>
-                    <ChevronRight />
-                </IconButton>
+                <Typography variant="body1" align="center" mt={2}>
+                    {`${currentSlide + 1} of ${sortedReveals.length}`}
+                </Typography>
             </Box>
-            <Typography variant="body1" align="center" mt={2}>
-                {`${currentSlide + 1} of ${sortedReveals.length}`}
-            </Typography>
-        </Box>
+        </ThemeProvider>
     );
 };
 

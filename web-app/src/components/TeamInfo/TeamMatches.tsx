@@ -232,7 +232,9 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
                     <CircularProgress style={{ margin: '20px' }} />
                 </div>
             ) : posts ? (
-                <div>No matches found</div>
+                <div className = "team-profile-subtitle">
+                    Team Matches
+                </div>
             ) : (
                 <div>
                     {showCurrentRankings ? (

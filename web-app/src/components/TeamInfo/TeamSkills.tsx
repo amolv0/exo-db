@@ -216,7 +216,9 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                     <CircularProgress style={{ margin: '20px' }} />
                 </div>
             ) : (posts || Object.keys(skillsMap).length === 0) ? (  // no skills :)
-                <div>No skills found :I</div>
+                <div className = "team-profile-subtitle">
+                    Team Skills
+                </div>
             ) : (
                 <div className="text-black">
                     {/* General event info */}

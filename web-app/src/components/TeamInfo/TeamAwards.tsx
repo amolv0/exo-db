@@ -144,7 +144,9 @@ const TeamAwards: React.FC<TeamAwardsProps> = ({ awards }) => {
                     <CircularProgress style={{ margin: '20px' }} />
                 </div>
             ) : (posts || totalAward() === 0)? ( 
-                <div>No awards found</div>
+                <div className = "team-profile-subtitle">
+                    Team Awards
+                </div>
             ) : (
               
                 <div>

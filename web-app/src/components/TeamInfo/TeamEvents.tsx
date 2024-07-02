@@ -124,7 +124,9 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                     <CircularProgress style={{ margin: '20px' }} />
                 </div>
             ) : error ? ( 
-                <div>No events found</div>
+                <div className = "team-profile-subtitle">
+                    Team Events
+                </div>
             ) :  (
                 <div style={{ color: 'black' }}>
                     <div className = "team-profile-subtitle">

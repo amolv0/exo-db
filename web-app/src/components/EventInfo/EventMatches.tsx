@@ -104,7 +104,9 @@ const EventMatchesComponent: React.FC<Divisions> = ({ divisions }) => {
     }, [selectedDivisionIndex]);
 
     if (!divisions[selectedDivisionIndex] || !divisions[selectedDivisionIndex].matches || divisions[selectedDivisionIndex].matches.length === 0) {
-        return <p>No matches</p>;
+        return <div className="tableTitleC">
+            Matches List
+        </div>;
     }
 
     return (

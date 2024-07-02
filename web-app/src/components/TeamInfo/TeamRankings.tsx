@@ -143,7 +143,9 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                 <CircularProgress style={{ margin: '20px' }} />
             </div>
             ) : posts ? (
-                <div>No rankings found</div>
+                <div className="team-profile-subtitle">
+                    Team Rankings
+                </div>
             ) : (
                 <div>
                     {showCurrentRankings ? (

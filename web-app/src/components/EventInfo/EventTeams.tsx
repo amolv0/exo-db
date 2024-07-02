@@ -4,7 +4,7 @@ import { CircularProgress } from '@mui/material';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../Stylesheets/theme';
-import { Typography, Link as MuiLink } from '@mui/material';
+import { Link as MuiLink } from '@mui/material';
 
 interface LocationData {
     city: string | null;

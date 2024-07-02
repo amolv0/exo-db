@@ -30,7 +30,7 @@ const EventSkillsComponent: React.FC<EventSkillsComponentProps> = ({ skills }) =
     const [orderBy, setOrderBy] = useState<string>('rank');
 
     if (!skills) {
-        return <div>No skills found :I</div>;
+        return <div className="tableTitleC">Skills Rankings</div>;
     }
 
     const programmingSkills = skills.filter(skill => skill.type === "programming");
