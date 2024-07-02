@@ -223,7 +223,7 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                     {showCurrentRankings === true ? (
                         <div>
                             <div className = "team-profile-subtitle">
-                                {getSeasonNameFromId(selectedSeason)} Skills
+                                Team Skills
                             </div>
                             <div className = "team-profile-info">
                                 <div className="team-profile-row">
@@ -241,7 +241,7 @@ const TeamSkills: React.FC<TeamSkillsProps> = ({ skills }) => {
                     ) : (
                         <div>
                             <div className = "team-profile-subtitle">
-                                All-time Skills
+                            Team Skills
                             </div>
                             <div className = "team-profile-info">
                                 <div className="team-profile-row">

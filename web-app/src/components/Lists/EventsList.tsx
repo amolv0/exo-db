@@ -31,7 +31,6 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
     const [groupsOf25, setGroupsOf25] = useState<number[][]>([]);
     const [size, setSize] = useState<number> (1);
     const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
-
     const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
         const groups: number[][] = [];
         setSize(arr.length);
@@ -46,38 +45,44 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
         const fetchData = async () => {
             try {
                 let apiUrl = `${process.env.REACT_APP_API_URL}/dev/events?`;
-                const queryParams: string[] = [];
+                if (numberOfEvents !== 5) {
+                    const queryParams: string[] = [];
 
-                // Insert the filter quries
-                if (numberOfEvents !== null && numberOfEvents !== undefined) queryParams.push(`numberOfEvents=${numberOfEvents}`);
-                if (status) queryParams.push(`status=${status}`);
-                if (programCode !== 'All') queryParams.push(`program=${programCode}`);
-                if (startAfter) queryParams.push(`start_after=${startAfter}`);
-                if (startBefore) queryParams.push(`start_before=${startBefore}`);
-                if (region !== 'All') queryParams.push(`region=${region}`);
-
-                apiUrl += queryParams.join('&')
-                // Fetch data using constructed URL
-                const response = await fetch(apiUrl);
-                const result = await response.json();
-                if (result.length === 0 || result.error) {
-                    setLoading(false);
-                    if (status === 'ongoing') {
-                        setError("No ongoing events");
-                    } else {
-                        setError("No events found")
+                    // Insert the filter quries
+                    if (numberOfEvents !== null && numberOfEvents !== undefined) queryParams.push(`numberOfEvents=${numberOfEvents}`);
+                    if (status) queryParams.push(`status=${status}`);
+                    if (programCode !== 'All') queryParams.push(`program=${programCode}`);
+                    if (startAfter) queryParams.push(`start_after=${startAfter}`);
+                    if (startBefore) queryParams.push(`start_before=${startBefore}`);
+                    if (region !== 'All') queryParams.push(`region=${region}`);
+                    apiUrl += queryParams.join('&')
+                    // Fetch data using constructed URL
+                    const response = await fetch(apiUrl);
+                    const result = await response.json();
+                    if (result.length === 0 || result.error) {
+                        setLoading(false);
+                        if (status === 'ongoing') {
+                            setError("No ongoing events");
+                        } else {
+                            setError("No events found")
+                        }
+                        return;
                     }
-                    return;
-                }
-                const formattedIds = JSON.stringify(result);
-                setError(null);
-                if (formattedIds) {
-                    setCurrentPage(1);
-                    const parsedEventIdsArray: number[] = JSON.parse(formattedIds);
-                    const groupedIds: number[][] = divideIntoGroups(parsedEventIdsArray, 25);
+                    const formattedIds = JSON.stringify(result);
+                    setError(null);
+                    if (formattedIds) {
+                        setCurrentPage(1);
+                        const parsedEventIdsArray: number[] = JSON.parse(formattedIds);
+                        const groupedIds: number[][] = divideIntoGroups(parsedEventIdsArray, 25);
+                        setGroupsOf25(groupedIds); 
+                        console.log(groupedIds);
+                    }
+                } else {
+                    // Hardcoded featured events!
+                    const groupedIds: number[][] = [[55557, 53690, 53692, 51488]];
                     setGroupsOf25(groupedIds); 
-                    setIsFirstUseEffectDone(true);
                 }
+                setIsFirstUseEffectDone(true);
             } catch (error) {
                 setError("Failed to find valid events");
                 setLoading(false);
@@ -163,11 +168,14 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
             ) :  (
                 <div>
                     <div className = "selector"> 
+                        {numberOfEvents !== 5 ? (
                         <div className = "tableTitle">
                             {(region === 'All' && programCode === 'All') && "All Events"}
                             {(region && programCode !== 'All') && `${region} ${programCode} Events`}
                             {(region !== 'All' && programCode === 'All') && `All ${region}  Events`}
                         </div>
+                        ) : (<div></div>)}
+
                         {/* Page selector */}
                         {!display && ( 
                             <div className = "pageSelector">

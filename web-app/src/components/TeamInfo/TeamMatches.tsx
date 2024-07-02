@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CircularProgress, Link as MuiLink } from '@mui/material';
+import { CircularProgress, Link as MuiLink, Switch } from '@mui/material';
 import SeasonDropdown from '../Dropdowns/SeasonDropDown';
 import MatchBasic2 from '../Lists/Helpers/MatchBasic2';
 import { Link } from 'react-router-dom';
@@ -13,6 +13,21 @@ interface TeamMatchesProps {
     currTeam?: string;
 }
 
+interface AllianceData {
+    color: string;
+    teams: TeamData[];
+    score: number;
+}
+
+interface TeamInfo {
+    name: string;
+    id: number;
+}
+
+interface TeamData {
+    team: TeamInfo;
+}
+
 const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
     const [seasonEventsMap, setSeasonEventsMap] = useState<{ [season: number]: { [event_id: number]: any[] } }>({});
     const [selectedSeason, setSelectedSeason] = useState<number>(181);
@@ -20,7 +35,9 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
     const [isFirstUseEffectDone, setIsFirstUseEffectDone] = useState<boolean>(false);
     const [posts, setPosts] = useState(true);
     const [loading, setLoading] = useState<boolean>(true);
-
+    const [showCurrentRankings, setShowCurrentRankings] = useState(true);
+    const[wins, setWins] = useState<number>(0);
+    const[losses, setLosses] = useState<number>(0);
     const divideIntoGroups = (arr: number[], groupSize: number): number[][] => {
         const groups: number[][] = [];
         for (let i = 0; i < arr.length; i += groupSize) {
@@ -29,6 +46,10 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
         return groups;
     };
     
+    const toggleRankingsDisplay = () => {
+        setShowCurrentRankings(prevState => !prevState);
+    };
+
     // On matches change, split it up into groups of 100
     useEffect(() => {
         if (matches) {
@@ -76,7 +97,10 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
                             tempSeasonEventsMap[event.season][event.event_name].push(event);
                         }
                     });
+                    console.log(tempSeasonEventsMap);
                     setSeasonEventsMap(tempSeasonEventsMap);
+                    setWins(calculateTotalWins(tempSeasonEventsMap));
+                    setLosses(calculateTotalLosses(tempSeasonEventsMap));
                     setSelectedSeason(Math.max(...Object.keys(tempSeasonEventsMap).map(Number)));
                 } catch (error) {
                     console.error('Error fetching match details:');
@@ -102,6 +126,96 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
         return totalMatches;
     };
     
+    const getTotalWinsForSeason = (season: number): number => {
+        let totalWins = 0;
+        if (seasonEventsMap[season]) {
+            Object.values(seasonEventsMap[season]).forEach(matches => {
+                matches.forEach(match => {
+                    const { alliances } = match;
+                    if (alliances) {
+                        const blueAlliance = alliances.find((alliance: AllianceData)=> alliance.color === 'blue');
+                        const redAlliance = alliances.find((alliance: AllianceData) => alliance.color === 'red');
+                        if (blueAlliance && blueAlliance.score > redAlliance.score && blueAlliance.teams.some((team: TeamData) => team.team.id.toString() === currTeam)) {
+                            totalWins++;
+                        } else if (redAlliance && redAlliance.score > blueAlliance.score && redAlliance.teams.some((team: TeamData) => team.team.id.toString() === currTeam)) {
+                            totalWins++;
+                        }
+                    }
+                });
+            });
+        }
+        return totalWins;
+    };
+
+    const getTotalLossesForSeason = (season: number): number => {
+        let totalLosses = 0;
+        if (seasonEventsMap[season]) {
+            Object.values(seasonEventsMap[season]).forEach(matches => {
+                matches.forEach(match => {
+                    const { alliances } = match;
+                    if (alliances) {
+                        const blueAlliance = alliances.find((alliance: AllianceData)=> alliance.color === 'blue');
+                        const redAlliance = alliances.find((alliance: AllianceData) => alliance.color === 'red');
+                        if (blueAlliance && blueAlliance.score < redAlliance.score && blueAlliance.teams.some((team: TeamData) => team.team.id.toString() === currTeam)) {
+                            totalLosses++;
+                        } else if (redAlliance && redAlliance.score < blueAlliance.score && redAlliance.teams.some((team: TeamData) => team.team.id.toString() === currTeam)) {
+                            totalLosses++;
+                        }
+                    }
+                });
+            });
+        }
+        return totalLosses;
+    };
+
+    const calculateTotalWins = (tempSeasonEventsMap: { [season: number]: { [event_name: string]: any[] } }) => {
+        let totalWins = 0;
+    
+        Object.values(tempSeasonEventsMap).forEach(season => {
+            Object.values(season).forEach(matches => {
+                matches.forEach(match => {
+                    const { alliances } = match;
+                    if (alliances) {
+                        const blueAlliance = alliances.find((alliance: AllianceData)=> alliance.color === 'blue');
+                        const redAlliance = alliances.find((alliance: AllianceData) => alliance.color === 'red');
+                        
+                        if (blueAlliance && blueAlliance.score > redAlliance.score && blueAlliance.teams.some((team: TeamData) => team.team.id.toString() === currTeam)) {
+                            totalWins++;
+                        } else if (redAlliance && redAlliance.score > blueAlliance.score && redAlliance.teams.some((team: TeamData) => team.team.id.toString() === currTeam)) {
+                            totalWins++;
+                        }
+                    }
+                });
+            });
+        });
+    
+        return totalWins;
+    };
+
+    const calculateTotalLosses = (tempSeasonEventsMap: { [season: number]: { [event_name: string]: any[] } }) => {
+        let totalLosses = 0;
+    
+        Object.values(tempSeasonEventsMap).forEach(season => {
+            Object.values(season).forEach(matches => {
+                matches.forEach(match => {
+                    const { alliances } = match;
+                    if (alliances) {
+                        const blueAlliance = alliances.find((alliance: AllianceData)=> alliance.color === 'blue');
+                        const redAlliance = alliances.find((alliance: AllianceData) => alliance.color === 'red');
+                        
+                        if (blueAlliance && blueAlliance.score < redAlliance.score && blueAlliance.teams.some((team: TeamData) => team.team.id.toString() === currTeam)) {
+                            totalLosses++;
+                        } else if (redAlliance && redAlliance.score < blueAlliance.score && redAlliance.teams.some((team: TeamData) => team.team.id.toString() === currTeam)) {
+                            totalLosses++;
+                        }
+                    }
+                });
+            });
+        });
+    
+        return totalLosses;
+    };
+
     const getTotalMatches = (): number => {
         let totalMatches = 0;
         Object.values(seasonEventsMap).forEach(season => {
@@ -121,22 +235,60 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
             ) : posts ? (
                 <div>No matches found</div>
             ) : (
-                <div className="text-black">
-                    <div className = "team-profile-subtitle">
-                        Team Matches
-                    </div>
-                    {/* General event info */}
-                    <div className = "team-profile-info">
-                        <div className="team-profile-row">
-                            <span className="team-profile-rank-label">Match Count</span>
-                            <span className="team-profile-rank-value">{getTotalMatches()}</span>
-                            <span className="team-profile-rank-label">All Seasons</span>
+                <div>
+                    {showCurrentRankings ? (
+                        <div>
+
+                            <div className = "team-profile-subtitle">
+                                Team Matches
+                            </div>
+                            <div className = "team-profile-info">
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label"> Match Count </span>
+                                    <span className="team-profile-rank-value">{getTotalMatchCountForSeason(selectedSeason)}</span>
+                                    <span className="team-profile-rank-label"> {getSeasonNameFromId(selectedSeason)}</span>
+                                </div>
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label">Match Wins</span>
+                                    <span className="team-profile-rank-value">{ getTotalWinsForSeason(selectedSeason)}</span>
+                                    <span className="team-profile-rank-label">{getSeasonNameFromId(selectedSeason)}</span>
+                                </div>
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label">Match Losses</span>
+                                    <span className="team-profile-rank-value">{getTotalLossesForSeason(selectedSeason)}</span>
+                                    <span className="team-profile-rank-label">{getSeasonNameFromId(selectedSeason)}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div className="team-profile-row">
-                            <span className="team-profile-rank-label"> Match Count </span>
-                            <span className="team-profile-rank-value">{getTotalMatchCountForSeason(selectedSeason)}</span>
-                            <span className="team-profile-rank-label"> {getSeasonNameFromId(selectedSeason)}</span>
+                    ) : (
+                        <div>
+                            <div className = "team-profile-subtitle">
+                                Team Matches
+                            </div>
+                            <div className = "team-profile-info">
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label">Match Count</span>
+                                    <span className="team-profile-rank-value">{getTotalMatches()}</span>
+                                    <span className="team-profile-rank-label">All Seasons</span>
+                                </div>
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label">Match Wins</span>
+                                    <span className="team-profile-rank-value">{wins}</span>
+                                    <span className="team-profile-rank-label">All Seasons</span>
+                                </div>
+                                <div className="team-profile-row">
+                                    <span className="team-profile-rank-label">Match Losses</span>
+                                    <span className="team-profile-rank-value">{losses}</span>
+                                    <span className="team-profile-rank-label">All Seasons</span>
+                                </div>
+                            </div>
                         </div>
+                    )}
+                    <div className="flex justify-center items-center h-full">
+                        <Switch
+                            checked={!showCurrentRankings}
+                            onChange={toggleRankingsDisplay}
+                        />
                     </div>
                     {/* DropDown */}
                     <div className="flex justify-center">
@@ -176,7 +328,7 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
                                     {eventIndex < eventArray.length - 1 && <div style={{ borderBottom: '3px solid grey', margin: '25px 0' }} />}
                                 </React.Fragment>
                             ))}
-                        </div>
+                    </div>
                     <br />
                     <br />
                 </div>

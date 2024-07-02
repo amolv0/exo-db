@@ -144,24 +144,24 @@ const TeamProfile: React.FC<TeamProfileProps> = ({ data }) => {
                     {/* Team profile basic info */}
                     <div className = "team-profile-info">
                         <div className="team-profile-row">
-                            <span className="team-profile-rank-label">Global Skills Rank</span>
-                            <span className="team-profile-rank-value">{maxSkillRanking === Number.MAX_SAFE_INTEGER ? 'N/A' : maxSkillRanking}</span>
-                            <span className="team-profile-rank-label">{maxSkillSeasonId === -1 ? '-' : getSeasonNameFromId(maxSkillSeasonId)}</span>
-                        </div>
-                        <div className="team-profile-row">
-                            <span className="team-profile-rank-label">Regional Skills Rank</span>
-                            <span className="team-profile-rank-value">{maxRegionalSkillRanking === Number.MAX_SAFE_INTEGER ? 'N/A' : maxRegionalSkillRanking}</span>
-                            <span className="team-profile-rank-label">{maxRegionalSkillSeasonId === -1 ? '-' : getSeasonNameFromId(maxRegionalSkillSeasonId)}</span>
-                        </div>
-                        <div className="team-profile-row">
                             <span className="team-profile-rank-label">Global Elo Rank</span>
                             <span className="team-profile-rank-value">{maxEloRanking === Number.MAX_SAFE_INTEGER ? 'N/A' : maxEloRanking}</span>
                             <span className="team-profile-rank-label">{maxEloSeasonId === -1 ? '-' : getSeasonNameFromId(maxEloSeasonId)}</span>
                         </div>
                         <div className="team-profile-row">
+                            <span className="team-profile-rank-label">Global Skills Rank</span>
+                            <span className="team-profile-rank-value">{maxSkillRanking === Number.MAX_SAFE_INTEGER ? 'N/A' : maxSkillRanking}</span>
+                            <span className="team-profile-rank-label">{maxSkillSeasonId === -1 ? '-' : getSeasonNameFromId(maxSkillSeasonId)}</span>
+                        </div>
+                        <div className="team-profile-row">
                             <span className="team-profile-rank-label">Regional Elo Rank</span>
                             <span className="team-profile-rank-value">{maxEloRegionalRanking === Number.MAX_SAFE_INTEGER ? 'N/A' : maxEloRegionalRanking}</span>
                             <span className="team-profile-rank-label">{maxEloRegionalSeasonId === -1 ? '-' : getSeasonNameFromId(maxEloRegionalSeasonId)}</span>
+                        </div>
+                        <div className="team-profile-row">
+                            <span className="team-profile-rank-label">Regional Skills Rank</span>
+                            <span className="team-profile-rank-value">{maxRegionalSkillRanking === Number.MAX_SAFE_INTEGER ? 'N/A' : maxRegionalSkillRanking}</span>
+                            <span className="team-profile-rank-label">{maxRegionalSkillSeasonId === -1 ? '-' : getSeasonNameFromId(maxRegionalSkillSeasonId)}</span>
                         </div>
                     </div>
                 </div>
@@ -172,25 +172,25 @@ const TeamProfile: React.FC<TeamProfileProps> = ({ data }) => {
                     </div>
                     <div className = "team-profile-info">
                         <div className="team-profile-row">
-                        <span className="team-profile-rank-label">Global Skills Rank</span>
-                        <span className="team-profile-rank-value">{maxSkillRanking2 === Number.MAX_SAFE_INTEGER ? 'N/A' : maxSkillRanking2}</span>
-                        <span className="team-profile-rank-label">{maxSkillSeasonId2 === -1 ? '-' : getSeasonNameFromId(maxSkillSeasonId2)}</span>
-                    </div>
-                    <div className="team-profile-row">
-                        <span className="team-profile-rank-label">Regional Skills Rank</span>
-                        <span className="team-profile-rank-value">{maxRegionalSkillRanking2 === Number.MAX_SAFE_INTEGER ? 'N/A' : maxRegionalSkillRanking2}</span>
-                        <span className="team-profile-rank-label">{maxRegionalSkillSeasonId2 === -1 ? '-' : getSeasonNameFromId(maxRegionalSkillSeasonId2)}</span>
-                    </div>
-                    <div className="team-profile-row">
-                        <span className="team-profile-rank-label">Global Elo Rank</span>
-                        <span className="team-profile-rank-value">{maxEloRanking2 === Number.MAX_SAFE_INTEGER ? 'N/A' : maxEloRanking2}</span>
-                        <span className="team-profile-rank-label">{maxEloSeasonId2 === -1 ? '-' : getSeasonNameFromId(maxEloSeasonId2)}</span>
-                    </div>
-                    <div className="team-profile-row">
-                        <span className="team-profile-rank-label">Regional Elo Rank</span>
-                        <span className="team-profile-rank-value">{maxEloRegionalRanking2 === Number.MAX_SAFE_INTEGER ? 'N/A' : maxEloRegionalRanking2}</span>
-                        <span className="team-profile-rank-label">{maxEloRegionalSeasonId2 === -1 ? '-' : getSeasonNameFromId(maxEloRegionalSeasonId2)}</span>
-                    </div>
+                            <span className="team-profile-rank-label">Global Elo Rank</span>
+                            <span className="team-profile-rank-value">{maxEloRanking2 === Number.MAX_SAFE_INTEGER ? 'N/A' : maxEloRanking2}</span>
+                            <span className="team-profile-rank-label">{maxEloSeasonId2 === -1 ? '-' : getSeasonNameFromId(maxEloSeasonId2)}</span>
+                        </div>
+                            <div className="team-profile-row">
+                            <span className="team-profile-rank-label">Global Skills Rank</span>
+                            <span className="team-profile-rank-value">{maxSkillRanking2 === Number.MAX_SAFE_INTEGER ? 'N/A' : maxSkillRanking2}</span>
+                            <span className="team-profile-rank-label">{maxSkillSeasonId2 === -1 ? '-' : getSeasonNameFromId(maxSkillSeasonId2)}</span>
+                        </div>
+                        <div className="team-profile-row">
+                            <span className="team-profile-rank-label">Regional Elo Rank</span>
+                            <span className="team-profile-rank-value">{maxEloRegionalRanking2 === Number.MAX_SAFE_INTEGER ? 'N/A' : maxEloRegionalRanking2}</span>
+                            <span className="team-profile-rank-label">{maxEloRegionalSeasonId2 === -1 ? '-' : getSeasonNameFromId(maxEloRegionalSeasonId2)}</span>
+                        </div>
+                        <div className="team-profile-row">
+                            <span className="team-profile-rank-label">Regional Skills Rank</span>
+                            <span className="team-profile-rank-value">{maxRegionalSkillRanking2 === Number.MAX_SAFE_INTEGER ? 'N/A' : maxRegionalSkillRanking2}</span>
+                            <span className="team-profile-rank-label">{maxRegionalSkillSeasonId2 === -1 ? '-' : getSeasonNameFromId(maxRegionalSkillSeasonId2)}</span>
+                        </div>
                     </div>
                 </div>
             )}
