@@ -97,7 +97,6 @@ const TeamMatches: React.FC<TeamMatchesProps> = ({ matches, currTeam }) => {
                             tempSeasonEventsMap[event.season][event.event_name].push(event);
                         }
                     });
-                    console.log(tempSeasonEventsMap);
                     setSeasonEventsMap(tempSeasonEventsMap);
                     setWins(calculateTotalWins(tempSeasonEventsMap));
                     setLosses(calculateTotalLosses(tempSeasonEventsMap));

@@ -53,7 +53,7 @@ const About: React.FC = () => {
                 <div className="w-full max-w-4xl mx-auto text-center">
                     <h2 className="text-center mt-8 mb-4 text-xl font-semibold">Version Notes</h2>
                     <div className="colorSecondary shadow-md rounded p-4 mb-4 mx-auto max-w-3xl">
-                        <h3 className="font-bold text-lg">Version 1.0 - July 1st 2024</h3>
+                        <h3 className="font-bold text-lg">Version 1.0 - July 2nd 2024</h3>
                         <ul className="list-disc list-inside text-left">
                             <li>🎉🎉🎉🎉🎉Launch🎉🎉🎉🎉🎉</li>
                         </ul>
