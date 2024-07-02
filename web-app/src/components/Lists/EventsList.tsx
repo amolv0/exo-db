@@ -75,7 +75,6 @@ const  EventsList: React.FC<EventFilter> = ({numberOfEvents, programCode, startA
                         const parsedEventIdsArray: number[] = JSON.parse(formattedIds);
                         const groupedIds: number[][] = divideIntoGroups(parsedEventIdsArray, 25);
                         setGroupsOf25(groupedIds); 
-                        console.log(groupedIds);
                     }
                 } else {
                     // Hardcoded featured events!

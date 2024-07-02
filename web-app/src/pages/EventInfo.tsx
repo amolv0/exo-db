@@ -107,14 +107,14 @@ const EventInfo: React.FC = () => {
                     <div className = "pageBackground">
                         {activeElement === 'EventInfo' && (
                             <>
+                                <EventStreams 
+                                    streams={eventData[0].streams || []} 
+                                />
                                 <EventAwards 
                                     location={eventData[0].location} 
                                     season={eventData[0].season} 
                                     program={eventData[0].program.code} 
                                     awards={eventData[0].awards} 
-                                />
-                                <EventStreams 
-                                    streams={eventData[0].streams || []} 
                                 />
                             </>
                         )
