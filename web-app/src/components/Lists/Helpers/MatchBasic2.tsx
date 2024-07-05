@@ -52,7 +52,7 @@ const MatchDisplay: React.FC<MatchDisplayProps> = ({ match, teamName }) => {
     const redScore = redAlliance.score;
 
     const isBlueWinning = blueScore > redScore;
-    const equal = blueScore == redScore;
+    const equal = blueScore === redScore;
 
     const findTeamAlliance = (teamId: string) => {
         if (blueAlliance.teams.some(team => team.team.id.toString() === teamId)) {
@@ -74,7 +74,7 @@ const MatchDisplay: React.FC<MatchDisplayProps> = ({ match, teamName }) => {
     const teamHasWon = teamAlliance === 'blue' ? isBlueWinning : teamAlliance === 'red' ? !isBlueWinning : false;
 
     return (
-        <div className={`matchContainer ${teamName ? (teamHasWon ? 'highlight-winner' : 'highlight-loser') : ''}`}>
+        <div className={`matchContainer ${(teamName && !equal) ? (teamHasWon ? 'highlight-winner' : 'highlight-loser') : ''}`}>
             <div className = "matchName">
                 <div>
                     {name}

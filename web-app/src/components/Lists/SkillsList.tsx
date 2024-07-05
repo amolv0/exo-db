@@ -250,8 +250,8 @@ const SkillsList: React.FC<{ season: string; grade: string; region?: string; sho
                                                 <div className = "flex">
                                                     <div className = "teamBox"> {rank.team_number} </div>
                                                     <MuiLink component={Link} to={`/teams/${rank.team_id}`} underline="hover" className = "flex">
-                                                        <Typography>
-                                                            <div className = "teamName"> {rank.team_name} </div>
+                                                        <Typography className = "teamName">
+                                                           {rank.team_name}
                                                         </Typography>
                                                     </MuiLink>
                                                 </div>

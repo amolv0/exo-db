@@ -196,7 +196,7 @@ const TeamEvents: React.FC<EventListDisplayProps> = ({ eventIdsString }) => {
                                                 <TableCell>
                                                     <MuiLink component={Link} to={`/events/${event.id}`} underline="hover" className = "flex">
                                                         <Typography>
-                                                            <div> {event.name} </div>
+                                                            {event.name}
                                                         </Typography>
                                                     </MuiLink>
                                                 </TableCell>

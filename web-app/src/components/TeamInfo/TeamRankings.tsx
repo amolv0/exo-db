@@ -139,7 +139,7 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
     return (
         <div>
             {loading ? (
-                <div className = "loader">
+                <div className="loader">
                 <CircularProgress style={{ margin: '20px' }} />
             </div>
             ) : posts ? (
@@ -269,10 +269,10 @@ const Teamrankings: React.FC<TeamrankingsProps> = ({ rankings }) => {
                                                     <TableCell>{rankings.total_points}</TableCell>
                                                     <TableCell>{rankings.opr}</TableCell>
                                                     <TableCell>{rankings.dpr}</TableCell>
-                                                    <TableCell>
+                                                    <TableCell>                             
                                                         <MuiLink component={Link} to={`/events/${rankings.event_id}`} underline="hover" className = "flex">
-                                                            <Typography>
-                                                                <div> {rankings.event_name} </div>
+                                                            <Typography> 
+                                                                {rankings.event_name} 
                                                             </Typography>
                                                         </MuiLink>
                                                     </TableCell>
